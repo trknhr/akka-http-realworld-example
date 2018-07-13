@@ -10,7 +10,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ Matchers, WordSpec }
 
 //#set-up
-class UserRoutesSpec extends WordSpec with Matchers with ScalaFutures with ScalatestRouteTest
+class UserAuthRoutesSpec extends WordSpec with Matchers with ScalaFutures with ScalatestRouteTest
     with UserRoutes {
   //#test-top
 

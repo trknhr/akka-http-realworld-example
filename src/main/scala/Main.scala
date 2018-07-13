@@ -27,7 +27,7 @@ object Main  extends App {
 
   val userStorage = new JdbcUserStorage(databaseConnector)
 
-  val userService = new UserService(userStorage)
+  val userService = new UserService(userStorage, config.secretKey)
 
   val httpRoute = new HttpRoute(userService, config.secretKey)
 

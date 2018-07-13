@@ -3,6 +3,7 @@ package users
 import java.sql.Timestamp
 import java.util.Date
 
+import users.core.User
 import utils.DatabaseConnector
 
 /**

@@ -6,7 +6,9 @@ import akka.http.scaladsl.model.StatusCodes
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
 import io.circe.generic.auto._
 import io.circe.syntax._
+import users.core.UserRegistration
 
+import users.core._
 import scala.concurrent.ExecutionContext
 
 class UserRoute (
@@ -15,31 +17,68 @@ class UserRoute (
 )(implicit executionContext: ExecutionContext) extends FailFastCirceSupport {
 
   import common.converter.Formatter._
+  import utils.JwtAuthDirectives._
   import StatusCodes._
   import usersService._
 
   val route = pathPrefix("users") {
-    pathEndOrSingleSlash {
-      get {
-        complete(getUsers().map(_.asJson))
-      }
-      post {
-        entity(as[UserRegistration]) { userRegisrtration =>
-          complete(register(userRegisrtration).map { user =>
-            user.asJson
+      path("login") {
+        pathEndOrSingleSlash {
+          post {
+            entity(as[LoginPasswordUser]) { idPass =>
+              complete(
+                login(idPass.user.email, idPass.user.password).map {
+                  case Some(user) => OK -> user.asJson
+                  case None => BadRequest -> None.asJson
+                }
+              )
+
+            }
+          }
+        }
+      } ~
+      pathEndOrSingleSlash {
+        get {
+          complete(getUsers().map(_.asJson))
+        }
+        post {
+          entity(as[UserRegistration]) { userRegisrtration =>
+            complete(register(userRegisrtration).map { user =>
+              user.asJson
           })
         }
-
+      }
+    }
+  } ~
+  path("user") {
+    pathEndOrSingleSlash {
+      authenticate(secretKey) { userId =>
+        get {
+          complete(getCurrentUser(userId).map {
+            case Some(user) =>
+              OK -> UserProfile(user.email, user.username, user.bio, user.image).asJson
+            case None =>
+              BadRequest -> None.asJson
+          })
+        }
+        put {
+          entity(as[UserUpdateParam]) { update =>
+            complete(updateUser(userId, update.user).map {
+              case Some(user) =>
+                OK -> UserProfile(user.username, user.email, user.bio, user.image).asJson
+              case None =>
+                BadRequest -> None.asJson
+            })
+          }
+        }
       }
     }
   }
-//    pathPrefix(Segment) { id =>
-//      pathEndOrSingleSlash {
-//        get {
-//          complete(getUsers)
-//
-//        }
-//      }
-//    }
-
 }
+
+private case class LoginPasswordUser(user: LoginPassword)
+
+private case class LoginPassword(email: String, password: String)
+private case class UserProfile(username: String, email: String, bio: Option[String], image: Option[String])
+
+private case class UserUpdateParam(user: core.UserUpdate)
