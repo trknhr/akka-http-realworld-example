@@ -8,9 +8,6 @@ import utils.MonadTransformers._
 import io.circe.syntax._
 import io.circe.generic.auto._
 
-/**
-  * Created by kunihiro on 2018/06/13.
-  */
 class UserService(userStorage: UserStorage, secretKey: String)(implicit executionContext: ExecutionContext) {
   def getUsers(): Future[Seq[User]] =
     userStorage.getUsers()

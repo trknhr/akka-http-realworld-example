@@ -6,11 +6,7 @@ import java.util.Date
 import users.core.User
 import utils.DatabaseConnector
 
-/**
-  * Created by kunihiro on 2018/06/13.
-  */
-
-private[users] trait UserProfileTable {
+trait UserProfileTable {
   protected val databaseConnector: DatabaseConnector
   import databaseConnector.profile.api._
 
