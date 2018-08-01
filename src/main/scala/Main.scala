@@ -1,7 +1,6 @@
 import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import com.example.{UserRegistryActor, UserRoutes}
 import profile.{JdbcProfileStorage, ProfileService}
 import routes.HttpRoute
 import users.{JdbcUserStorage, UserService}
@@ -18,7 +17,6 @@ object Main  extends App {
   implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   val config = Config.load()
-  val userRegistryActor: ActorRef = system.actorOf(UserRegistryActor.props, "userRegistryActor")
 
   val databaseConnector = new DatabaseConnector(
     config.database.jdbcUrl,

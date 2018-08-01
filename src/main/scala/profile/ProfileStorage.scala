@@ -2,13 +2,14 @@ package profile
 
 import profile.core.Profile
 import users.UserProfileTable
+import users.core.User
 
 import scala.concurrent.{ExecutionContext, Future}
 import utils.DatabaseConnector
-import utils.MonadTransformers._
 
 trait ProfileStorage {
-  def getProfile(username: String): Future[Option[Profile]]
+  def getProfile(username: String): Future[Option[User]]
+  def isFollowing(userId: Long, targetUserId: Long): Future[Boolean]
 }
 
 class JdbcProfileStorage(
@@ -17,10 +18,14 @@ class JdbcProfileStorage(
     import databaseConnector._
     import databaseConnector.profile.api._
 
-  def getProfile(username: String): Future[Option[Profile]] = db.run(
+  def getProfile(username: String): Future[Option[User]] = db.run(
     users.filter(_.username === username).result.headOption
-    ).mapT(u =>
-      Profile(u.username, u.bio, u.image, true)
+  )
+
+  def isFollowing(userId: Long, targetUserId: Long): Future[Boolean] = db.run(
+    followers.filter(m => m.userId === userId && m.followeeId === targetUserId).result.headOption.map(
+      _.exists(m => false)
+    )
   )
 }
 

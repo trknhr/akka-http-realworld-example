@@ -24,34 +24,20 @@ class ProfileRoute (
 
   val route = pathPrefix("profiles") {
     path(Segment) { username =>
-      get{
-        complete(getProfile(username).map{
-          case Some(user) =>
-            OK -> user.asJson
-          case None =>
-            BadRequest -> None.asJson
-        })
+      pathEndOrSingleSlash {
+        authenticate(secretKey) { userId =>
+          get {
+            complete(getProfile(userId, username).map {
+              case Some(user) =>
+                OK -> user.asJson
+              case None =>
+                BadRequest -> None.asJson
+            })
+          }
+        }
       }
-      //      pathEndOrSingleSlash {
-      //        authenticate(secretKey) { userId =>
-      //          get {
-      //            complete(getCurrentUser(userId).map {
-      //              case Some(user) =>
-      //                OK -> UserProfile(user.email, user.username, user.bio, user.image).asJson
-      //              case None =>
-      //                BadRequest -> None.asJson
-      //            })
-      //          }
-      //        }
-      //      }
     }
   }
 
 }
 
-//private case class LoginPasswordUser(user: LoginPassword)
-//
-//private case class LoginPassword(email: String, password: String)
-//private case class UserProfile(username: String, email: String, bio: Option[String], image: Option[String])
-//
-//private case class UserUpdateParam(user: core.UserUpdate)
