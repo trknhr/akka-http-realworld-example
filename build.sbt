@@ -2,6 +2,7 @@ lazy val akkaHttpVersion = "10.0.11"
 lazy val akkaVersion    = "2.5.11"
 
 val circeVersion = "0.9.3"
+val sttpV = "1.1.13"
 
 lazy val root = (project in file(".")).
   settings(
@@ -24,6 +25,9 @@ lazy val root = (project in file(".")).
 
       // Postgres driver
       "org.postgresql" % "postgresql" % "42.1.4",
+      // Migration for SQL databases
+      "org.flywaydb" % "flyway-core" % "4.2.0",
+
       // Connection pool for database
       "com.zaxxer" % "HikariCP" % "2.7.0",
 
@@ -44,9 +48,17 @@ lazy val root = (project in file(".")).
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
 
+      // Http client, used currently only for IT test
+      "com.softwaremill.sttp" %% "core" % sttpV % Test,
+      "com.softwaremill.sttp" %% "akka-http-backend" % sttpV % Test,
+
+      // Test
       "com.typesafe.akka" %% "akka-http-testkit"    % akkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-testkit"         % akkaVersion     % Test,
       "com.typesafe.akka" %% "akka-stream-testkit"  % akkaVersion     % Test,
-      "org.scalatest"     %% "scalatest"            % "3.0.1"         % Test
+      "org.scalatest"     %% "scalatest"            % "3.0.1"         % Test,
+      "ru.yandex.qatools.embed" % "postgresql-embedded" % "2.4" % Test,
+      "org.mockito" % "mockito-all" % "1.9.5" % Test
+
     )
   )
