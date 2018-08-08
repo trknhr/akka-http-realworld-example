@@ -1,12 +1,17 @@
+import com.softwaremill.sttp.akkahttp.AkkaHttpBackend
+import utils.InMemoryPostgresStorage
+
 /**
   * Created by kunihiro on 2018/08/02.
   */
 class HealthCheck extends BaseServiceTest {
-  InmemoryPostgresStorage
+
+  InMemoryPostgresStorage
   implicit val sttpBackend = AkkaHttpBackend()
 
-  "reqlest to health checks" in {
-    200 shouldBe 200
-
+  "Service" should {
+    "reqlest to health checks" in {
+      200 shouldBe 200
+    }
   }
 }

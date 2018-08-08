@@ -2,7 +2,6 @@ package utils
 
 import de.flapdoodle.embed.process.runtime.Network._
 import ru.yandex.qatools.embed.postgresql.PostgresStarter
-i
 import ru.yandex.qatools.embed.postgresql.config.AbstractPostgresConfig.{Credentials, Net, Storage, Timeout}
 import ru.yandex.qatools.embed.postgresql.config.PostgresConfig
 import ru.yandex.qatools.embed.postgresql.distribution.Version
@@ -10,7 +9,7 @@ import ru.yandex.qatools.embed.postgresql.distribution.Version
 /**
   * Created by kunihiro on 2018/08/02.
   */
-class InMemoryPostgresStorage {
+object InMemoryPostgresStorage {
   val dbHost = getLocalHost.getHostAddress
   val dbPort = 25535
   val dbName = "database-name"
@@ -25,6 +24,16 @@ class InMemoryPostgresStorage {
   )
 
   val psqlInstance = PostgresStarter.getDefaultInstance
-  val flywayService = new DataMigrationManager()
+  val flywayService = new DatabaseMigrationManager(jdbcUrl, dbUser, dbPassword)
+
+  val process = psqlInstance.prepare(psqlConfig).start()
+  flywayService.dropDatabase()
+  flywayService.migrateDatabaseSchema()
+
+  val databaseConnector = new DatabaseConnector(
+    InMemoryPostgresStorage.jdbcUrl,
+    InMemoryPostgresStorage.dbUser,
+    InMemoryPostgresStorage.dbPassword
+  )
 
 }
