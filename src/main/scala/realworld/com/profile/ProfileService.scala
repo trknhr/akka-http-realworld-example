@@ -1,15 +1,7 @@
-package profile
-
+package realworld.com.profile
 
 import scala.concurrent.{ExecutionContext, Future}
-import com.roundeights.hasher.Implicits._
-import pdi.jwt.{Jwt, JwtAlgorithm}
-import users.core._
-import utils.MonadTransformers._
-import io.circe.syntax._
-import io.circe.generic.auto._
-import profile.core.Profile
-import utils.MonadTransformers._
+import realworld.com.utils.MonadTransformers._
 
 /**
   * Created by kunihiro on 2018/07/20.

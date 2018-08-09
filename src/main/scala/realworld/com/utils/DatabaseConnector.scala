@@ -1,5 +1,4 @@
-package utils
-
+package realworld.com.utils
 
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 

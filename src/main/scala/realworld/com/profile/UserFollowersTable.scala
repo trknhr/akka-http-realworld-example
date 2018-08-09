@@ -1,10 +1,9 @@
-package profile
+package realworld.com.profile
 
 import java.sql.Timestamp
 import java.util.Date
 
-import profile.core.UserFollower
-import utils.DatabaseConnector
+import realworld.com.utils.DatabaseConnector
 
 trait UserFollowersTable {
   protected val databaseConnector: DatabaseConnector

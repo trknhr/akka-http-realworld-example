@@ -1,4 +1,4 @@
-package users
+package realworld.com
 
 import java.sql.Timestamp
 import java.util.Date

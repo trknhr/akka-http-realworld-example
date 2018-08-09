@@ -1,4 +1,4 @@
-package utils
+package realworld.com.utils
 
 import scala.concurrent.{ExecutionContext, Future}
 

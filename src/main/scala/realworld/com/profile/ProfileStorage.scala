@@ -1,11 +1,14 @@
-package profile
+package realworld.com.profile
 
-import profile.core.Profile
-import users.UserProfileTable
-import users.core.User
+//import users.UserProfileTable
+//import users.core.User
+
+import realworld.com.core.User
+import realworld.com.users.UserProfileTable
+import realworld.com.utils.DatabaseConnector
 
 import scala.concurrent.{ExecutionContext, Future}
-import utils.DatabaseConnector
+//import utils.DatabaseConnector
 
 trait ProfileStorage {
   def getProfile(username: String): Future[Option[User]]

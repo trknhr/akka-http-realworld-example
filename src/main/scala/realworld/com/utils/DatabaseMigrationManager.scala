@@ -1,4 +1,4 @@
-package utils
+package realworld.com.utils
 
 import org.flywaydb.core.Flyway
 

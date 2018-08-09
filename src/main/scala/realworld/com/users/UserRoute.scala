@@ -1,4 +1,4 @@
-package users
+package realworld.com.users
 
 import scala.concurrent.ExecutionContext
 import akka.http.scaladsl.server.Directives._
@@ -6,9 +6,9 @@ import akka.http.scaladsl.model.StatusCodes
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
 import io.circe.generic.auto._
 import io.circe.syntax._
-import users.core.UserRegistration
+import realworld.com.core
+import realworld.com.core.UserRegistration
 
-import users.core._
 import scala.concurrent.ExecutionContext
 
 class UserRoute (
@@ -16,8 +16,8 @@ class UserRoute (
   usersService: UserService
 )(implicit executionContext: ExecutionContext) extends FailFastCirceSupport {
 
-  import common.converter.Formatter._
-  import utils.JwtAuthDirectives._
+  import realworld.com.converter.Formatter._
+  import realworld.com.utils.JwtAuthDirectives._
   import StatusCodes._
   import usersService._
 

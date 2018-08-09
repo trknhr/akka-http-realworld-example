@@ -1,3 +1,5 @@
+package realworld.com
+
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest._
 import org.scalatest.mockito.MockitoSugar

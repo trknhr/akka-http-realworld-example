@@ -1,5 +1,7 @@
+package realworld.com
+
 import com.softwaremill.sttp.akkahttp.AkkaHttpBackend
-import utils.InMemoryPostgresStorage
+import realworld.com.utils.InMemoryPostgresStorage
 
 /**
   * Created by kunihiro on 2018/08/02.
@@ -11,6 +13,7 @@ class HealthCheck extends BaseServiceTest {
 
   "Service" should {
     "reqlest to health checks" in {
+      println("aaaaaaaaaaaaaa")
       200 shouldBe 200
     }
   }

@@ -1,10 +1,10 @@
-package routes
+package realworld.com.routes.routes
 
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
-import profile.{ProfileRoute, ProfileService}
-import users.{UserRoute, UserService}
+import realworld.com.profile.{ProfileRoute, ProfileService}
+import realworld.com.users.{UserRoute, UserService}
 
 import scala.concurrent.ExecutionContext
 

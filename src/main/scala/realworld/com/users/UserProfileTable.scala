@@ -1,10 +1,10 @@
-package users
+package realworld.com.users
 
 import java.sql.Timestamp
 import java.util.Date
 
-import users.core.User
-import utils.DatabaseConnector
+import realworld.com.core.User
+import realworld.com.utils.DatabaseConnector
 
 trait UserProfileTable {
   protected val databaseConnector: DatabaseConnector

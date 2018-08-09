@@ -1,12 +1,12 @@
-package users
+package realworld.com.users
 
 import scala.concurrent.{ExecutionContext, Future}
 import com.roundeights.hasher.Implicits._
 import pdi.jwt.{Jwt, JwtAlgorithm}
-import users.core._
-import utils.MonadTransformers._
+import realworld.com.core._
 import io.circe.syntax._
 import io.circe.generic.auto._
+import realworld.com.utils.MonadTransformers._
 
 class UserService(userStorage: UserStorage, secretKey: String)(implicit executionContext: ExecutionContext) {
   def getUsers(): Future[Seq[User]] =

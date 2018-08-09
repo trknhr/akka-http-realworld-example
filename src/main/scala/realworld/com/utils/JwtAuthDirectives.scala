@@ -1,11 +1,11 @@
-package utils
+package realworld.com.utils
 
 import akka.http.scaladsl.server.Directive1
 import akka.http.scaladsl.server.directives.{BasicDirectives, HeaderDirectives, RouteDirectives}
 import pdi.jwt.{Jwt, JwtAlgorithm}
-import users.core.AuthTokenContent
 import io.circe.parser._
 import io.circe.generic.auto._
+import realworld.com.core.AuthTokenContent
 
 /**
   * Created by kunihiro on 2018/06/13.

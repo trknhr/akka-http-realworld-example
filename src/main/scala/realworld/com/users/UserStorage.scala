@@ -1,7 +1,8 @@
-package users
+package realworld.com.users
 
-import utils.DatabaseConnector
-import users.core.User
+
+import realworld.com.core.User
+import realworld.com.utils.DatabaseConnector
 
 import scala.concurrent.{ExecutionContext, Future}
 
