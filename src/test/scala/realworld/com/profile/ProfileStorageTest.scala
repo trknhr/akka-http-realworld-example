@@ -10,23 +10,21 @@ class ProfileStorageTest extends BaseServiceTest{
   "profileStorage" when {
     "getProfile" should {
       "return profile by id" in new Context {
-//        awaitForResult(for {
-//          _ <- profileStorage.getProfile(testProfileId)
-//
-//        })
-
+        awaitForResult(for {
+          maybeProfile <- profileStorage.getProfile(testProfileUsername)
+        } yield maybeProfile shouldBe None)
       }
     }
   }
   trait Context {
     val profileStorage: ProfileStorage = new JdbcProfileStorage(InMemoryPostgresStorage.databaseConnector)
-    val testProfileId = 1
-    val testProfile2Id = 2
+    val testProfileUsername = "profilename1"
+    val testProfileUsername2 = "profilename2"
 
-    val testProfile1: Profile = testProfile(testProfileId)
-    val testProfile2: Profile = testProfile(testProfile2Id)
+    val testProfile1: Profile = testProfile(testProfileUsername)
+    val testProfile2: Profile = testProfile(testProfileUsername2)
 
-    def testProfile(id: Long)  = Profile("username", Some("bio"), Some("image"), false)
+    def testProfile(username: String)  = Profile(username, Some("bio"), Some("image"), false)
   }
 }
 

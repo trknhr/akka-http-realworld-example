@@ -1,8 +1,5 @@
 package realworld.com.profile
 
-//import users.UserProfileTable
-//import users.core.User
-
 import realworld.com.core.User
 import realworld.com.users.UserProfileTable
 import realworld.com.utils.DatabaseConnector
@@ -21,7 +18,13 @@ class JdbcProfileStorage(
     import databaseConnector._
     import databaseConnector.profile.api._
 
-  def getProfile(username: String): Future[Option[User]] = db.run(
+  def hoge(): Future[Option[Int]] =
+    db.run(sql"SELECT 1".as[Int].headOption)
+
+  sql"select 1 ".as[Int].headOption
+
+  def getProfile(username: String): Future[Option[User]] =
+    db.run(
     users.filter(_.username === username).result.headOption
   )
 

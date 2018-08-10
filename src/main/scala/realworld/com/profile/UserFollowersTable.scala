@@ -9,7 +9,7 @@ trait UserFollowersTable {
   protected val databaseConnector: DatabaseConnector
   import databaseConnector.profile.api._
 
-  class Followers(tag: Tag) extends Table[UserFollower](tag, "user_followers") {
+  class Followers(tag: Tag) extends Table[UserFollower](tag, "followers") {
     def currentWhenInserting = new Timestamp((new Date).getTime)
 
     def userId = column[Long]("user_id")
