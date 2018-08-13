@@ -1,15 +1,17 @@
 package realworld.com.profile
 
+import realworld.com.users.UserStorage
+
 import scala.concurrent.{ExecutionContext, Future}
 import realworld.com.utils.MonadTransformers._
 
 /**
   * Created by kunihiro on 2018/07/20.
   */
-class ProfileService(profileStorage: ProfileStorage, secretKey: String) (implicit executionContext: ExecutionContext) {
+class ProfileService(userStorage: UserStorage, secretKey: String)(implicit executionContext: ExecutionContext) {
   def getProfile(userId: Long, username: String): Future[Option[Profile]] =
-    profileStorage.getProfile(username).flatMapTFuture(p =>
-      profileStorage.isFollowing(userId, p.id).map(isFollowing =>
+    userStorage.getUserByUsername(username).flatMapTFuture(p =>
+      userStorage.isFollowing(userId, p.id).map(isFollowing =>
         Profile(p.username, p.bio, p.image, isFollowing)
       )
     )

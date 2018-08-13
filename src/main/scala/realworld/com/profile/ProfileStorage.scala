@@ -7,33 +7,25 @@ import realworld.com.utils.DatabaseConnector
 import scala.concurrent.{ExecutionContext, Future}
 //import utils.DatabaseConnector
 
-trait ProfileStorage {
-  def getProfile(username: String): Future[Option[User]]
-  def isFollowing(userId: Long, targetUserId: Long): Future[Boolean]
-}
-
-class JdbcProfileStorage(
-    val databaseConnector: DatabaseConnector
-  )(implicit executionContext: ExecutionContext) extends UserProfileTable with UserFollowersTable with ProfileStorage {
-    import databaseConnector._
-    import databaseConnector.profile.api._
-
-  def hoge(): Future[Option[Int]] =
-    db.run(sql"SELECT 1".as[Int].headOption)
-
-  sql"select 1 ".as[Int].headOption
-
-  def getProfile(username: String): Future[Option[User]] =
-    db.run(
-    users.filter(_.username === username).result.headOption
-  )
-
-  def isFollowing(userId: Long, targetUserId: Long): Future[Boolean] = db.run(
-    followers.filter(m => m.userId === userId && m.followeeId === targetUserId).result.headOption.map(
-      _.exists(m => false)
-    )
-  )
-}
+//trait ProfileStorage {
+//  def isFollowing(userId: Long, targetUserId: Long): Future[Boolean]
+////  def follow(username: String)
+//}
+//
+//class JdbcProfileStorage(
+//    val databaseConnector: DatabaseConnector
+//  )(implicit executionContext: ExecutionContext) extends UserProfileTable with UserFollowersTable with ProfileStorage {
+//    import databaseConnector._
+//    import databaseConnector.profile.api._
+//
+//  def isFollowing(userId: Long, targetUserId: Long): Future[Boolean] = db.run(
+//    followers.filter(m => m.userId === userId && m.followeeId === targetUserId).result.headOption.map(
+//      _.exists(m => false)
+//    )
+//  )
+//
+////  def follow()
+//}
 
 //package users
 //

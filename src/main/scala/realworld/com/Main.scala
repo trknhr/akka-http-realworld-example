@@ -3,7 +3,7 @@ package realworld.com
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import profile.{JdbcProfileStorage, ProfileService}
+import profile.{ProfileService}
 import realworld.com.routes.routes.HttpRoute
 import users.{JdbcUserStorage, UserService}
 import utils.{Config, DatabaseConnector}
@@ -28,11 +28,11 @@ object Main  extends App {
     )
 
     val userStorage = new JdbcUserStorage(databaseConnector)
-    val profileStorage = new JdbcProfileStorage(databaseConnector)
+//    val profileStorage = new JdbcProfileStorage(databaseConnector)
 
     val userService = new UserService(userStorage, config.secretKey)
 
-    val profileService = new ProfileService(profileStorage, config.secretKey)
+    val profileService = new ProfileService(userStorage, config.secretKey)
 
     val httpRoute = new HttpRoute(userService, profileService, config.secretKey)
 
