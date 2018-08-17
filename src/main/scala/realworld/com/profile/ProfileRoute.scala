@@ -17,7 +17,17 @@ class ProfileRoute (
   import realworld.com.utils.JwtAuthDirectives._
 
   val route = pathPrefix("profiles") {
-    path(Segment) { username =>
+    path("datasource"  / Segment) { username =>
+        path("follow") {
+          //        //          authenticate(secretKey) { userId =>
+          pathEnd{
+            get {
+              complete("OK")
+            }
+
+          }
+          //        //            }
+        }~
       pathEndOrSingleSlash {
         authenticate(secretKey) { userId =>
           get {

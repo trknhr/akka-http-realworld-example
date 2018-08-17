@@ -28,11 +28,10 @@ object Main  extends App {
     )
 
     val userStorage = new JdbcUserStorage(databaseConnector)
-//    val profileStorage = new JdbcProfileStorage(databaseConnector)
 
     val userService = new UserService(userStorage, config.secretKey)
 
-    val profileService = new ProfileService(userStorage, config.secretKey)
+    val profileService = new ProfileService(userStorage)
 
     val httpRoute = new HttpRoute(userService, profileService, config.secretKey)
 

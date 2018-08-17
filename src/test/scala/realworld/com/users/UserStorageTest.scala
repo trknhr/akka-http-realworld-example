@@ -20,6 +20,36 @@ class UserStorageTest extends BaseServiceTest{
         } yield maybeProfile shouldBe Some(testUser2))
       }
     }
+
+    "follow" should {
+      "success" in new Context {
+        awaitForResult(for {
+          _ <- userStorage.saveUser(testUser1)
+          _ <- userStorage.saveUser(testUser2)
+          successFlag <- userStorage.follow(testUser1.id, testUser2.id)
+        } yield successFlag shouldBe 1)
+      }
+    }
+
+    "isFollow" should {
+      "return true" in new Context {
+        awaitForResult(for {
+          _ <- userStorage.saveUser(testUser1)
+          _ <- userStorage.saveUser(testUser2)
+          _ <- userStorage.follow(testUser1.id, testUser2.id)
+          isFollowing <- userStorage.isFollowing(testUser1.id, testUser2.id)
+        } yield isFollowing shouldBe true)
+      }
+
+      "return false" in new Context {
+        awaitForResult(for {
+          _ <- userStorage.saveUser(testUser1)
+          _ <- userStorage.saveUser(testUser2)
+          _ <- userStorage.follow(testUser1.id, testUser2.id)
+          isFollowing <- userStorage.isFollowing(testUser2.id, testUser1.id)
+        } yield isFollowing shouldBe false)
+      }
+    }
   }
   trait Context {
     val userStorage: UserStorage = new JdbcUserStorage(InMemoryPostgresStorage.databaseConnector)

@@ -7,13 +7,14 @@ import realworld.com.utils.DatabaseConnector
 
 import scala.concurrent.{ExecutionContext, Future}
 
-sealed trait UserStorage {
+trait UserStorage {
   def getUsers(): Future[Seq[User]]
   def getUser(userId: Long): Future[Option[User]]
   def getUserByUsername(username: String): Future[Option[User]]
   def register(userRegistration: User): Future[User]
   def findUserByEmail(email: String): Future[Option[User]]
-  def saveUser(user: User): Future[User];
+  def saveUser(user: User): Future[User]
+  def follow(userId: Long, targetUserId: Long): Future[Int]
   def isFollowing(userId: Long, targetUserId: Long): Future[Boolean]
 }
 
@@ -52,12 +53,12 @@ class JdbcUserStorage (
 
   def follow(userId: Long, targetUserId: Long): Future[Int] =
     db.run(
-      followers.insertOrUpdate(UserFollower(userId, targetUserId, null))
+      followers += UserFollower(userId, targetUserId, currentWhenInserting)
     )
 
   def isFollowing(userId: Long, targetUserId: Long): Future[Boolean] = db.run(
     followers.filter(m => m.userId === userId && m.followeeId === targetUserId).result.headOption.map(
-      _.exists(m => false)
+      _.isDefined
     )
   )
 }
