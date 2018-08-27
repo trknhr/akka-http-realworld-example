@@ -12,4 +12,9 @@ class ProfileService(userStorage: UserStorage)(implicit executionContext: Execut
         Profile(p.username, p.bio, p.image, isFollowing)
       )
     )
+
+  def follow(userId: Long, username: String): Future[Int] =
+    userStorage.getUserByUsername(username).flatMapTFuture(p =>
+      userStorage.follow(userId, p.id)
+    ).map(a => 1)
 }
