@@ -1,6 +1,5 @@
 package realworld.com.users
 
-
 import realworld.com.core.User
 import realworld.com.profile.{UserFollower, UserFollowersTable}
 import realworld.com.utils.DatabaseConnector
@@ -15,16 +14,18 @@ trait UserStorage {
   def findUserByEmail(email: String): Future[Option[User]]
   def saveUser(user: User): Future[User]
   def follow(userId: Long, targetUserId: Long): Future[Int]
+  def unfollow(userId: Long, targetUserId: Long): Future[Int]
   def isFollowing(userId: Long, targetUserId: Long): Future[Boolean]
 }
 
-class JdbcUserStorage (
-  val databaseConnector: DatabaseConnector
-  )(implicit executionContext: ExecutionContext) extends UserProfileTable with UserStorage with UserFollowersTable {
+class JdbcUserStorage(
+    val databaseConnector: DatabaseConnector
+)(implicit executionContext: ExecutionContext)
+    extends UserProfileTable
+    with UserStorage
+    with UserFollowersTable {
   import databaseConnector._
   import databaseConnector.profile.api._
-
-
 
   def getUsers(): Future[Seq[User]] = db.run(users.result)
 
@@ -38,7 +39,7 @@ class JdbcUserStorage (
 
   def register(user: User): Future[User] = {
     val userWithId =
-      (users returning users.map(_.id) into ((u, id) => u.copy(id = id + 1) ) ) += user
+      (users returning users.map(_.id) into ((u, id) => u.copy(id = id + 1))) += user
 
     db.run(userWithId)
   }
@@ -50,15 +51,25 @@ class JdbcUserStorage (
   def findUserByEmail(email: String): Future[Option[User]] =
     db.run(users.filter(_.email === email).result.headOption)
 
-
   def follow(userId: Long, targetUserId: Long): Future[Int] =
     db.run(
       followers += UserFollower(userId, targetUserId, currentWhenInserting)
     )
 
+  def unfollow(userId: Long, targetUserId: Long): Future[Int] = {
+    val f = followers.filter(a =>
+      a.userId === userId && a.followeeId === targetUserId)
+
+    db.run(f.delete)
+  }
+
   def isFollowing(userId: Long, targetUserId: Long): Future[Boolean] = db.run(
-    followers.filter(m => m.userId === userId && m.followeeId === targetUserId).result.headOption.map(
-      _.isDefined
-    )
+    followers
+      .filter(m => m.userId === userId && m.followeeId === targetUserId)
+      .result
+      .headOption
+      .map(
+        _.isDefined
+      )
   )
 }

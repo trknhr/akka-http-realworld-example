@@ -34,6 +34,9 @@ class ProfileRoute (
           pathEndOrSingleSlash {
             post {
               complete(follow(userId, username))
+            }~
+            delete {
+              complete(unfollow(userId, username))
             }
           }
         }
