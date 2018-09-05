@@ -1,5 +1,11 @@
 package realworld.com.articles
 
-class ArticleRoutes {
+import realworld.com.profile.ProfileService
 
+class ArticleRoutes(
+   secretKey: String,
+   profileService: ProfileService
+                   ) {
+
+  "/api/articles"
 }
