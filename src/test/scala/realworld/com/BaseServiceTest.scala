@@ -1,5 +1,8 @@
 package realworld.com
 
+import java.sql.Timestamp
+import java.util.Date
+
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest._
 import org.scalatest.mockito.MockitoSugar
@@ -14,4 +17,6 @@ class BaseServiceTest extends WordSpec with Matchers with ScalatestRouteTest /*w
 
   def awaitForResult[T](futureResult: Future[T]): T =
     Await.result(futureResult, 5.seconds)
+
+  def currentWhenInserting = new Timestamp((new Date).getTime)
 }

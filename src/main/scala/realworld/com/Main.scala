@@ -3,14 +3,14 @@ package realworld.com
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import profile.{ProfileService}
+import profile.ProfileService
+import realworld.com.articles.{ArticleService, JdbcArticleStorage}
 import realworld.com.routes.routes.HttpRoute
 import users.{JdbcUserStorage, UserService}
 import utils.{Config, DatabaseConnector}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-
 import scala.concurrent.ExecutionContext
 
 object Main  extends App {
@@ -29,11 +29,15 @@ object Main  extends App {
 
     val userStorage = new JdbcUserStorage(databaseConnector)
 
+    val articleStorage = new JdbcArticleStorage(databaseConnector)
+
     val userService = new UserService(userStorage, config.secretKey)
 
     val profileService = new ProfileService(userStorage)
 
-    val httpRoute = new HttpRoute(userService, profileService, config.secretKey)
+    val articleService = new ArticleService(articleStorage)
+
+    val httpRoute = new HttpRoute(userService, profileService, articleService, config.secretKey)
 
     Http().bindAndHandle(httpRoute.route, config.http.host, config.http.port)
 

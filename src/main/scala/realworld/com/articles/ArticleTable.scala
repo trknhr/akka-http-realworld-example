@@ -9,14 +9,14 @@ trait ArticleTable {
   protected val databaseConnector: DatabaseConnector
   import databaseConnector.profile.api._
 
-  class Articles(tag: Tag) extends Table[Article](tag, "users") {
+  class Articles(tag: Tag) extends Table[Article](tag, "articles") {
     def currentWhenInserting = new Timestamp((new Date).getTime)
     def id = column[Long]("id",  O.AutoInc, O.PrimaryKey)
     def slug = column[String]("slug")
     def title = column[String]("title")
     def description = column[String]("description")
     def body = column[String]("body")
-    def authorId = column[Long]("bio")
+    def authorId = column[Long]("author_id")
 
     def createdAt = column[Timestamp]("created_at", O.Default(currentWhenInserting))
 
@@ -26,5 +26,4 @@ trait ArticleTable {
   }
 
   protected val articles = TableQuery[Articles]
-
 }

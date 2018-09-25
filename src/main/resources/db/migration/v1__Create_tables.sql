@@ -21,16 +21,16 @@ CREATE TABLE followers (
   FOREIGN KEY (followee_id) REFERENCES users(id),
   FOREIGN KEY (user_id) REFERENCES users(id),
   CONSTRAINT follower_follower_follwed_unq UNIQUE (user_id, followee_id)
-)
+);
 
 CREATE TABLE articles (
-  id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   slug VARCHAR(255) NOT NULL,
   title VARCHAR(300) NOT NULL,
   description VARCHAR(255) NOT NULL,
   body TEXT NOT NULL,
-  created_at DATETIME NOT NULL,
-  updated_at DATETIME NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
   author_id INTEGER NOT NULL,
   FOREIGN KEY (author_id) REFERENCES users(id),
   CONSTRAINT articles_slug_unique UNIQUE(slug)
