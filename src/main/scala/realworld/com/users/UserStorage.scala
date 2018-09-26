@@ -9,6 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 trait UserStorage {
   def getUsers(): Future[Seq[User]]
   def getUser(userId: Long): Future[Option[User]]
+  def getFollowees(userId: Long): Future[Seq[User]]
   def getUserByUsername(username: String): Future[Option[User]]
   def register(userRegistration: User): Future[User]
   def findUserByEmail(email: String): Future[Option[User]]
@@ -36,6 +37,16 @@ class JdbcUserStorage(
 
   def getUser(userId: Long): Future[Option[User]] =
     db.run(users.filter(_.id === userId).result.headOption)
+
+  def getFollowees(userId: Long): Future[Seq[User]] =
+    db.run(
+      followers
+        .join(users)
+        .on(_.followeeId === _.id)
+        .filter(a => a._1.userId === userId)
+        .map(_._2)
+        .result
+    )
 
   def register(user: User): Future[User] = {
     val userWithId =

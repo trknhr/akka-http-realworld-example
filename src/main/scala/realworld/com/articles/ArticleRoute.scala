@@ -9,33 +9,47 @@ import io.circe.syntax._
 import scala.concurrent.ExecutionContext
 
 class ArticleRoute(
-   secretKey: String,
-   articleService: ArticleService
-                   )(implicit executionContext: ExecutionContext) extends FailFastCirceSupport {
+    secretKey: String,
+    articleService: ArticleService
+)(implicit executionContext: ExecutionContext)
+    extends FailFastCirceSupport {
   import akka.http.scaladsl.model.StatusCodes._
   import realworld.com.converter.Formatter._
   import articleService._
   import realworld.com.utils.JwtAuthDirectives._
 
   val route = pathPrefix("articles") {
-      pathEndOrSingleSlash {
-        get {
-          entity(as[ArticleRequest]) {
-            request =>
-            complete(getArticles(request).map(_.asJson))
+    pathEndOrSingleSlash {
+      get {
+        entity(as[ArticleRequest]) { request =>
+          complete(getArticles(request).map(_.asJson))
+        }
+      } ~
+        post {
+          authenticate(secretKey) { authorId =>
+            entity(as[CreateArticle]) { article =>
+              complete(createArticle(authorId, article.article).map { article =>
+                article.asJson
+              })
+            }
           }
         }
-      }~
-      post {
-        authenticate(secretKey) { authorId =>
-          entity(as[CreateArticle]) { article =>
-            complete(createArticle(authorId, article.article).map { article =>
-              article.asJson
-            })
+    } ~
+      path("feed") {
+        pathEndOrSingleSlash {
+          get {
+            authenticate(secretKey) { userId =>
+              parameters("limit".as[Int].?, "offfset".as[Int].?) {
+                (limit, offset) =>
+                  complete(getFeeds(userId, limit, offset).map(_.asJson))
+              }
+            }
           }
         }
       }
   }
 }
-private case class CreateArticle(article: ArticlePosted)
 
+private case class CreateArticle(article: ArticlePosted)
+case class FeedRequest(limit: Option[Long] = Some(100),
+                       offset: Option[Long] = Some(0))

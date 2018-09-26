@@ -1,18 +1,21 @@
 package realworld.com.articles
 
-import realworld.com.users.UserStorage
-
 import scala.concurrent.Future
-import realworld.com.utils.MonadTransformers._
 
 class ArticleService(
-  articleStorage: ArticleStorage,
+    articleStorage: ArticleStorage
 ) {
 
   def getArticles(request: ArticleRequest): Future[Seq[Article]] =
-      articleStorage.getArticles(request)
+    articleStorage.getArticles(request)
 
-  def createArticle(authorId: Long, newArticle: ArticlePosted): Future[Article] =
+  def createArticle(authorId: Long,
+                    newArticle: ArticlePosted): Future[Article] =
     articleStorage.createArticle(newArticle.create(authorId))
+
+  def getFeeds(userId: Long,
+               limit: Option[Int],
+               offset: Option[Int]): Future[Seq[Article]] =
+    articleStorage.getArticlesByFollowees(userId, limit, offset)
 
 }

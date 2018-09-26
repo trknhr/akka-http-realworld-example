@@ -15,9 +15,11 @@ trait UserFollowersTable {
 
     def userId = column[Long]("user_id")
     def followeeId = column[Long]("followee_id")
-    def insertedAt = column[Timestamp]("inserted_at", O.Default(currentWhenInserting))
+    def insertedAt =
+      column[Timestamp]("inserted_at", O.Default(currentWhenInserting))
 
-    def * = (userId, followeeId, insertedAt) <> ((UserFollower.apply _).tupled, UserFollower.unapply)
+    def * =
+      (userId, followeeId, insertedAt) <> ((UserFollower.apply _).tupled, UserFollower.unapply)
   }
 
   protected val followers = TableQuery[Followers]

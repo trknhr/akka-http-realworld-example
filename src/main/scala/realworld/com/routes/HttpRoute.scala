@@ -12,25 +12,25 @@ import scala.concurrent.ExecutionContext
 /**
   * Created by kunihiro on 2018/06/13.
   */
-class HttpRoute (
-                  userService: UserService,
-                  profileService: ProfileService,
-                  articleService: ArticleService,
-                  secretKey: String
-) (implicit executionContext: ExecutionContext) {
+class HttpRoute(
+    userService: UserService,
+    profileService: ProfileService,
+    articleService: ArticleService,
+    secretKey: String
+)(implicit executionContext: ExecutionContext) {
   private val usersRouter = new UserRoute(secretKey, userService)
   private val profileRouter = new ProfileRoute(secretKey, profileService)
   private val articleRouter = new ArticleRoute(secretKey, articleService)
 
   val route: Route =
-    cors(){
+    cors() {
       usersRouter.route ~
-      profileRouter.route ~
-      articleRouter.route ~
-      pathPrefix("healthcheck"){
-        get {
-          complete("OK")
+        profileRouter.route ~
+        articleRouter.route ~
+        pathPrefix("healthcheck") {
+          get {
+            complete("OK")
+          }
         }
-      }
     }
 }

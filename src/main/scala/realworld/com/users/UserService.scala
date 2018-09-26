@@ -8,14 +8,15 @@ import io.circe.syntax._
 import io.circe.generic.auto._
 import realworld.com.utils.MonadTransformers._
 
-class UserService(userStorage: UserStorage, secretKey: String)(implicit executionContext: ExecutionContext) {
+class UserService(userStorage: UserStorage, secretKey: String)(
+    implicit executionContext: ExecutionContext) {
   def getUsers(): Future[Seq[User]] =
     userStorage.getUsers()
 
   def getCurrentUser(userId: Long): Future[Option[User]] =
     userStorage.getUser(userId)
 
-  def updateUser(id: Long, userUpdate: UserUpdate) : Future[Option[User]] =
+  def updateUser(id: Long, userUpdate: UserUpdate): Future[Option[User]] =
     userStorage
       .getUser(id)
       .mapT(userUpdate.merge)
@@ -28,12 +29,17 @@ class UserService(userStorage: UserStorage, secretKey: String)(implicit executio
     userStorage
       .findUserByEmail(email)
       .filterT(_.password == password.sha256.hex)
-      .mapT(user => UserWithToken(user.username, user.email, user.bio, user.image, encodeToken(user.id)))
+      .mapT(
+        user =>
+          UserWithToken(user.username,
+                        user.email,
+                        user.bio,
+                        user.image,
+                        encodeToken(user.id)))
 
   private def encodeToken(userId: Long): AuthToken = {
-    Jwt.encode(AuthTokenContent(userId).asJson.noSpaces, secretKey, JwtAlgorithm.HS256)
+    Jwt.encode(AuthTokenContent(userId).asJson.noSpaces,
+               secretKey,
+               JwtAlgorithm.HS256)
   }
 }
-
-
-

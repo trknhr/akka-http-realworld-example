@@ -1,5 +1,6 @@
 package realworld.com.profile
 
+import realworld.com.core.User
 import realworld.com.users.UserStorage
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,4 +33,7 @@ class ProfileService(userStorage: UserStorage)(
           userStorage
             .unfollow(userId, p.id)
             .map(a => Profile(p.username, p.bio, p.image, false)))
+
+  def getFollowees(userId: Long): Future[Seq[User]] =
+    userStorage.getFollowees(userId)
 }

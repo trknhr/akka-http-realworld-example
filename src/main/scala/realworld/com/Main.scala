@@ -13,7 +13,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext
 
-object Main  extends App {
+object Main extends App {
   def startApplication() = {
     implicit val system: ActorSystem = ActorSystem("helloAkkaHttpServer")
     implicit val executor: ExecutionContext = system.dispatcher
@@ -37,7 +37,10 @@ object Main  extends App {
 
     val articleService = new ArticleService(articleStorage)
 
-    val httpRoute = new HttpRoute(userService, profileService, articleService, config.secretKey)
+    val httpRoute = new HttpRoute(userService,
+                                  profileService,
+                                  articleService,
+                                  config.secretKey)
 
     Http().bindAndHandle(httpRoute.route, config.http.host, config.http.port)
 

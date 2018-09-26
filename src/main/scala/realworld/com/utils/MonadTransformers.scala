@@ -3,7 +3,8 @@ package realworld.com.utils
 import scala.concurrent.{ExecutionContext, Future}
 
 object MonadTransformers {
-  implicit class FutureOptionMonadTransformer[A](t: Future[Option[A]])(implicit executionContext: ExecutionContext) {
+  implicit class FutureOptionMonadTransformer[A](t: Future[Option[A]])(
+      implicit executionContext: ExecutionContext) {
     def filterT(f: A => Boolean): Future[Option[A]] =
       t.map {
         case Some(data) if f(data) =>
