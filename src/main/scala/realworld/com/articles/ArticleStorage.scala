@@ -14,14 +14,20 @@ trait ArticleStorage {
                              limit: Option[Int],
                              offset: Option[Int]): Future[Seq[Article]]
   def createArticle(newArticle: Article): Future[Article]
+  def getArticleBySlug(slug: String): Future[Option[Article]]
 }
+
 class JdbcArticleStorage(
     val databaseConnector: DatabaseConnector
 )(implicit executionContext: ExecutionContext)
     extends ArticleStorage
     with ArticleTable
     with UserProfileTable
-    with UserFollowersTable {
+    with UserFollowersTable
+    with TagTable
+    with ArticleTagTable
+    with FavoriteTable
+{
   import databaseConnector._
   import databaseConnector.profile.api._
 
@@ -60,6 +66,19 @@ class JdbcArticleStorage(
 
     db.run(articleWithId)
   }
+
+    def getArticleBySlug(slug: String): Future[Option[Article]] =
+      db.run(articles.filter(_.slug === slug).result.headOption)
+
+//  def getArticleBySlug(slug: String): Future[Option[ArticleForResponse]] =
+//    db.run(articles
+//        .joinRight(articleTags)
+//        .on(_.id === _.articleId)
+//        .join(tags)
+//        .on(_._2.articleId === _.id)
+//        .join(favorites)
+//        .on(_._1._1.a)
+//      .filter(a => a.slug === slug).result.headOption)
 
   case class MaybeFilter[X, Y](query: Query[X, Y, Seq]) {
     def filter[T, R <: Rep[_]: CanBeQueryCondition](data: Option[T])(

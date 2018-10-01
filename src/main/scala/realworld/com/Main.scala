@@ -7,7 +7,7 @@ import profile.ProfileService
 import realworld.com.articles.{ArticleService, JdbcArticleStorage}
 import realworld.com.routes.routes.HttpRoute
 import users.{JdbcUserStorage, UserService}
-import utils.{Config, DatabaseConnector}
+import utils.{Config, DatabaseConnector, DatabaseMigrationManager}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -20,6 +20,12 @@ object Main extends App {
     implicit val materializer: ActorMaterializer = ActorMaterializer()
 
     val config = Config.load()
+
+//    new DatabaseMigrationManager(
+//      config.database.jdbcUrl,
+//      config.database.username,
+//      config.database.password
+//    ).migrateDatabaseSchema()
 
     val databaseConnector = new DatabaseConnector(
       config.database.jdbcUrl,

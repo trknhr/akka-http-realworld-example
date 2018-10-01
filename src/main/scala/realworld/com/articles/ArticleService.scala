@@ -18,4 +18,7 @@ class ArticleService(
                offset: Option[Int]): Future[Seq[Article]] =
     articleStorage.getArticlesByFollowees(userId, limit, offset)
 
+  def getArticleBySlug(slug: String): Future[Option[Article]] =
+    articleStorage.getArticleBySlug(slug)
+
 }

@@ -37,6 +37,19 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         }
       }
     }
+
+    "getArticleBySlug" should {
+      "create an article by specific slug" in new Context {
+        val targetArticle = Article(0, "slug", "title", "description", "body", 1, currentWhenInserting, currentWhenInserting)
+        (articleStorage.getArticleBySlug _).expects("sample-slug") returning Future(Some(targetArticle))
+
+        for{
+          article <- articleService.getArticleBySlug("sample-slug")
+        } {
+          article shouldBe Some(targetArticle)
+        }
+      }
+    }
   }
 
   trait Context {

@@ -19,7 +19,7 @@ class ArticleRoute(
   import realworld.com.utils.JwtAuthDirectives._
 
   val route = pathPrefix("articles") {
-    pathEndOrSingleSlash {
+    pathEnd {
       get {
         entity(as[ArticleRequest]) { request =>
           complete(getArticles(request).map(_.asJson))
@@ -43,6 +43,15 @@ class ArticleRoute(
                 (limit, offset) =>
                   complete(getFeeds(userId, limit, offset).map(_.asJson))
               }
+            }
+          }
+        }
+      } ~
+      path(Segment) { slug =>
+        pathEndOrSingleSlash {
+          get {
+            authenticate(secretKey) { userId =>
+              complete(getArticleBySlug(slug))
             }
           }
         }
