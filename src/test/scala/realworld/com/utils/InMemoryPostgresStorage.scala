@@ -6,9 +6,6 @@ import ru.yandex.qatools.embed.postgresql.config.AbstractPostgresConfig.{Credent
 import ru.yandex.qatools.embed.postgresql.config.PostgresConfig
 import ru.yandex.qatools.embed.postgresql.distribution.Version
 
-/**
-  * Created by kunihiro on 2018/08/02.
-  */
 object InMemoryPostgresStorage {
   val dbHost = getLocalHost.getHostAddress
   val dbPort = 25535

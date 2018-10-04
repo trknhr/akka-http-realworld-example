@@ -1,0 +1,13 @@
+# User 1
+{
+  "email": "test@test.com",
+  "username": "test-user1",
+  "password": "password"
+}
+
+# User 2
+{
+  "email": "user2@test.com",
+  "username": "test-user2",
+  "password": "password"
+}

@@ -21,17 +21,18 @@ object Main extends App {
 
     val config = Config.load()
 
-//    new DatabaseMigrationManager(
-//      config.database.jdbcUrl,
-//      config.database.username,
-//      config.database.password
-//    ).migrateDatabaseSchema()
-
     val databaseConnector = new DatabaseConnector(
       config.database.jdbcUrl,
       config.database.username,
       config.database.password
     )
+
+    new DatabaseMigrationManager(
+      config.database.jdbcUrl,
+      config.database.username,
+      config.database.password
+    ).migrateDatabaseSchema()
+
 
     val userStorage = new JdbcUserStorage(databaseConnector)
 

@@ -15,6 +15,9 @@ trait ArticleStorage {
                              offset: Option[Int]): Future[Seq[Article]]
   def createArticle(newArticle: Article): Future[Article]
   def getArticleBySlug(slug: String): Future[Option[Article]]
+  def isFavoriteArticleIds(userId: Long,
+                           articleIds: Seq[Long]): Future[Seq[Long]]
+  def countFavorites(articleIds: Seq[Long]): Future[Seq[(Long, Int)]]
 }
 
 class JdbcArticleStorage(
@@ -26,8 +29,7 @@ class JdbcArticleStorage(
     with UserFollowersTable
     with TagTable
     with ArticleTagTable
-    with FavoriteTable
-{
+    with FavoriteTable {
   import databaseConnector._
   import databaseConnector.profile.api._
 
@@ -67,18 +69,25 @@ class JdbcArticleStorage(
     db.run(articleWithId)
   }
 
-    def getArticleBySlug(slug: String): Future[Option[Article]] =
-      db.run(articles.filter(_.slug === slug).result.headOption)
+  def getArticleBySlug(slug: String): Future[Option[Article]] =
+    db.run(articles.filter(_.slug === slug).result.headOption)
 
-//  def getArticleBySlug(slug: String): Future[Option[ArticleForResponse]] =
-//    db.run(articles
-//        .joinRight(articleTags)
-//        .on(_.id === _.articleId)
-//        .join(tags)
-//        .on(_._2.articleId === _.id)
-//        .join(favorites)
-//        .on(_._1._1.a)
-//      .filter(a => a.slug === slug).result.headOption)
+  def isFavoriteArticleIds(userId: Long,
+                           articleIds: Seq[Long]): Future[Seq[Long]] =
+    db.run(
+      favorites
+        .filter(_.userId === userId)
+        .filter(_.favoritedId inSet articleIds)
+        .map(_.favoritedId)
+        .result)
+
+  def countFavorites(articleIds: Seq[Long]): Future[Seq[(Long, Int)]] =
+    db.run(
+      favorites
+        .filter(_.favoritedId inSet articleIds)
+        .groupBy(_.favoritedId)
+        .map({ case (a, q) => (a, q.size) })
+        .result)
 
   case class MaybeFilter[X, Y](query: Query[X, Y, Seq]) {
     def filter[T, R <: Rep[_]: CanBeQueryCondition](data: Option[T])(
