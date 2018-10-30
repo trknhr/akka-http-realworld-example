@@ -12,8 +12,27 @@ class ArticleService(
     articleStorage.getArticles(request)
 
   def createArticle(authorId: Long,
-                    newArticle: ArticlePosted): Future[Article] =
-    articleStorage.createArticle(newArticle.create(authorId))
+                    newArticle: ArticlePosted, tagNames: Seq[String]): Future[Article] =
+    for{
+      article <- articleStorage.createArticle(newArticle.create(authorId))
+      tags <- createTags(tagNames)
+    } yield article
+
+  def createTags(tagNames: Seq[String]) = {
+    for{
+      existingTags <- articleStorage.findTagByNames(tagNames)
+      newTags <- extractNewTag(tagNames, existingTags)
+    }
+  }
+
+  def extractNewTag(tagNames: Seq[String], existingTags: Seq[TagV]) = {
+    val existingTagNames = existingTags.map(_.name).toSet
+    val newTagNames = tagNames.toSet -- existingTagNames
+    val newTags = newTagNames.map(TagV.create).toSeq
+
+
+    articleStorage.insertAndGet(newTags)
+  }
 
   def getFeeds(userId: Long,
                limit: Option[Int],
@@ -44,7 +63,6 @@ class ArticleService(
     }
 
   def getArticleBySlug(slug: String): Future[Option[Article]] =
-//    articleStorage.isFavorites()
     articleStorage.getArticleBySlug(slug)
 
 }

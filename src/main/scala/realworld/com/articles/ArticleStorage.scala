@@ -18,6 +18,8 @@ trait ArticleStorage {
   def isFavoriteArticleIds(userId: Long,
                            articleIds: Seq[Long]): Future[Seq[Long]]
   def countFavorites(articleIds: Seq[Long]): Future[Seq[(Long, Int)]]
+  def findTagByNames(tagNames: Seq[String]): Future[Seq[TagV]]
+  def insertAndGet(tagVs: Seq[TagV]): Future[Seq[TagV]]
 }
 
 class JdbcArticleStorage(
@@ -89,10 +91,33 @@ class JdbcArticleStorage(
         .map({ case (a, q) => (a, q.size) })
         .result)
 
+  def findTagByNames(tagNames: Seq[String]): Future[Seq[TagV]] =
+    db.run(
+      tags.filter(_.name inSet tagNames).result
+    )
+  def insertAndGet(tagVs: Seq[TagV]): Future[Seq[TagV]] = {
+    val articlesIds =
+      tags.returning(tags.map(_.id))
+        .++=(tagVs)
+        .flatMap(ids => tags.filter(_.id inSet ids).result)
+
+    db.run(articlesIds)
+  }
+//  def saveTag(tag: TagV): Future[Long] = {
+//    val existsTag = tags.filter(_.id === tag.id)
+////    val articleWithId = (tags returning tag.map(_.id) into ( (u,
+////                                            id) => u.copy(id = id + 1))) += newArticle
+//    db.run(
+//      tags.filter(_.id === tag.id)
+//      tags.insert(tag)
+//    )
+//  }
+
   case class MaybeFilter[X, Y](query: Query[X, Y, Seq]) {
     def filter[T, R <: Rep[_]: CanBeQueryCondition](data: Option[T])(
         f: T => X => R): MaybeFilter[X, Y] = {
       data.map(v => MaybeFilter(query.filter(f(v)))).getOrElse(this)
     }
   }
+
 }

@@ -16,7 +16,11 @@ package object articles {
                      createdAt: Timestamp,
                      updatedAt: Timestamp)
 
-  case class TagO(id: Long, name: String)
+  case class TagV(id: Long, name: String)
+  object TagV {
+    def create(tagName: String): TagV = TagV(-1, tagName)
+  }
+
   case class ArticleTag(id: Long, articleId: Long, tagId: Long)
   case class Favorite(id: Long, userId: Long, favoritedId: Long)
 
