@@ -22,14 +22,21 @@ class ArticleService(
     for{
       existingTags <- articleStorage.findTagByNames(tagNames)
       newTags <- extractNewTag(tagNames, existingTags)
+      tags = existingTags ++ newTags
     }
   }
+
+  def getArticleResponse(article: Article, tags: Seq[TagV])
+
+//  def associateTagsWithArticle(tags: Seq[Tag0], article: Article)  = {
+//
+//  }
+
 
   def extractNewTag(tagNames: Seq[String], existingTags: Seq[TagV]) = {
     val existingTagNames = existingTags.map(_.name).toSet
     val newTagNames = tagNames.toSet -- existingTagNames
     val newTags = newTagNames.map(TagV.create).toSeq
-
 
     articleStorage.insertAndGet(newTags)
   }
