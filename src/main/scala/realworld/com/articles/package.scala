@@ -24,7 +24,7 @@ package object articles {
   case class ArticleTag(id: Long, articleId: Long, tagId: Long)
   case class Favorite(id: Long, userId: Long, favoritedId: Long)
 
-  case class ArticlePosted(title: String, description: String, body: String) {
+  case class ArticlePosted(title: String, description: String, body: String, tagList: Seq[String]) {
     def create(authorId: Long): Article = {
       Article(0,
               slugify(title),

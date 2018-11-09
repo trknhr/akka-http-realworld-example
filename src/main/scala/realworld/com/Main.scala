@@ -42,7 +42,7 @@ object Main extends App {
 
     val profileService = new ProfileService(userStorage)
 
-    val articleService = new ArticleService(articleStorage)
+    val articleService = new ArticleService(articleStorage, userStorage)
 
     val httpRoute = new HttpRoute(userService,
                                   profileService,

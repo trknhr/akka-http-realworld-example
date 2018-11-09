@@ -26,14 +26,14 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
     "createArticle" should {
       "create an article and return the one" in new Context {
         val newArticle = Article(0, "slug", "title", "description", "body", 1, currentWhenInserting, currentWhenInserting)
-        val newPostArticle = ArticlePosted("title", "description", "body")
+        val newPostArticle = ArticlePosted("title", "description", "body", Seq())
         var request = ArticleRequest(tag = None, authorName = Some("testAuthor"), favorited = None)
         (articleStorage.createArticle _).expects(*) returning Future{newArticle}
 
         for{
-          article <- articleService.createArticle(0, newPostArticle)
+          article <- articleService.createArticle(0, newPostArticle, Option(1))
         } {
-          article shouldBe newArticle
+          article shouldBe Some(newPostArticle)
         }
       }
     }
@@ -54,6 +54,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
 
   trait Context {
     val articleStorage = mock[ArticleStorage]
-    val articleService = new ArticleService(articleStorage)
+    val userStorage = mock[UserStorage]
+    val articleService = new ArticleService(articleStorage, userStorage)
   }
 }

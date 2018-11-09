@@ -28,7 +28,7 @@ class ArticleRoute(
         post {
           authenticate(secretKey) { authorId =>
             entity(as[CreateArticle]) { article =>
-              complete(createArticle(authorId, article.article).map { article =>
+              complete(createArticle(authorId, article.article, Some(authorId)).map { article =>
                 article.asJson
               })
             }
