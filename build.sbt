@@ -3,7 +3,6 @@ lazy val akkaVersion    = "2.5.11"
 
 val circeVersion = "0.9.3"
 val sttpV = "1.1.13"
-val fakeTask = taskKey[Unit]("fake task")
 
 lazy val root = (project in file(".")).
   settings(
@@ -12,7 +11,6 @@ lazy val root = (project in file(".")).
       scalaVersion    := "2.12.4"
     )),
     name := "akka-http-quickstart-scala",
-    fakeTask :=   BuildInfoGenerator.generatorSettings, //(runMain in Compile).toTask,("sql.CreateAllData").value,
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
