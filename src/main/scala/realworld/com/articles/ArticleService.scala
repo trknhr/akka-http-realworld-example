@@ -25,13 +25,12 @@ class ArticleService(
       res <- getArticleResponse(article, tags, currentUserId)
     } yield res
 
-  def createTags(tagNames: Seq[String]) = {
+  def createTags(tagNames: Seq[String]) =
     for {
       existingTags <- articleStorage.findTagByNames(tagNames)
       newTags <- extractNewTag(tagNames, existingTags)
       tags = existingTags ++ newTags
     } yield tags
-  }
 
   def getArticleResponse(article: Article,
                          tags: Seq[TagV],
