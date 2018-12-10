@@ -15,11 +15,13 @@ trait ArticleStorage {
                              offset: Option[Int]): Future[Seq[Article]]
   def createArticle(newArticle: Article): Future[Article]
   def getArticleBySlug(slug: String): Future[Option[Article]]
+  def updateArticle(article: Article): Future[Article]
   def isFavoriteArticleIds(userId: Long,
                            articleIds: Seq[Long]): Future[Seq[Long]]
   def countFavorites(articleIds: Seq[Long]): Future[Seq[(Long, Int)]]
   def findTagByNames(tagNames: Seq[String]): Future[Seq[TagV]]
   def insertAndGet(tagVs: Seq[TagV]): Future[Seq[TagV]]
+  def insertArticleTag(atags: Seq[ArticleTag]): Future[Seq[ArticleTag]]
 }
 
 class JdbcArticleStorage(
@@ -66,9 +68,19 @@ class JdbcArticleStorage(
     val articleWithId =
       (articles returning articles.map(_.id) into (
           (u,
-           id) => u.copy(id = id + 1))) += newArticle
+           id) => u.copy(id = id))) += newArticle
 
     db.run(articleWithId)
+  }
+
+  private def getArticleById(id: Long) =
+    db.run(articles.filter(_.id === id).result.headOption)
+
+  def updateArticle(article: Article): Future[Article] = {
+    db.run(articles
+      .filter(_.id === article.id)
+      .update(article)
+      .flatMap(_ => articles.filter(_.id === article.id).result.head))
   }
 
   def getArticleBySlug(slug: String): Future[Option[Article]] =
@@ -95,23 +107,22 @@ class JdbcArticleStorage(
     db.run(
       tags.filter(_.name inSet tagNames).result
     )
+
   def insertAndGet(tagVs: Seq[TagV]): Future[Seq[TagV]] = {
     val articlesIds =
-      tags.returning(tags.map(_.id))
+      tags
+        .returning(tags.map(_.id))
         .++=(tagVs)
         .flatMap(ids => tags.filter(_.id inSet ids).result)
 
     db.run(articlesIds)
   }
-//  def saveTag(tag: TagV): Future[Long] = {
-//    val existsTag = tags.filter(_.id === tag.id)
-////    val articleWithId = (tags returning tag.map(_.id) into ( (u,
-////                                            id) => u.copy(id = id + 1))) += newArticle
-//    db.run(
-//      tags.filter(_.id === tag.id)
-//      tags.insert(tag)
-//    )
-//  }
+
+  def insertArticleTag(atags: Seq[ArticleTag]): Future[Seq[ArticleTag]] =
+    db.run(articleTags
+        .returning(articleTags.map(_.id))
+        .++=(atags)
+        .flatMap(ids => articleTags.filter(_.id inSet ids).result))
 
   case class MaybeFilter[X, Y](query: Query[X, Y, Seq]) {
     def filter[T, R <: Rep[_]: CanBeQueryCondition](data: Option[T])(

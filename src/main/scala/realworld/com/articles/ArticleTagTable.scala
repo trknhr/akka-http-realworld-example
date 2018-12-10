@@ -6,7 +6,7 @@ trait ArticleTagTable {
   protected val databaseConnector: DatabaseConnector
   import databaseConnector.profile.api._
 
-  class ArticleTags(tag: Tag) extends Table[ArticleTag](tag, "article_tags") {
+  class ArticleTags(tag: Tag) extends Table[ArticleTag](tag, "articles_tags") {
     def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
     def articleId = column[Long]("article_id")
     def tagId = column[Long]("tag_id")

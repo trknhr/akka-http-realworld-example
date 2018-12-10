@@ -23,6 +23,7 @@ package object articles {
 
   case class ArticleTag(id: Long, articleId: Long, tagId: Long)
   case class Favorite(id: Long, userId: Long, favoritedId: Long)
+  case class ArticleUpdated(title: Option[String], description: Option[String], body: Option[String])
 
   case class ArticlePosted(title: String, description: String, body: String, tagList: Seq[String]) {
     def create(authorId: Long): Article = {
@@ -50,7 +51,7 @@ package object articles {
       author: Profile
   )
 
-  private def slugify(title: String): String =
+  def slugify(title: String): String =
     title.toLowerCase().replaceAll("""\s""", "-")
 
   case class ArticleRequest(tag: Option[String],

@@ -54,11 +54,19 @@ class ArticleRoute(
               complete(getArticleBySlug(slug))
             }
           }
+          put {
+            authenticate(secretKey) { userId =>
+              entity(as[UpdateArticle]) { updateArticle =>
+                complete(updateArticleBySlug(slug, updateArticle.article))
+              }
+            }
+          }
         }
       }
   }
 }
 
+private case class UpdateArticle(article: ArticleUpdated)
 private case class CreateArticle(article: ArticlePosted)
 case class FeedRequest(limit: Option[Long] = Some(100),
                        offset: Option[Long] = Some(0))
