@@ -3,15 +3,15 @@ package realworld.com.routes.routes
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
-import realworld.com.articles.{ArticleRoute, ArticleService}
-import realworld.com.profile.{ProfileRoute, ProfileService}
-import realworld.com.users.{UserRoute, UserService}
+import realworld.com.articles.{ ArticleRoute, ArticleService }
+import realworld.com.profile.{ ProfileRoute, ProfileService }
+import realworld.com.users.{ UserRoute, UserService }
 
 import scala.concurrent.ExecutionContext
 
 /**
-  * Created by kunihiro on 2018/06/13.
-  */
+ * Created by kunihiro on 2018/06/13.
+ */
 class HttpRoute(
     userService: UserService,
     profileService: ProfileService,

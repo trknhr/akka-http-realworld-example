@@ -3,11 +3,11 @@ package realworld.com.converter
 import java.sql.Timestamp
 
 import io.circe.Decoder.Result
-import io.circe.{Decoder, Encoder, HCursor, Json}
+import io.circe.{ Decoder, Encoder, HCursor, Json }
 
 /**
-  * Created by kunihiro on 2018/06/18.
-  */
+ * Created by kunihiro on 2018/06/18.
+ */
 object Formatter {
   implicit val TimestampFormat: Encoder[Timestamp] with Decoder[Timestamp] =
     new Encoder[Timestamp] with Decoder[Timestamp] {

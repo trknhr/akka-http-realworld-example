@@ -18,8 +18,7 @@ trait ArticleTable {
     def body = column[String]("body")
     def authorId = column[Long]("author_id")
 
-    def createdAt =
-      column[Timestamp]("created_at", O.Default(currentWhenInserting))
+    def createdAt = column[Timestamp]("created_at", O.Default(currentWhenInserting))
 
     def updatedAt =
       column[Timestamp]("updated_at", O.Default(currentWhenInserting))

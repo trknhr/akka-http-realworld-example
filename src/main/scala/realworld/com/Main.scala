@@ -4,10 +4,10 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import profile.ProfileService
-import realworld.com.articles.{ArticleService, JdbcArticleStorage}
+import realworld.com.articles.{ ArticleService, JdbcArticleStorage }
 import realworld.com.routes.routes.HttpRoute
-import users.{JdbcUserStorage, UserService}
-import utils.{Config, DatabaseConnector, DatabaseMigrationManager}
+import users.{ JdbcUserStorage, UserService }
+import utils.{ Config, DatabaseConnector, DatabaseMigrationManager }
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -33,7 +33,6 @@ object Main extends App {
       config.database.password
     ).migrateDatabaseSchema()
 
-
     val userStorage = new JdbcUserStorage(databaseConnector)
 
     val articleStorage = new JdbcArticleStorage(databaseConnector)
@@ -44,10 +43,12 @@ object Main extends App {
 
     val articleService = new ArticleService(articleStorage, userStorage)
 
-    val httpRoute = new HttpRoute(userService,
-                                  profileService,
-                                  articleService,
-                                  config.secretKey)
+    val httpRoute = new HttpRoute(
+      userService,
+      profileService,
+      articleService,
+      config.secretKey
+    )
 
     Http().bindAndHandle(httpRoute.route, config.http.host, config.http.port)
 

@@ -6,14 +6,14 @@ import akka.http.scaladsl.server.directives.{
   HeaderDirectives,
   RouteDirectives
 }
-import pdi.jwt.{Jwt, JwtAlgorithm}
+import pdi.jwt.{ Jwt, JwtAlgorithm }
 import io.circe.parser._
 import io.circe.generic.auto._
 import realworld.com.core.AuthTokenContent
 
 /**
-  * Created by kunihiro on 2018/06/13.
-  */
+ * Created by kunihiro on 2018/06/13.
+ */
 object JwtAuthDirectives {
 
   import BasicDirectives._

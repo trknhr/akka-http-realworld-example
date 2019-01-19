@@ -1,10 +1,10 @@
 package realworld.com.users
 
 import realworld.com.core.User
-import realworld.com.profile.{UserFollower, UserFollowersTable}
+import realworld.com.profile.{ UserFollower, UserFollowersTable }
 import realworld.com.utils.DatabaseConnector
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait UserStorage {
   def getUsers(): Future[Seq[User]]
@@ -20,7 +20,7 @@ trait UserStorage {
 }
 
 class JdbcUserStorage(
-    val databaseConnector: DatabaseConnector
+  val databaseConnector: DatabaseConnector
 )(implicit executionContext: ExecutionContext)
     extends UserProfileTable
     with UserStorage
@@ -41,11 +41,11 @@ class JdbcUserStorage(
   def getFollowees(userId: Long): Future[Seq[User]] =
     db.run(
       followers
-        .join(users)
-        .on(_.followeeId === _.id)
-        .filter(a => a._1.userId === userId)
-        .map(_._2)
-        .result
+      .join(users)
+      .on(_.followeeId === _.id)
+      .filter(a => a._1.userId === userId)
+      .map(_._2)
+      .result
     )
 
   def register(user: User): Future[User] = {

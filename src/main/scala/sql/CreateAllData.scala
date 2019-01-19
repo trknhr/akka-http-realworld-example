@@ -4,8 +4,8 @@ import java.sql.Timestamp
 import java.util.Date
 
 import realworld.com.core.User
-import realworld.com.users.{JdbcUserStorage, UserStorage}
-import realworld.com.utils.{Config, DatabaseConnector, DatabaseMigrationManager}
+import realworld.com.users.{ JdbcUserStorage, UserStorage }
+import realworld.com.utils.{ Config, DatabaseConnector, DatabaseMigrationManager }
 
 import scala.concurrent.ExecutionContext
 

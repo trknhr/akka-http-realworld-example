@@ -11,8 +11,8 @@ import realworld.com.core.UserRegistration
 import scala.concurrent.ExecutionContext
 
 class UserRoute(
-    secretKey: String,
-    usersService: UserService
+  secretKey: String,
+  usersService: UserService
 )(implicit executionContext: ExecutionContext)
     extends FailFastCirceSupport {
 
@@ -29,7 +29,7 @@ class UserRoute(
             complete(
               login(idPass.user.email, idPass.user.password).map {
                 case Some(user) => OK -> user.asJson
-                case None       => BadRequest -> None.asJson
+                case None => BadRequest -> None.asJson
               }
             )
 
@@ -56,10 +56,12 @@ class UserRoute(
           get {
             complete(getCurrentUser(userId).map {
               case Some(user) =>
-                OK -> UserProfile(user.email,
-                                  user.username,
-                                  user.bio,
-                                  user.image).asJson
+                OK -> UserProfile(
+                  user.email,
+                  user.username,
+                  user.bio,
+                  user.image
+                ).asJson
               case None =>
                 BadRequest -> None.asJson
             })
@@ -68,10 +70,12 @@ class UserRoute(
               entity(as[UserUpdateParam]) { update =>
                 complete(updateUser(userId, update.user).map {
                   case Some(user) =>
-                    OK -> UserProfile(user.username,
-                                      user.email,
-                                      user.bio,
-                                      user.image).asJson
+                    OK -> UserProfile(
+                      user.username,
+                      user.email,
+                      user.bio,
+                      user.image
+                    ).asJson
                   case None =>
                     BadRequest -> None.asJson
                 })
@@ -85,9 +89,11 @@ class UserRoute(
 private case class LoginPasswordUser(user: LoginPassword)
 
 private case class LoginPassword(email: String, password: String)
-private case class UserProfile(username: String,
-                               email: String,
-                               bio: Option[String],
-                               image: Option[String])
+private case class UserProfile(
+  username: String,
+  email: String,
+  bio: Option[String],
+  image: Option[String]
+)
 
 private case class UserUpdateParam(user: core.UserUpdate)

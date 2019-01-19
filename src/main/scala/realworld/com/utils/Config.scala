@@ -3,8 +3,8 @@ package realworld.com.utils
 import pureconfig.loadConfig
 
 /**
-  * Created by kunihiro on 2018/06/13.
-  */
+ * Created by kunihiro on 2018/06/13.
+ */
 case class Config(secretKey: String, http: HttpConfig, database: DatabaseConfig)
 
 object Config {
@@ -17,6 +17,8 @@ object Config {
 }
 
 private[utils] case class HttpConfig(host: String, port: Int)
-private[utils] case class DatabaseConfig(jdbcUrl: String,
-                                         username: String,
-                                         password: String)
+private[utils] case class DatabaseConfig(
+  jdbcUrl: String,
+  username: String,
+  password: String
+)

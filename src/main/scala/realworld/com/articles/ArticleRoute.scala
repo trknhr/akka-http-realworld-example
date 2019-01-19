@@ -9,8 +9,8 @@ import io.circe.syntax._
 import scala.concurrent.ExecutionContext
 
 class ArticleRoute(
-    secretKey: String,
-    articleService: ArticleService
+  secretKey: String,
+  articleService: ArticleService
 )(implicit executionContext: ExecutionContext)
     extends FailFastCirceSupport {
   import akka.http.scaladsl.model.StatusCodes._
@@ -28,9 +28,12 @@ class ArticleRoute(
         post {
           authenticate(secretKey) { authorId =>
             entity(as[CreateArticle]) { article =>
-              complete(createArticle(authorId, article.article, Some(authorId)).map { article =>
-                article.asJson
-              })
+              complete(
+                createArticle(authorId, article.article, Some(authorId)).map {
+                  article =>
+                    article.asJson
+                }
+              )
             }
           }
         }
@@ -48,19 +51,29 @@ class ArticleRoute(
         }
       } ~
       path(Segment) { slug =>
-        pathEndOrSingleSlash {
-          get {
-            authenticate(secretKey) { userId =>
+        authenticate(secretKey) { userId =>
+          pathEndOrSingleSlash {
+            get {
               complete(getArticleBySlug(slug))
             }
-          }
-          put {
-            authenticate(secretKey) { userId =>
+            put {
               entity(as[UpdateArticle]) { updateArticle =>
                 complete(updateArticleBySlug(slug, updateArticle.article))
               }
             }
-          }
+            delete {
+              complete(deleteArticleBySlug(slug))
+            }
+          } ~
+            path("comments") {
+              get {
+                complete("ok")
+              }
+              post {
+                complete("ok")
+              }
+
+            }
         }
       }
   }
@@ -68,5 +81,7 @@ class ArticleRoute(
 
 private case class UpdateArticle(article: ArticleUpdated)
 private case class CreateArticle(article: ArticlePosted)
-case class FeedRequest(limit: Option[Long] = Some(100),
-                       offset: Option[Long] = Some(0))
+case class FeedRequest(
+  limit: Option[Long] = Some(100),
+  offset: Option[Long] = Some(0)
+)

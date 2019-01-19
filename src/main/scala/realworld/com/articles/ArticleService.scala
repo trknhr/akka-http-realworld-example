@@ -4,7 +4,7 @@ import realworld.com.core.User
 import realworld.com.profile.Profile
 import realworld.com.users.UserStorage
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 import realworld.com.utils.MonadTransformers._
 import realworld.com.utils.MonadTransformers._
 
@@ -17,9 +17,10 @@ class ArticleService(
     articleStorage.getArticles(request)
 
   def createArticle(
-      authorId: Long,
-      newArticle: ArticlePosted,
-      currentUserId: Option[Long]): Future[Option[ArticleForResponse]] =
+    authorId: Long,
+    newArticle: ArticlePosted,
+    currentUserId: Option[Long]
+  ): Future[Option[ArticleForResponse]] =
     for {
       article <- articleStorage.createArticle(newArticle.create(authorId))
       tags <- createTags(newArticle.tagList)
@@ -39,23 +40,28 @@ class ArticleService(
     articleStorage.insertArticleTag(articleTags)
   }
 
-  def getArticleResponse(article: Article,
-                         tags: Seq[TagV],
-                         currentUserId: Option[Long]) =
+  def getArticleResponse(
+    article: Article,
+    tags: Seq[TagV],
+    currentUserId: Option[Long]
+  ) =
     userStorage
       .getUser(article.authorId)
       .flatMapTFuture(
         author => getArticleWithTags(article, author, tags, currentUserId)
       )
 
-  def getArticleWithTags(article: Article,
-                         author: User,
-                         tags: Seq[TagV],
-                         currentUserId: Option[Long]) =
+  def getArticleWithTags(
+    article: Article,
+    author: User,
+    tags: Seq[TagV],
+    currentUserId: Option[Long]
+  ) =
     for {
       favorites <- articleStorage.isFavoriteArticleIds(
         currentUserId.getOrElse(0),
-        Seq(article.id))
+        Seq(article.id)
+      )
       favoriteCount <- articleStorage.countFavorites(Seq(article.id))
     } yield {
       ArticleForResponse(
@@ -85,9 +91,11 @@ class ArticleService(
     articleStorage.insertAndGet(newTags)
   }
 
-  def getFeeds(userId: Long,
-               limit: Option[Int],
-               offset: Option[Int]): Future[Seq[ArticleForResponse]] =
+  def getFeeds(
+    userId: Long,
+    limit: Option[Int],
+    offset: Option[Int]
+  ): Future[Seq[ArticleForResponse]] =
     for {
       articles <- articleStorage.getArticlesByFollowees(userId, limit, offset)
       favorites <- articleStorage
@@ -108,7 +116,8 @@ class ArticleService(
             favorites.contains(a.id),
             favoriteCount.map(a => a._1 -> a._2).toMap.get(a.id).getOrElse(0),
             Profile("dummy", None, None, false)
-        ))
+          )
+      )
     }
 
   def getArticleBySlug(slug: String): Future[Option[Article]] =
@@ -118,9 +127,12 @@ class ArticleService(
     articleStorage.getArticleBySlug(slug)
       .flatMapTFuture(
         a => articleStorage.updateArticle(updateArticle(a, articleUpdated))
-        )
+      )
 
-  private def updateArticle(article: Article, update: ArticleUpdated): Article ={
+  def deleteArticleBySlug(slug: String): Future[Unit] =
+    articleStorage.deleteArticleBySlug(slug).map(_ => {})
+
+  private def updateArticle(article: Article, update: ArticleUpdated): Article = {
     val title = update.title.getOrElse(article.title)
     val slug = slugify(title)
     val description = update.description.getOrElse(article.description)
