@@ -6,7 +6,6 @@ import realworld.com.users.UserStorage
 
 import scala.concurrent.{ ExecutionContext, Future }
 import realworld.com.utils.MonadTransformers._
-import realworld.com.utils.MonadTransformers._
 
 class ArticleService(
     articleStorage: ArticleStorage,

@@ -3,10 +3,12 @@ package realworld.com.articles
 import java.sql.Timestamp
 import java.util.Date
 
+import com.roundeights.hasher.Implicits._
 import realworld.com.profile.Profile
 
 package object comments {
-  case class CommentRequest(body: String)
+  case class CommentRequest(comment: CommentForJson)
+  case class CommentForJson(body: String)
   case class Comment(
     id: Long,
     body: String,

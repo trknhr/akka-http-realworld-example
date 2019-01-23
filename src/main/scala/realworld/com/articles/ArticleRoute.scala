@@ -6,9 +6,12 @@ import akka.http.scaladsl.server.Directives._
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
 import io.circe.generic.auto._
 import io.circe.syntax._
+import realworld.com.articles.comments.CommentRoute
+
 import scala.concurrent.ExecutionContext
 
 class ArticleRoute(
+  commentRoute: CommentRoute,
   secretKey: String,
   articleService: ArticleService
 )(implicit executionContext: ExecutionContext)
@@ -55,27 +58,20 @@ class ArticleRoute(
           pathEndOrSingleSlash {
             get {
               complete(getArticleBySlug(slug))
-            }
-            put {
-              entity(as[UpdateArticle]) { updateArticle =>
-                complete(updateArticleBySlug(slug, updateArticle.article))
+            } ~
+              put {
+                entity(as[UpdateArticle]) { updateArticle =>
+                  complete(updateArticleBySlug(slug, updateArticle.article))
+                }
+              } ~
+              delete {
+                complete(deleteArticleBySlug(slug))
               }
-            }
-            delete {
-              complete(deleteArticleBySlug(slug))
-            }
-          } ~
-            path("comments") {
-              get {
-                complete("ok")
-              }
-              post {
-                complete("ok")
-              }
+          }
 
-            }
         }
-      }
+      } ~
+      commentRoute.route
   }
 }
 

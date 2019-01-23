@@ -11,7 +11,7 @@ trait CommentStorage {
 
 class JdbcCommentStorage(
     val databaseConnector: DatabaseConnector
-)(implicit executionContext: ExecutionContext) extends CommentTable {
+)(implicit executionContext: ExecutionContext) extends CommentTable with CommentStorage {
   import databaseConnector._
   import databaseConnector.profile.api._
 
