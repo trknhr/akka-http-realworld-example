@@ -26,25 +26,13 @@ class CommentRoute(
     authenticate(secretKey) { userId =>
       pathEndOrSingleSlash {
         get {
-          complete("ok")
+          complete(getComments(slug))
         } ~
           post {
             entity(as[CommentRequest]) { comment =>
-              //              complete(createComment(slug, userId, comment).map {
-              //                case Some(c) =>
-              //                  OK -> c
-              //                case None =>
-              //                  BadRequest -> None.asJson
-              //              })
-              complete(createComment(slug, userId, comment).map { c =>
-                c match {
-                  case Some(x) => OK -> x.asJson
-                  case None => NotFound -> None.asJson
-                }
-                //                c match {
-                //                  case Some(c) => OK -> "ok"
-                //                  case None => BadGateway -> None.asJson
-                //                }
+              complete(createComment(slug, userId, comment).map {
+                case Some(x) => OK -> x.asJson
+                case None => NotFound -> None.asJson
               })
             }
           }
