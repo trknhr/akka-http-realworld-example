@@ -46,88 +46,22 @@ class CommentService(
     slug: String,
     userId: Long
   ): Future[Seq[CommentResponse]] =
-    (for {
-      a <- FutureOptional(articleStorage.getArticleBySlug(slug))
-      comments <- commentStorage.getComments(a.id)
-      users <- userStorage.getUsers(comments.map(_.authorId))
-    } yield
-     users.zip(comments).map( (u, c) =>
+    for {
+      a <- articleStorage.getArticleBySlug(slug)
+      comments: Seq[Comment] <- commentStorage.getComments(a.map(b => b.id).getOrElse(-1L))
+      users: Seq[User] <- userStorage.getUsers(comments.map(_.authorId))
+    } yield users.zip(comments).toList.map((a: (User, Comment)) =>
       CommentResponse(
-      c.id,
-      c.createdAt,
-      c.updatedAt,
-      c.body,
-      u.username,
-      Profile(
-        u.username,
-        u.bio,
-        u.image,
-        false
-      )
-    )}).future
-  //    for {
-  //      a <- articleStorage.getArticleBySlug(slug)
-  //    } yield
-  //      a.flatMap { a =>
-  //        for {
-  //          comments <- commentStorage.getComments(a.id)
-  //          users <- userStorage.getUsers(comments.map(_.authorId))
-  //        } yield
-  //          for ((u, c) <- users zip comments)
-  //            yield
-  //              CommentResponse(
-  //                c.id,
-  //                c.createdAt,
-  //                c.updatedAt,
-  //                c.body,
-  //                u.username,
-  //                Profile(
-  //                  u.username,
-  //                  u.bio,
-  //                  u.image,
-  //                  false
-  //                )
-  //              )
-  //
-  //      }
-  //    articleStorage.getArticleBySlug(slug).flatMap { optionA =>
-  //      for {
-  //        a <- optionA
-  //        comments <- commentStorage.getComments(a.id)
-  //        users <- userStorage.getUsers(comments.map(_.authorId))
-  //      } yield for ((u, c) <- users zip comments) yield CommentResponse(
-  //        c.id,
-  //        c.createdAt,
-  //        c.updatedAt,
-  //        c.body,
-  //        u.username,
-  //        Profile(
-  //          u.username,
-  //          u.bio,
-  //          u.image,
-  //          false
-  //        )
-  //      )
-  //    }
-
-  //        c => CommentResponse(
-  //        c.id,
-  //        c.createdAt,
-  //        c.updatedAt,
-  //        c.body,
-  //        u.username,
-  //        Profile(
-  //          u.username,
-  //          u.bio,
-  //          u.image,
-  //          false
-  //        )
-
-  //      )
-  //    )
-  //    (for {
-  //      a <- FutureOptional(articleStorage.getArticleBySlug(slug))
-  //      b <-
-  ////      u <- FutureOptional(userStorage.getUser(userId))
-  //    )
+        a._2.id,
+        a._2.createdAt,
+        a._2.updatedAt,
+        a._2.body,
+        a._1.username,
+        Profile(
+          a._1.username,
+          a._1.bio,
+          a._1.image,
+          false
+        )
+      ))
 }

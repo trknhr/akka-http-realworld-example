@@ -26,7 +26,7 @@ class CommentRoute(
     authenticate(secretKey) { userId =>
       pathEndOrSingleSlash {
         get {
-          complete(getComments(slug))
+          complete(getComments(slug, userId))
         } ~
           post {
             entity(as[CommentRequest]) { comment =>
