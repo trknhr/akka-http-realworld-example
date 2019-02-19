@@ -64,4 +64,9 @@ class CommentService(
           false
         )
       ))
+
+  def deleteComment(
+    id: Long
+  ): Future[Int] =
+    commentStorage.deleteComments(id)
 }

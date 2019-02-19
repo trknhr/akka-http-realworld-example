@@ -8,6 +8,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 trait CommentStorage {
   def createComment(comment: Comment): Future[Comment]
   def getComments(articleId: Long): Future[Seq[Comment]]
+  def deleteComments(commentId: Long): Future[Int]
 }
 
 class JdbcCommentStorage(
@@ -25,4 +26,7 @@ class JdbcCommentStorage(
 
   def getComments(articleId: Long): Future[Seq[Comment]] =
     db.run(comments.filter(c => c.articleId === articleId).result)
+
+  def deleteComments(commentId: Long): Future[Int] =
+    db.run(comments.filter(c => c.id === commentId).delete)
 }

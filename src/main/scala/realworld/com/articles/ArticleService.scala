@@ -131,6 +131,27 @@ class ArticleService(
   def deleteArticleBySlug(slug: String): Future[Unit] =
     articleStorage.deleteArticleBySlug(slug).map(_ => {})
 
+  def favoriteArticle(userId: Long, slug: String) =
+    for {
+      article <- articleStorage.getArticleBySlug(slug)
+      f <- articleStorage.favoriteArticle(article.map(b => b.id).getOrElse(-1L), userId)
+      favoriteCount <- articleStorage.countFavorite(article.map(_.authorId).getOrElse(-1L))
+    } yield article.map(
+      a =>
+        ArticleForResponse(
+          a.slug,
+          a.title,
+          a.description,
+          a.body,
+          Seq(""),
+          a.createdAt,
+          a.updatedAt,
+          true,
+          favoriteCount,
+          Profile("dummy", None, None, false)
+        )
+    )
+
   private def updateArticle(article: Article, update: ArticleUpdated): Article = {
     val title = update.title.getOrElse(article.title)
     val slug = slugify(title)

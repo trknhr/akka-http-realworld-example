@@ -22,7 +22,9 @@ trait ArticleStorage {
     userId: Long,
     articleIds: Seq[Long]
   ): Future[Seq[Long]]
+  def favoriteArticle(userId: Long, articleId: Long): Future[Int];
   def countFavorites(articleIds: Seq[Long]): Future[Seq[(Long, Int)]]
+  def countFavorite(articleId: Long): Future[Int]
   def findTagByNames(tagNames: Seq[String]): Future[Seq[TagV]]
   def insertAndGet(tagVs: Seq[TagV]): Future[Seq[TagV]]
   def insertArticleTag(atags: Seq[ArticleTag]): Future[Seq[ArticleTag]]
@@ -117,6 +119,14 @@ class JdbcArticleStorage(
       .result
     )
 
+  def countFavorite(articleId: Long): Future[Int] =
+    db.run(
+      favorites
+      .filter(_.favoritedId === articleId)
+      .length
+      .result
+    )
+
   def findTagByNames(tagNames: Seq[String]): Future[Seq[TagV]] =
     db.run(
       tags.filter(_.name inSet tagNames).result
@@ -140,6 +150,9 @@ class JdbcArticleStorage(
 
   def deleteArticleBySlug(slug: String): Future[Int] =
     db.run(articles.filter(_.slug === slug).delete)
+
+  def favoriteArticle(userId: Long, articleId: Long): Future[Int] =
+    db.run(favorites += Favorite(-1, userId, articleId))
 
   case class MaybeFilter[X, Y](query: Query[X, Y, Seq]) {
     def filter[T, R <: Rep[_]: CanBeQueryCondition](data: Option[T])(

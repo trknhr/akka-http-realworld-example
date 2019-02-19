@@ -36,7 +36,12 @@ class CommentRoute(
               })
             }
           }
-      }
+      } ~
+        path(LongNumber) { commentId =>
+          delete {
+            complete(deleteComment(commentId))
+          }
+        }
     }
   }
 }

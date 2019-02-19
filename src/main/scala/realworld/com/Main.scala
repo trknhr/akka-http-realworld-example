@@ -28,11 +28,11 @@ object Main extends App {
       config.database.password
     )
 
-    new DatabaseMigrationManager(
-      config.database.jdbcUrl,
-      config.database.username,
-      config.database.password
-    ).migrateDatabaseSchema()
+    //    new DatabaseMigrationManager(
+    //      config.database.jdbcUrl,
+    //      config.database.username,
+    //      config.database.password
+    //    ).migrateDatabaseSchema()
 
     val userStorage = new JdbcUserStorage(databaseConnector)
 
