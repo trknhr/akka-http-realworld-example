@@ -134,7 +134,27 @@ class ArticleService(
   def favoriteArticle(userId: Long, slug: String) =
     for {
       article <- articleStorage.getArticleBySlug(slug)
-      f <- articleStorage.favoriteArticle(article.map(b => b.id).getOrElse(-1L), userId)
+      f <- articleStorage.favoriteArticle(userId, article.map(b => b.id).getOrElse(-1L))
+      favoriteCount <- articleStorage.countFavorite(article.map(_.authorId).getOrElse(-1L))
+    } yield article.map(
+      a =>
+        ArticleForResponse(
+          a.slug,
+          a.title,
+          a.description,
+          a.body,
+          Seq(""),
+          a.createdAt,
+          a.updatedAt,
+          true,
+          favoriteCount,
+          Profile("dummy", None, None, false)
+        )
+    )
+  def unFavoriteArticle(userId: Long, slug: String) =
+    for {
+      article <- articleStorage.getArticleBySlug(slug)
+      f <- articleStorage.unFavoriteArticle(userId, article.map(b => b.id).getOrElse(-1L))
       favoriteCount <- articleStorage.countFavorite(article.map(_.authorId).getOrElse(-1L))
     } yield article.map(
       a =>

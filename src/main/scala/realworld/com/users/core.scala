@@ -11,7 +11,7 @@ package object core {
   final case class AuthTokenContent2(userId: String)
 
   case class User(
-    id: Long,
+      id: Long,
       username: String,
       password: String,
       email: String,
@@ -34,7 +34,7 @@ package object core {
   )
 
   case class UserUpdate(
-    username: Option[String],
+      username: Option[String],
       password: Option[String],
       email: Option[String],
       bio: Option[String],
@@ -57,7 +57,7 @@ package object core {
   }
 
   case class UserRegistration(
-    username: String,
+      username: String,
       password: String,
       email: String
   ) {

@@ -6,7 +6,7 @@ import org.flywaydb.core.Flyway
  * Created by kunihiro on 2018/08/02.
  */
 class DatabaseMigrationManager(
-  jdbcUrl: String,
+    jdbcUrl: String,
     dbUser: String,
     dbPassword: String
 ) {
