@@ -77,13 +77,13 @@ class ArticleRoute(
               case Some(x) => OK -> x.asJson
               case None => NotFound -> None.asJson
             })
-          }
-          delete {
-            complete(unFavoriteArticle(userId, slug).map {
-              case Some(x) => OK -> x.asJson
-              case None => NotFound -> None.asJson
-            })
-          }
+          } ~
+            delete {
+              complete(unFavoriteArticle(userId, slug).map {
+                case Some(x) => OK -> x.asJson
+                case None => NotFound -> None.asJson
+              })
+            }
         }
       } ~
       commentRoute.route

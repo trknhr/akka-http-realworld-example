@@ -7,6 +7,7 @@ import profile.ProfileService
 import realworld.com.articles.comments.{ CommentService, JdbcCommentStorage }
 import realworld.com.articles.{ ArticleService, JdbcArticleStorage }
 import realworld.com.routes.routes.HttpRoute
+import realworld.com.tags.{ JdbcTagStorage, TagService }
 import users.{ JdbcUserStorage, UserService }
 import utils.{ Config, DatabaseConnector, DatabaseMigrationManager }
 
@@ -40,6 +41,8 @@ object Main extends App {
 
     val commentStorage = new JdbcCommentStorage(databaseConnector)
 
+    val tagStorage = new JdbcTagStorage(databaseConnector)
+
     val userService = new UserService(userStorage, config.secretKey)
 
     val profileService = new ProfileService(userStorage)
@@ -48,11 +51,14 @@ object Main extends App {
 
     val commentService = new CommentService(articleStorage, commentStorage, userStorage)
 
+    val tagService = new TagService(tagStorage)
+
     val httpRoute = new HttpRoute(
       userService,
       profileService,
       articleService,
       commentService,
+      tagService,
       config.secretKey
     )
 
