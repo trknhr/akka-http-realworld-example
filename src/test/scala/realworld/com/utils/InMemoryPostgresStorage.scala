@@ -2,7 +2,7 @@ package realworld.com.utils
 
 import de.flapdoodle.embed.process.runtime.Network.getLocalHost
 import ru.yandex.qatools.embed.postgresql.PostgresStarter
-import ru.yandex.qatools.embed.postgresql.config.AbstractPostgresConfig.{Credentials, Net, Storage, Timeout}
+import ru.yandex.qatools.embed.postgresql.config.AbstractPostgresConfig.{ Credentials, Net, Storage, Timeout }
 import ru.yandex.qatools.embed.postgresql.config.PostgresConfig
 import ru.yandex.qatools.embed.postgresql.distribution.Version
 

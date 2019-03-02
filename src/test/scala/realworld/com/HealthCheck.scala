@@ -4,8 +4,8 @@ import com.softwaremill.sttp.akkahttp.AkkaHttpBackend
 import realworld.com.utils.InMemoryPostgresStorage
 
 /**
-  * Created by kunihiro on 2018/08/02.
-  */
+ * Created by kunihiro on 2018/08/02.
+ */
 class HealthCheck extends BaseServiceTest {
 
   InMemoryPostgresStorage
@@ -13,7 +13,6 @@ class HealthCheck extends BaseServiceTest {
 
   "Service" should {
     "reqlest to health checks" in {
-      println("aaaaaaaaaaaaaa")
       200 shouldBe 200
     }
   }

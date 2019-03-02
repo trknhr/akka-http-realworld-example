@@ -1,6 +1,5 @@
 package realworld.com.articles
 
-
 import org.scalamock.scalatest.MockFactory
 import realworld.com.BaseServiceTest
 import realworld.com.core.User
@@ -13,9 +12,9 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
       "return articles by username" in new Context {
         val article1 = Article(0, "slug", "title", "description", "body", 1, currentWhenInserting, currentWhenInserting)
         var request = ArticleRequest(tag = None, authorName = Some("testAuthor"), favorited = None)
-        (articleStorage.getArticles _).expects(request) returning Future{List(article1)}
+        (articleStorage.getArticles _).expects(request) returning Future { List(article1) }
 
-        for{
+        for {
           article <- articleService.getArticles(request)
         } {
           article shouldBe Seq(article1)
@@ -28,9 +27,9 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         val newArticle = Article(0, "slug", "title", "description", "body", 1, currentWhenInserting, currentWhenInserting)
         val newPostArticle = ArticlePosted("title", "description", "body", Seq())
         var request = ArticleRequest(tag = None, authorName = Some("testAuthor"), favorited = None)
-        (articleStorage.createArticle _).expects(*) returning Future{newArticle}
+        (articleStorage.createArticle _).expects(*) returning Future { newArticle }
 
-        for{
+        for {
           article <- articleService.createArticle(0, newPostArticle, Option(1))
         } {
           article shouldBe Some(newPostArticle)
@@ -43,7 +42,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         val targetArticle = Article(0, "slug", "title", "description", "body", 1, currentWhenInserting, currentWhenInserting)
         (articleStorage.getArticleBySlug _).expects("sample-slug") returning Future(Some(targetArticle))
 
-        for{
+        for {
           article <- articleService.getArticleBySlug("sample-slug")
         } {
           article shouldBe Some(targetArticle)
