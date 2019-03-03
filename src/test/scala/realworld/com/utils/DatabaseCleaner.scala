@@ -2,10 +2,10 @@ package realworld.com.utils
 
 import slick.jdbc.SQLActionBuilder
 import slick.jdbc.SetParameter.SetUnit
-import slick.jdbc.meta.{MQName, MTable}
+import slick.jdbc.meta.{ MQName, MTable }
 
 import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ Await, ExecutionContext, Future }
 
 object DatabaseCleaner {
 
@@ -17,22 +17,22 @@ object DatabaseCleaner {
     import databaseConnector.profile.api._
 
     val truncatesFuture = db
-//      val tables = Await.result(db.run(MTable.getTables), 1.seconds).toList
+      //      val tables = Await.result(db.run(MTable.getTables), 1.seconds).toList
 
       .run(
         MTable.getTables
-//        sql"""SELECT * FROM pg_catalog.pg_tables"""
-//        sql"""\dt"""
-//        .as[(String, String)]
+      //        sql"""SELECT * FROM pg_catalog.pg_tables"""
+      //        sql"""\dt"""
+      //        .as[(String, String)]
       )
       .map {
-        _.filter{
+        _.filter {
           case MTable(tableName, "TABLE", _, _, _, _) => true
           case _ => false
         }.map {
           case MTable(tableName, _, _, _, _, _) =>
             println(tableName.name)
-            SQLActionBuilder(List(s"SET CONSTRAINTS ALL DEFERRED; ", s"TRUNCATE TABLE ${tableName.name} CASCADE;", s" SET CONSTRAINTS ALL IMMEDIATE;"), SetUnit).asUpdate
+            SQLActionBuilder(List(s"TRUNCATE TABLE ${tableName.name} CASCADE"), SetUnit).asUpdate
         }
       }
 
@@ -41,12 +41,8 @@ object DatabaseCleaner {
         truncates =>
           db.run(
             DBIO.sequence(
-              List(
-//              List(sqlu"""ALTER TABLE b DISABLE TRIGGER ALL"""),
-              truncates,
-//              List(sqlu"""SET FOREIGN_KEY_CHECKS = 1;""")
-            ).flatten
-            ).transactionally
+              truncates
+            )
           )
       ),
       5.seconds

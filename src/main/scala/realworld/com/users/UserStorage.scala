@@ -62,7 +62,7 @@ class JdbcUserStorage(
   }
 
   def saveUser(user: User): Future[User] = {
-    db.run(users.insertOrUpdate(user)).map(_ => user)
+    db.run((users returning users).insertOrUpdate(user).map(_.get))
   }
 
   def findUserByEmail(email: String): Future[Option[User]] =

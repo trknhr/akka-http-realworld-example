@@ -24,33 +24,34 @@ class UserStorageTest extends BaseServiceTest {
     "follow" should {
       "success" in new Context {
         databaseTest(for {
-          _ <- userStorage.saveUser(testUser1)
-          _ <- userStorage.saveUser(testUser2)
-          successFlag <- userStorage.follow(testUser1.id, testUser2.id)
-        } yield successFlag shouldBe 1)
+          a <- userStorage.saveUser(testUser1)
+          b <- userStorage.saveUser(testUser2)
+          successFlag <- userStorage.follow(a.id, b.id)
+        } yield {
+          successFlag shouldBe 1
+        })
       }
     }
 
-    "isFollow" should {
+    "isFollowing" should {
       "return true" in new Context {
         databaseTest(for {
-          _ <- userStorage.saveUser(testUser1)
-          _ <- userStorage.saveUser(testUser2)
-          _ <- userStorage.follow(testUser1.id, testUser2.id)
-          isFollowing <- userStorage.isFollowing(testUser1.id, testUser2.id)
+          a <- userStorage.saveUser(testUser1)
+          b <- userStorage.saveUser(testUser2)
+          _ <- userStorage.follow(a.id, b.id)
+          isFollowing <- userStorage.isFollowing(a.id, b.id)
         } yield true shouldBe true)
       }
+
+      "return false" in new Context {
+        databaseTest(for {
+          a <- userStorage.saveUser(testUser1)
+          b <- userStorage.saveUser(testUser2)
+          _ <- userStorage.follow(a.id, b.id)
+          isFollowing <- userStorage.isFollowing(b.id, a.id)
+        } yield isFollowing shouldBe false)
+      }
     }
-    //
-    //      "return false" in new Context {
-    //        awaitForResult(for {
-    //          _ <- userStorage.saveUser(testUser1)
-    //          _ <- userStorage.saveUser(testUser2)
-    //          _ <- userStorage.follow(testUser1.id, testUser2.id)
-    //          isFollowing <- userStorage.isFollowing(testUser2.id, testUser1.id)
-    //        } yield isFollowing shouldBe false)
-    //      }
-    //    }
   }
   trait Context {
     val userStorage: UserStorage = new JdbcUserStorage(InMemoryPostgresStorage.databaseConnector)
