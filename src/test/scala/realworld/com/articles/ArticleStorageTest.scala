@@ -3,41 +3,67 @@ package realworld.com.articles
 import java.sql.Timestamp
 import java.util.Date
 
-import realworld.com.BaseServiceTest
+import realworld.com.{ BaseServiceTest }
 import realworld.com.core.User
 import realworld.com.users.{ JdbcUserStorage, UserStorage }
-import realworld.com.utils.InMemoryPostgresStorage
+import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 
 class ArticleStorageTest extends BaseServiceTest {
+  override def beforeEach(): Unit = {
+    DatabaseCleaner.cleanDatabase(InMemoryPostgresStorage.databaseConnector)
+    super.beforeEach() // To be stackable, must call super.beforeEach
+  }
   "ArticleStorage" when {
     "getArticles" should {
       "return article by author id" in new Context {
-        //        awaitForResult(for {
-        //          _ <- userStorage.saveUser(author)
-        //          _ <- articleStorage.createArticle(testArticle1)
-        //          articles <- articleStorage.getArticles(
-        //            ArticleRequest(
-        //              authorName = Some("author"),
-        //              tag = None,
-        //              favorited = None,
-        //              limit = 10,
-        //              offset = 0
-        //            )
-        //          )
-        //        } yield articles.head shouldBe testArticle1.copy(id = 1))
+        println { "-----------start----------" }
+        awaitForResult(
+          for {
+            user <- userStorage.saveUser(author)
+            users <- userStorage.getUsers()
+            article <- articleStorage.createArticle(
+              testArticle1.copy(authorId = user.id)
+            )
+            articles <- articleStorage.getArticles(
+              ArticleRequest(
+                authorName = Some(user.username),
+                tag = None,
+                favorited = None,
+                limit = 10,
+                offset = 0
+              )
+            )
+          } yield {
+            println { "-----------end----------" }
+            println(users)
+            println(user)
+            println(article)
+            println(articles)
+            articles.head shouldBe testArticle1.copy(id = 1)
+          }
+        )
       }
     }
     "getArticleBySlug" should {
       "return article by slug" in new Context {
-        //        awaitForResult(for {
-        //          _ <- userStorage.saveUser(author)
-        //          _ <- articleStorage.createArticle(testArticle1)
-        //          articles <- articleStorage.getArticleBySlug(
-        //            "title-one"
-        //          )
-        //        } yield articles.head shouldBe testArticle1.copy(id = 1))
+        awaitForResult(for {
+          u <- userStorage.saveUser(author)
+          _ <- articleStorage.createArticle(testArticle1.copy(authorId = u.id))
+          article <- articleStorage.getArticleBySlug(
+            "title-one"
+          )
+        } yield {
+          article.foreach(a => {
+            article.head shouldBe testArticle1.copy(id = a.id, authorId = u.id)
+          })
+        })
       }
     }
+    //    "updateArticle" should {
+    //      "update an exisiting article" in new Context {
+    //
+    //      }
+    //    }
   }
 
   trait Context {

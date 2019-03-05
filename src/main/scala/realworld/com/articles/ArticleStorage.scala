@@ -50,8 +50,12 @@ class JdbcArticleStorage(
 
     db.run(
       MaybeFilter(joins)
-      .filter(pageRequest.authorName)(authorname =>
-        tables => tables._2.username === authorname)
+      //      .filter(pageRequest.authorName)(authorname =>
+      //        tables => {
+      //          println("authorname", authorname)
+      //          println("tables._2.username", tables._2.username)
+      //          tables._2.username === authorname
+      //        })
       .query
       .map(_._1)
       .result
@@ -80,7 +84,7 @@ class JdbcArticleStorage(
         (
           u,
           id
-        ) => u.copy(id = id)
+        ) => u.copy(id = id + 1)
       )) += newArticle
 
     db.run(articleWithId)

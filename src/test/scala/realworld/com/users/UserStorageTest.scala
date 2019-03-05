@@ -6,51 +6,52 @@ import java.util.Date
 import realworld.com.BaseServiceTest
 import realworld.com.core.User
 import realworld.com.profile.Profile
-import realworld.com.utils.InMemoryPostgresStorage
+import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 
 class UserStorageTest extends BaseServiceTest {
+  override def beforeEach(): Unit = {
+    DatabaseCleaner.cleanDatabase(InMemoryPostgresStorage.databaseConnector)
+    super.beforeEach() // To be stackable, must call super.beforeEach
+  }
 
-  "userStorage" when {
-    "getUserByUsername" should {
-      "return profile by id" in new Context {
-        databaseTest(for {
-          _ <- userStorage.saveUser(testUser1)
-          _ <- userStorage.saveUser(testUser2)
-          maybeProfile <- userStorage.getUserByUsername(testUser2.username)
-        } yield maybeProfile shouldBe Some(testUser2))
-      }
+  "getUserByUsername" when {
+    "return profile by id" in new Context {
+      awaitForResult(for {
+        _ <- userStorage.saveUser(testUser1)
+        _ <- userStorage.saveUser(testUser2)
+        maybeProfile <- userStorage.getUserByUsername(testUser2.username)
+      } yield maybeProfile shouldBe Some(testUser2))
+    }
+  }
+  "follow" when {
+    "success" in new Context {
+      awaitForResult(for {
+        a <- userStorage.saveUser(testUser1)
+        b <- userStorage.saveUser(testUser2)
+        successFlag <- userStorage.follow(a.id, b.id)
+      } yield {
+        successFlag shouldBe 1
+      })
+    }
+  }
+
+  "isFollowing" when {
+    "return true" in new Context {
+      awaitForResult(for {
+        a <- userStorage.saveUser(testUser1)
+        b <- userStorage.saveUser(testUser2)
+        _ <- userStorage.follow(a.id, b.id)
+        isFollowing <- userStorage.isFollowing(a.id, b.id)
+      } yield true shouldBe true)
     }
 
-    "follow" should {
-      "success" in new Context {
-        databaseTest(for {
-          a <- userStorage.saveUser(testUser1)
-          b <- userStorage.saveUser(testUser2)
-          successFlag <- userStorage.follow(a.id, b.id)
-        } yield {
-          successFlag shouldBe 1
-        })
-      }
-    }
-
-    "isFollowing" should {
-      "return true" in new Context {
-        databaseTest(for {
-          a <- userStorage.saveUser(testUser1)
-          b <- userStorage.saveUser(testUser2)
-          _ <- userStorage.follow(a.id, b.id)
-          isFollowing <- userStorage.isFollowing(a.id, b.id)
-        } yield true shouldBe true)
-      }
-
-      "return false" in new Context {
-        databaseTest(for {
-          a <- userStorage.saveUser(testUser1)
-          b <- userStorage.saveUser(testUser2)
-          _ <- userStorage.follow(a.id, b.id)
-          isFollowing <- userStorage.isFollowing(b.id, a.id)
-        } yield isFollowing shouldBe false)
-      }
+    "return false" in new Context {
+      awaitForResult(for {
+        a <- userStorage.saveUser(testUser1)
+        b <- userStorage.saveUser(testUser2)
+        _ <- userStorage.follow(a.id, b.id)
+        isFollowing <- userStorage.isFollowing(b.id, a.id)
+      } yield isFollowing shouldBe false)
     }
   }
   trait Context {

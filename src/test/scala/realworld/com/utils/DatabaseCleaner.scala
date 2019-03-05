@@ -3,6 +3,7 @@ package realworld.com.utils
 import slick.jdbc.SQLActionBuilder
 import slick.jdbc.SetParameter.SetUnit
 import slick.jdbc.meta.{ MQName, MTable }
+import scala.util.{ Failure, Success }
 
 import scala.concurrent.duration._
 import scala.concurrent.{ Await, ExecutionContext, Future }
@@ -17,13 +18,8 @@ object DatabaseCleaner {
     import databaseConnector.profile.api._
 
     val truncatesFuture = db
-      //      val tables = Await.result(db.run(MTable.getTables), 1.seconds).toList
-
       .run(
         MTable.getTables
-      //        sql"""SELECT * FROM pg_catalog.pg_tables"""
-      //        sql"""\dt"""
-      //        .as[(String, String)]
       )
       .map {
         _.filter {
@@ -31,62 +27,18 @@ object DatabaseCleaner {
           case _ => false
         }.map {
           case MTable(tableName, _, _, _, _, _) =>
-            println(tableName.name)
             SQLActionBuilder(List(s"TRUNCATE TABLE ${tableName.name} CASCADE"), SetUnit).asUpdate
         }
       }
 
-    Await.result(
-      truncatesFuture.flatMap(
-        truncates =>
-          db.run(
-            DBIO.sequence(
-              truncates
-            )
-          )
-      ),
-      5.seconds
+    val truncates = Await.result(
+      truncatesFuture, Duration.Inf
     )
+
+    Await.result(db.run(
+      DBIO.sequence(
+        truncates
+      )
+    ), Duration.Inf)
   }
-
 }
-//package com.sergigp.horus.infrastructure
-//
-//import slick.jdbc.SQLActionBuilder
-//import slick.jdbc.SetParameter.SetUnit
-//
-//import scala.concurrent.Await
-//import scala.concurrent.ExecutionContext.Implicits.global
-//import scala.concurrent.duration._
-//
-//import play.api.db.slick.DatabaseConfigProvider
-//import play.api.inject.Injector
-
-//import slick.driver.JdbcProfile
-//import slick.driver.MySQLDriver.api._
-//import slick.jdbc.SQLActionBuilder
-//import slick.jdbc.SetParameter.SetUnit
-
-//object EnvironmentArranger {
-//  def cleanDatabase(injector: Injector): Unit = {
-////    val dbConfig = injector.instanceOf[DatabaseConfigProvider].get[JdbcProfile]
-//    val truncatesFuture = dbConfig.db.run(
-//      sql"""show full tables where Table_Type = "BASE TABLE"""".as[(String, String)]
-//    ).map {
-//      _.map { case (tableName, _) => SQLActionBuilder(List(s"TRUNCATE TABLE $tableName"), SetUnit).asUpdate }
-//    }
-//
-//    Await.result(truncatesFuture.flatMap(
-//      truncates =>
-//        dbConfig.db.run(
-//          DBIO.sequence(
-//            List(
-//              List( sqlu"""SET FOREIGN_KEY_CHECKS = 0;"""),
-//              truncates,
-//              List( sqlu"""SET FOREIGN_KEY_CHECKS = 1;""")
-//            ).flatten
-//          )
-//        )
-//    ), 5.seconds)
-//  }
-//}
