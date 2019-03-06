@@ -11,40 +11,33 @@ import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 class ArticleStorageTest extends BaseServiceTest {
   override def beforeEach(): Unit = {
     DatabaseCleaner.cleanDatabase(InMemoryPostgresStorage.databaseConnector)
-    super.beforeEach() // To be stackable, must call super.beforeEach
+    super.beforeEach()
   }
-  "ArticleStorage" when {
-    "getArticles" should {
-      "return article by author id" in new Context {
-        println { "-----------start----------" }
-        awaitForResult(
-          for {
-            user <- userStorage.saveUser(author)
-            users <- userStorage.getUsers()
-            article <- articleStorage.createArticle(
-              testArticle1.copy(authorId = user.id)
+
+  "getArticles" when {
+    "return article by author id" in new Context {
+      awaitForResult(
+        for {
+          user <- userStorage.saveUser(author)
+          article <- articleStorage.createArticle(
+            testArticle1.copy(authorId = user.id)
+          )
+          articles <- articleStorage.getArticles(
+            ArticleRequest(
+              authorName = Some(user.username),
+              tag = None,
+              favorited = None,
+              limit = 10,
+              offset = 0
             )
-            articles <- articleStorage.getArticles(
-              ArticleRequest(
-                authorName = Some(user.username),
-                tag = None,
-                favorited = None,
-                limit = 10,
-                offset = 0
-              )
-            )
-          } yield {
-            println { "-----------end----------" }
-            println(users)
-            println(user)
-            println(article)
-            println(articles)
-            articles.head shouldBe testArticle1.copy(id = 1)
-          }
-        )
-      }
+          )
+          users <- userStorage.getUsers()
+        } yield {
+          articles.head shouldBe testArticle1.copy(id = 1, authorId = user.id)
+        }
+      )
     }
-    "getArticleBySlug" should {
+    "getArticleBySlug" when {
       "return article by slug" in new Context {
         awaitForResult(for {
           u <- userStorage.saveUser(author)
@@ -54,16 +47,44 @@ class ArticleStorageTest extends BaseServiceTest {
           )
         } yield {
           article.foreach(a => {
-            article.head shouldBe testArticle1.copy(id = a.id, authorId = u.id)
+            a shouldBe testArticle1.copy(id = a.id, authorId = u.id)
           })
         })
       }
     }
-    //    "updateArticle" should {
-    //      "update an exisiting article" in new Context {
-    //
-    //      }
-    //    }
+    "updateArticle" when {
+      "update an existing article" in new Context {
+        val updatedBody = "updated body"
+        awaitForResult(for {
+          u <- userStorage.saveUser(author)
+          a <- articleStorage.createArticle(testArticle1.copy(authorId = u.id))
+        } yield {
+          for {
+            _ <- articleStorage.updateArticle(a.copy(body = updatedBody))
+            article <- articleStorage.getArticleBySlug(
+              "title-one"
+            )
+          } yield article.foreach(expect => {
+            expect.body shouldBe updatedBody
+          })
+        })
+      }
+    }
+    "favorite" when {
+      "favoriteArticle" should {
+        "should set favorite" in new Context {
+          awaitForResult(for {
+            u <- userStorage.saveUser(author)
+            a <- articleStorage.createArticle(testArticle1.copy(authorId = u.id))
+          } yield for {
+            f <- articleStorage.favoriteArticle(u.id, a.id)
+          } yield {
+            println(f)
+
+          })
+        }
+      }
+    }
   }
 
   trait Context {
