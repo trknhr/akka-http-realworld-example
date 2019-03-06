@@ -42,8 +42,8 @@ class UserRoute(
           complete(getUsers().map(_.asJson))
         }
         post {
-          entity(as[UserRegistration]) { userRegisrtration =>
-            complete(register(userRegisrtration).map { user =>
+          entity(as[ResisterRequest]) { req =>
+            complete(register(req.user).map { user =>
               user.asJson
             })
           }
@@ -56,12 +56,7 @@ class UserRoute(
           get {
             complete(getCurrentUser(userId).map {
               case Some(user) =>
-                OK -> UserProfile(
-                  user.email,
-                  user.username,
-                  user.bio,
-                  user.image
-                ).asJson
+                OK -> user.asJson
               case None =>
                 BadRequest -> None.asJson
             })
@@ -70,12 +65,7 @@ class UserRoute(
               entity(as[UserUpdateParam]) { update =>
                 complete(updateUser(userId, update.user).map {
                   case Some(user) =>
-                    OK -> UserProfile(
-                      user.username,
-                      user.email,
-                      user.bio,
-                      user.image
-                    ).asJson
+                    OK -> user.asJson
                   case None =>
                     BadRequest -> None.asJson
                 })
@@ -85,6 +75,7 @@ class UserRoute(
       }
     }
 }
+private case class ResisterRequest(user: UserRegistration)
 
 private case class LoginPasswordUser(user: LoginPassword)
 

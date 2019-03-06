@@ -11,12 +11,11 @@ import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 class ArticleStorageTest extends BaseServiceTest {
   override def beforeEach(): Unit = {
     DatabaseCleaner.cleanDatabase(InMemoryPostgresStorage.databaseConnector)
-    super.beforeEach() // To be stackable, must call super.beforeEach
+    super.beforeEach()
   }
   "ArticleStorage" when {
     "getArticles" should {
       "return article by author id" in new Context {
-        println { "-----------start----------" }
         awaitForResult(
           for {
             user <- userStorage.saveUser(author)
@@ -33,14 +32,7 @@ class ArticleStorageTest extends BaseServiceTest {
                 offset = 0
               )
             )
-          } yield {
-            println { "-----------end----------" }
-            println(users)
-            println(user)
-            println(article)
-            println(articles)
-            articles.head shouldBe testArticle1.copy(id = 1)
-          }
+          } yield articles.head shouldBe testArticle1.copy(id = 1)
         )
       }
     }

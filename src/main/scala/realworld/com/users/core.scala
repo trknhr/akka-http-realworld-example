@@ -25,6 +25,8 @@ package object core {
     require(email.nonEmpty, "email.empty")
   }
 
+  case class ResponseUser(user: UserWithToken)
+
   case class UserWithToken(
     username: String,
     email: String,
