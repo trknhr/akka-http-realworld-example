@@ -11,16 +11,20 @@ import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 class UserStorageTest extends BaseServiceTest {
   override def beforeEach(): Unit = {
     DatabaseCleaner.cleanDatabase(InMemoryPostgresStorage.databaseConnector)
-    super.beforeEach() // To be stackable, must call super.beforeEach
+    super.beforeEach()
   }
 
   "getUserByUsername" when {
     "return profile by id" in new Context {
       awaitForResult(for {
+        users <- userStorage.getUsers()
         _ <- userStorage.saveUser(testUser1)
         _ <- userStorage.saveUser(testUser2)
         maybeProfile <- userStorage.getUserByUsername(testUser2.username)
-      } yield maybeProfile shouldBe Some(testUser2))
+      } yield {
+        println("aaaaaaaa", users)
+        maybeProfile shouldBe Some(testUser2)
+      })
     }
   }
   "follow" when {

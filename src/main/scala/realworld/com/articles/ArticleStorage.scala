@@ -100,8 +100,9 @@ class JdbcArticleStorage(
       .flatMap(_ => articles.filter(_.id === article.id).result.head))
   }
 
-  def getArticleBySlug(slug: String): Future[Option[Article]] =
+  def getArticleBySlug(slug: String): Future[Option[Article]] = {
     db.run(articles.filter(_.slug === slug).result.headOption)
+  }
 
   def isFavoriteArticleIds(
     userId: Long,
