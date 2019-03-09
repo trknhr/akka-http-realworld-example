@@ -75,12 +75,31 @@ class ArticleStorageTest extends BaseServiceTest {
         "should set favorite" in new Context {
           awaitForResult(for {
             u <- userStorage.saveUser(author)
-            a <- articleStorage.createArticle(testArticle1.copy(authorId = u.id))
-          } yield for {
-            f <- articleStorage.favoriteArticle(u.id, a.id)
+            a <- articleStorage.createArticle(
+              testArticle1.copy(authorId = u.id)
+            )
+            _ <- articleStorage.favoriteArticle(u.id, a.id)
+            c <- articleStorage.countFavorites(Seq(a.id))
           } yield {
-            println(f)
+            c shouldBe Vector((a.id, 1))
+          })
+        }
+      }
+    }
 
+    "unfavorite" when {
+      "unfavariteArticle" should {
+        "should unset favorite" in new Context {
+          awaitForResult(for {
+            u <- userStorage.saveUser(author)
+            a <- articleStorage.createArticle(
+              testArticle1.copy(authorId = u.id)
+            )
+            _ <- articleStorage.favoriteArticle(u.id, a.id)
+            _ <- articleStorage.unFavoriteArticle(u.id, a.id)
+            c <- articleStorage.countFavorites(Seq(a.id))
+          } yield {
+            c shouldBe Vector()
           })
         }
       }

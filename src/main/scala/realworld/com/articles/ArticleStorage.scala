@@ -22,7 +22,7 @@ trait ArticleStorage {
     userId: Long,
     articleIds: Seq[Long]
   ): Future[Seq[Long]]
-  def favoriteArticle(userId: Long, articleId: Long): Future[Int];
+  def favoriteArticle(userId: Long, articleId: Long): Future[Favorite];
   def unFavoriteArticle(userId: Long, articleId: Long): Future[Int];
   def countFavorites(articleIds: Seq[Long]): Future[Seq[(Long, Int)]]
   def countFavorite(articleId: Long): Future[Int]
@@ -84,7 +84,7 @@ class JdbcArticleStorage(
         (
           u,
           id
-        ) => u.copy(id = id + 1)
+        ) => u.copy(id = id)
       )) += newArticle
 
     db.run(articleWithId)
@@ -157,8 +157,12 @@ class JdbcArticleStorage(
   def deleteArticleBySlug(slug: String): Future[Int] =
     db.run(articles.filter(_.slug === slug).delete)
 
-  def favoriteArticle(userId: Long, articleId: Long): Future[Int] =
-    db.run(favorites += Favorite(-1, userId, articleId))
+  def favoriteArticle(userId: Long, articleId: Long): Future[Favorite] = {
+    println("userId", userId)
+    println("articleId", articleId)
+    val insertFavorites = favorites returning favorites.map(_.id) into ((favorite, id) => favorite.copy(id = id))
+    db.run(insertFavorites += Favorite(-1, userId, articleId))
+  }
 
   def unFavoriteArticle(userId: Long, articleId: Long): Future[Int] =
     db.run(favorites.filter(a => a.userId === userId && a.favoritedId === articleId).delete)

@@ -22,7 +22,6 @@ class UserStorageTest extends BaseServiceTest {
         _ <- userStorage.saveUser(testUser2)
         maybeProfile <- userStorage.getUserByUsername(testUser2.username)
       } yield {
-        println("aaaaaaaa", users)
         maybeProfile shouldBe Some(testUser2)
       })
     }

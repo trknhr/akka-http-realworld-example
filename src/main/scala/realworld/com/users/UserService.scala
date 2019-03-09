@@ -1,8 +1,8 @@
 package realworld.com.users
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 import com.roundeights.hasher.Implicits._
-import pdi.jwt.{Jwt, JwtAlgorithm}
+import pdi.jwt.{ Jwt, JwtAlgorithm }
 import realworld.com.core._
 import io.circe.syntax._
 import io.circe.generic.auto._
@@ -24,8 +24,10 @@ class UserService(userStorage: UserStorage, secretKey: String)(
         )
       })
 
-  def updateUser(id: Long,
-                 userUpdate: UserUpdate): Future[Option[ResponseUser]] =
+  def updateUser(
+    id: Long,
+    userUpdate: UserUpdate
+  ): Future[Option[ResponseUser]] =
     userStorage
       .getUser(id)
       .mapT(userUpdate.merge)
@@ -33,11 +35,15 @@ class UserService(userStorage: UserStorage, secretKey: String)(
       .mapT(
         a =>
           ResponseUser(
-            UserWithToken(a.username,
-                          a.email,
-                          a.bio,
-                          a.image,
-                          encodeToken(a.id))))
+            UserWithToken(
+              a.username,
+              a.email,
+              a.bio,
+              a.image,
+              encodeToken(a.id)
+            )
+          )
+      )
 
   def register(userRegistration: UserRegistration): Future[ResponseUser] =
     userStorage
@@ -45,11 +51,15 @@ class UserService(userStorage: UserStorage, secretKey: String)(
       .map(
         a =>
           ResponseUser(
-            UserWithToken(a.username,
-                          a.email,
-                          a.bio,
-                          a.image,
-                          encodeToken(a.id))))
+            UserWithToken(
+              a.username,
+              a.email,
+              a.bio,
+              a.image,
+              encodeToken(a.id)
+            )
+          )
+      )
 
   def login(email: String, password: String): Future[Option[ResponseUser]] =
     userStorage
@@ -64,7 +74,8 @@ class UserService(userStorage: UserStorage, secretKey: String)(
               user.bio,
               user.image,
               encodeToken(user.id)
-            ))
+            )
+          )
       )
 
   private def encodeToken(userId: Long): AuthToken = {
