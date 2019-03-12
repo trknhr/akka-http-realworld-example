@@ -70,6 +70,25 @@ class ArticleStorageTest extends BaseServiceTest {
         })
       }
     }
+
+    "delete article" when {
+      "deleteArticleBySlug" should {
+        "should remove an article by slug" in new Context {
+          awaitForResult(
+            for {
+              u <- userStorage.saveUser(author)
+              a <- articleStorage.createArticle(
+                testArticle1.copy(authorId = u.id)
+              )
+            } yield for {
+              _ <- articleStorage.deleteArticleBySlug(testArticle1.slug)
+              a <- articleStorage.getArticleBySlug(testArticle1.slug)
+            } yield a shouldBe None
+          )
+        }
+      }
+    }
+
     "favorite" when {
       "favoriteArticle" should {
         "should set favorite" in new Context {
@@ -104,6 +123,59 @@ class ArticleStorageTest extends BaseServiceTest {
         }
       }
     }
+    "count favorite" when {
+      "countFavorite" should {
+        "should count favorite numbers" in new Context {
+          awaitForResult(for {
+            u <- userStorage.saveUser(author)
+            someone <- userStorage.saveUser(someone)
+            a <- articleStorage.createArticle(
+              testArticle1.copy(authorId = u.id)
+            )
+            _ <- articleStorage.favoriteArticle(u.id, a.id)
+            _ <- articleStorage.favoriteArticle(someone.id, a.id)
+            c <- articleStorage.countFavorite(a.id)
+          } yield {
+            c shouldBe 2
+          })
+        }
+      }
+    }
+    "find tag" when {
+      "findTagByNames" should {
+        "should return correct an article" in new Context {
+          awaitForResult(for {
+            a <- articleStorage.insertAndGet(
+              Seq(TagV.create("test"), TagV.create("test2"))
+            )
+            tags <- articleStorage.findTagByNames(Seq("test"))
+          } yield tags shouldBe Vector(TagV(1, "test")))
+        }
+      }
+    }
+    "insert tag" when {
+      "insertArticleTag" should {
+        "should count favorite numbers" in new Context {
+          awaitForResult(for {
+            tags <- articleStorage.insertAndGet(Seq(TagV.create("test")))
+          } yield tags shouldBe Vector(TagV(1, "test")))
+        }
+      }
+    }
+    "insert tag article" when {
+      "insertArticleTag" should {
+        "should insert article tag" in new Context {
+          awaitForResult(for {
+            u <- userStorage.saveUser(author)
+            a <- articleStorage.createArticle(
+              testArticle1.copy(authorId = u.id)
+            )
+            tags <- articleStorage.insertAndGet(Seq(TagV.create("test")))
+            a <- articleStorage.insertArticleTag(Seq(ArticleTag(0, a.id, tags.head.id)))
+          } yield a shouldBe Vector(ArticleTag(1, 1, 1)))
+        }
+      }
+    }
   }
 
   trait Context {
@@ -129,6 +201,17 @@ class ArticleStorageTest extends BaseServiceTest {
       "author",
       "test",
       "test",
+      None,
+      image = None,
+      createdAt = currentWhenInserting,
+      updatedAt = currentWhenInserting
+    )
+
+    val someone = User(
+      2,
+      "someone",
+      "test-someone",
+      "test-someone",
       None,
       image = None,
       createdAt = currentWhenInserting,

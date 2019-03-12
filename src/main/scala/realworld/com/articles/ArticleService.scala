@@ -27,69 +27,6 @@ class ArticleService(
       res <- getArticleResponse(article, tags, currentUserId)
     } yield res
 
-  def createTags(tagNames: Seq[String]) =
-    for {
-      existingTags <- articleStorage.findTagByNames(tagNames)
-      newTags <- extractNewTag(tagNames, existingTags)
-      tags = existingTags ++ newTags
-    } yield tags
-
-  private def connectTagArticle(tags: Seq[TagV], articleId: Long) = {
-    val articleTags = tags.map(tag => ArticleTag(-1, articleId, tag.id))
-    articleStorage.insertArticleTag(articleTags)
-  }
-
-  def getArticleResponse(
-    article: Article,
-    tags: Seq[TagV],
-    currentUserId: Option[Long]
-  ) =
-    userStorage
-      .getUser(article.authorId)
-      .flatMapTFuture(
-        author => getArticleWithTags(article, author, tags, currentUserId)
-      )
-
-  def getArticleWithTags(
-    article: Article,
-    author: User,
-    tags: Seq[TagV],
-    currentUserId: Option[Long]
-  ) =
-    for {
-      favorites <- articleStorage.isFavoriteArticleIds(
-        currentUserId.getOrElse(0),
-        Seq(article.id)
-      )
-      favoriteCount <- articleStorage.countFavorites(Seq(article.id))
-    } yield {
-      ArticleForResponse(
-        article.slug,
-        article.title,
-        article.description,
-        article.body,
-        tags.map(t => t.name),
-        article.createdAt,
-        article.updatedAt,
-        favorites.contains(article.id),
-        favoriteCount.map(a => a._1 -> a._2).toMap.get(article.id).getOrElse(0),
-        Profile(
-          author.username,
-          author.bio,
-          author.image,
-          false
-        )
-      )
-    }
-
-  def extractNewTag(tagNames: Seq[String], existingTags: Seq[TagV]) = {
-    val existingTagNames = existingTags.map(_.name).toSet
-    val newTagNames = tagNames.toSet -- existingTagNames
-    val newTags = newTagNames.map(TagV.create).toSeq
-
-    articleStorage.insertAndGet(newTags)
-  }
-
   def getFeeds(
     userId: Long,
     limit: Option[Int],
@@ -151,6 +88,7 @@ class ArticleService(
           Profile("dummy", None, None, false)
         )
     )
+
   def unFavoriteArticle(userId: Long, slug: String) =
     for {
       article <- articleStorage.getArticleBySlug(slug)
@@ -185,4 +123,68 @@ class ArticleService(
       body = body
     )
   }
+
+  private def createTags(tagNames: Seq[String]) =
+    for {
+      existingTags <- articleStorage.findTagByNames(tagNames)
+      newTags <- extractNewTag(tagNames, existingTags)
+      tags = existingTags ++ newTags
+    } yield tags
+
+  private def connectTagArticle(tags: Seq[TagV], articleId: Long) = {
+    val articleTags = tags.map(tag => ArticleTag(-1, articleId, tag.id))
+    articleStorage.insertArticleTag(articleTags)
+  }
+
+  private def extractNewTag(tagNames: Seq[String], existingTags: Seq[TagV]) = {
+    val existingTagNames = existingTags.map(_.name).toSet
+    val newTagNames = tagNames.toSet -- existingTagNames
+    val newTags = newTagNames.map(TagV.create).toSeq
+
+    articleStorage.insertAndGet(newTags)
+  }
+
+  private def getArticleResponse(
+    article: Article,
+    tags: Seq[TagV],
+    currentUserId: Option[Long]
+  ) =
+    userStorage
+      .getUser(article.authorId)
+      .flatMapTFuture(
+        author => getArticleWithTags(article, author, tags, currentUserId)
+      )
+
+  private def getArticleWithTags(
+    article: Article,
+    author: User,
+    tags: Seq[TagV],
+    currentUserId: Option[Long]
+  ) =
+    for {
+      favorites <- articleStorage.isFavoriteArticleIds(
+        currentUserId.getOrElse(0),
+        Seq(article.id)
+      )
+      favoriteCount <- articleStorage.countFavorites(Seq(article.id))
+    } yield {
+      ArticleForResponse(
+        article.slug,
+        article.title,
+        article.description,
+        article.body,
+        tags.map(t => t.name),
+        article.createdAt,
+        article.updatedAt,
+        favorites.contains(article.id),
+        favoriteCount.map(a => a._1 -> a._2).toMap.get(article.id).getOrElse(0),
+        Profile(
+          author.username,
+          author.bio,
+          author.image,
+          false
+        )
+      )
+    }
+
 }
