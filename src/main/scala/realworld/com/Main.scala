@@ -29,11 +29,12 @@ object Main extends App {
       config.database.password
     )
 
-    //    new DatabaseMigrationManager(
-    //      config.database.jdbcUrl,
-    //      config.database.username,
-    //      config.database.password
-    //    ).migrateDatabaseSchema()
+    val flywayService = new DatabaseMigrationManager(
+      config.database.jdbcUrl,
+      config.database.username,
+      config.database.password
+    )
+    flywayService.migrateDatabaseSchema()
 
     val userStorage = new JdbcUserStorage(databaseConnector)
 

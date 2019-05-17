@@ -158,8 +158,6 @@ class JdbcArticleStorage(
     db.run(articles.filter(_.slug === slug).delete)
 
   def favoriteArticle(userId: Long, articleId: Long): Future[Favorite] = {
-    println("userId", userId)
-    println("articleId", articleId)
     val insertFavorites = favorites returning favorites.map(_.id) into ((favorite, id) => favorite.copy(id = id))
     db.run(insertFavorites += Favorite(-1, userId, articleId))
   }

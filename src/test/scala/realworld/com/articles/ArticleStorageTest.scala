@@ -27,8 +27,8 @@ class ArticleStorageTest extends BaseServiceTest {
               authorName = Some(user.username),
               tag = None,
               favorited = None,
-              limit = 10,
-              offset = 0
+              limit = Some(10),
+              offset = Some(0)
             )
           )
           users <- userStorage.getUsers()
@@ -158,7 +158,7 @@ class ArticleStorageTest extends BaseServiceTest {
         "should count favorite numbers" in new Context {
           awaitForResult(for {
             tags <- articleStorage.insertAndGet(Seq(TagV.create("test")))
-          } yield tags shouldBe Vector(TagV(1, "test")))
+          } yield tags shouldBe Vector(TagV(tags.head.id, "test")))
         }
       }
     }
@@ -167,12 +167,12 @@ class ArticleStorageTest extends BaseServiceTest {
         "should insert article tag" in new Context {
           awaitForResult(for {
             u <- userStorage.saveUser(author)
-            a <- articleStorage.createArticle(
+            article <- articleStorage.createArticle(
               testArticle1.copy(authorId = u.id)
             )
             tags <- articleStorage.insertAndGet(Seq(TagV.create("test")))
-            a <- articleStorage.insertArticleTag(Seq(ArticleTag(0, a.id, tags.head.id)))
-          } yield a shouldBe Vector(ArticleTag(1, 1, 1)))
+            a <- articleStorage.insertArticleTag(Seq(ArticleTag(0, article.id, tags.head.id)))
+          } yield a shouldBe Vector(ArticleTag(a.head.id, article.id, tags.head.id)))
         }
       }
     }

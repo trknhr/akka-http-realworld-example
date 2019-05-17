@@ -24,7 +24,13 @@ class ArticleRoute(
   val route = pathPrefix("articles") {
     pathEnd {
       get {
-        entity(as[ArticleRequest]) { request =>
+//        1. Article has "tagList" property
+//          2. Article's "tagList" property is an Array
+//        3. Article has "author" property
+//          4. Article has "favorited" property
+//          5. Article has "favoritesCount" property
+//          6. favoritesCount is an integer
+        parameters('tag.?, 'authorName.?, 'favorited.?, 'limit.as[Long].?, 'offset.as[Long].?).as(ArticleRequest) { request =>
           complete(getArticles(request).map(_.asJson))
         }
       } ~

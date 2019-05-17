@@ -3,8 +3,9 @@ package realworld.com.articles
 import realworld.com.core.User
 import realworld.com.profile.Profile
 import realworld.com.users.UserStorage
+import realworld.com.utils.ISO8601
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 import realworld.com.utils.MonadTransformers._
 
 class ArticleService(
@@ -12,8 +13,41 @@ class ArticleService(
     userStorage: UserStorage
 )(implicit executionContext: ExecutionContext) {
 
-  def getArticles(request: ArticleRequest): Future[Seq[Article]] =
-    articleStorage.getArticles(request)
+  def getArticles(request: ArticleRequest): Future[ForResponseArticles] = {
+    for {
+      articles <- articleStorage.getArticles(request)
+      authors <- userStorage
+                  .getUsers(articles.map(_.authorId)).map(a => a map (t => t.id -> t) toMap)
+    } yield {
+      ForResponseArticles(articles.map(
+        a => {
+          // Todo favorited
+          // Author
+          val targetAuthor = authors.get(a.authorId)
+          ArticleForResponse(
+            a.slug,
+            a.title,
+            a.description,
+            a.body,
+            Seq(""),
+            ISO8601(a.createdAt),
+            ISO8601(a.updatedAt),
+            false,
+            0,
+            createProfile(targetAuthor)//Profile(author.username, author.bio, author.image, false)
+          )
+        }
+      ), articles.length)
+    }
+  }
+
+  def createProfile(author: Option[User]) =
+    author match {
+      case Some(a) => Profile(a.username, a.bio, a.image, false)
+      case None => Profile("", None, None, false)
+  }
+
+
 
   def createArticle(
     authorId: Long,
@@ -47,8 +81,8 @@ class ArticleService(
             a.description,
             a.body,
             Seq(""),
-            a.createdAt,
-            a.updatedAt,
+            ISO8601(a.createdAt),
+            ISO8601(a.updatedAt),
             favorites.contains(a.id),
             favoriteCount.map(a => a._1 -> a._2).toMap.get(a.id).getOrElse(0),
             Profile("dummy", None, None, false)
@@ -59,8 +93,12 @@ class ArticleService(
   def getArticleBySlug(slug: String): Future[Option[Article]] =
     articleStorage.getArticleBySlug(slug)
 
-  def updateArticleBySlug(slug: String, articleUpdated: ArticleUpdated): Future[Option[Article]] =
-    articleStorage.getArticleBySlug(slug)
+  def updateArticleBySlug(
+    slug: String,
+    articleUpdated: ArticleUpdated
+  ): Future[Option[Article]] =
+    articleStorage
+      .getArticleBySlug(slug)
       .flatMapTFuture(
         a => articleStorage.updateArticle(updateArticle(a, articleUpdated))
       )
@@ -71,8 +109,13 @@ class ArticleService(
   def favoriteArticle(userId: Long, slug: String) =
     for {
       article <- articleStorage.getArticleBySlug(slug)
-      f <- articleStorage.favoriteArticle(userId, article.map(b => b.id).getOrElse(-1L))
-      favoriteCount <- articleStorage.countFavorite(article.map(_.authorId).getOrElse(-1L))
+      f <- articleStorage.favoriteArticle(
+        userId,
+        article.map(b => b.id).getOrElse(-1L)
+      )
+      favoriteCount <- articleStorage.countFavorite(
+        article.map(_.authorId).getOrElse(-1L)
+      )
     } yield article.map(
       a =>
         ArticleForResponse(
@@ -81,8 +124,8 @@ class ArticleService(
           a.description,
           a.body,
           Seq(""),
-          a.createdAt,
-          a.updatedAt,
+          ISO8601(a.createdAt),
+          ISO8601(a.updatedAt),
           true,
           favoriteCount,
           Profile("dummy", None, None, false)
@@ -92,8 +135,13 @@ class ArticleService(
   def unFavoriteArticle(userId: Long, slug: String) =
     for {
       article <- articleStorage.getArticleBySlug(slug)
-      f <- articleStorage.unFavoriteArticle(userId, article.map(b => b.id).getOrElse(-1L))
-      favoriteCount <- articleStorage.countFavorite(article.map(_.authorId).getOrElse(-1L))
+      f <- articleStorage.unFavoriteArticle(
+        userId,
+        article.map(b => b.id).getOrElse(-1L)
+      )
+      favoriteCount <- articleStorage.countFavorite(
+        article.map(_.authorId).getOrElse(-1L)
+      )
     } yield article.map(
       a =>
         ArticleForResponse(
@@ -102,15 +150,18 @@ class ArticleService(
           a.description,
           a.body,
           Seq(""),
-          a.createdAt,
-          a.updatedAt,
+          ISO8601(a.createdAt),
+          ISO8601(a.updatedAt),
           true,
           favoriteCount,
           Profile("dummy", None, None, false)
         )
     )
 
-  private def updateArticle(article: Article, update: ArticleUpdated): Article = {
+  private def updateArticle(
+    article: Article,
+    update: ArticleUpdated
+  ): Article = {
     val title = update.title.getOrElse(article.title)
     val slug = slugify(title)
     val description = update.description.getOrElse(article.description)
@@ -174,8 +225,8 @@ class ArticleService(
         article.description,
         article.body,
         tags.map(t => t.name),
-        article.createdAt,
-        article.updatedAt,
+        ISO8601(article.createdAt),
+        ISO8601(article.updatedAt),
         favorites.contains(article.id),
         favoriteCount.map(a => a._1 -> a._2).toMap.get(article.id).getOrElse(0),
         Profile(

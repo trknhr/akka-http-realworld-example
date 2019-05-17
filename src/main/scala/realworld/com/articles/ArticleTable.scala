@@ -5,6 +5,17 @@ import java.util.Date
 
 import realworld.com.utils.DatabaseConnector
 
+case class Article(
+  id: Long,
+  slug: String,
+  title: String,
+  description: String,
+  body: String,
+  authorId: Long,
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+)
+
 trait ArticleTable {
   protected val databaseConnector: DatabaseConnector
   import databaseConnector.profile.api._
@@ -18,7 +29,8 @@ trait ArticleTable {
     def body = column[String]("body")
     def authorId = column[Long]("author_id")
 
-    def createdAt = column[Timestamp]("created_at", O.Default(currentWhenInserting))
+    def createdAt =
+      column[Timestamp]("created_at", O.Default(currentWhenInserting))
 
     def updatedAt =
       column[Timestamp]("updated_at", O.Default(currentWhenInserting))

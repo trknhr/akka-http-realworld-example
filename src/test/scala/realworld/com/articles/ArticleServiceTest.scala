@@ -25,7 +25,9 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         var request = ArticleRequest(
           tag = None,
           authorName = Some("testAuthor"),
-          favorited = None
+          favorited = None,
+          limit = None,
+          offset = None
         )
         (articleStorage.getArticles _).expects(request) returning Future {
           List(article1)
@@ -56,7 +58,9 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         var request = ArticleRequest(
           tag = None,
           authorName = Some("testAuthor"),
-          favorited = None
+          favorited = None,
+          limit = None,
+          offset = None
         )
         (articleStorage.createArticle _).expects(*) returning Future {
           newArticle
