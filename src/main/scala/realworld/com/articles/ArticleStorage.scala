@@ -3,6 +3,8 @@ package realworld.com.articles
 import realworld.com.profile.UserFollowersTable
 import realworld.com.users.UserProfileTable
 import realworld.com.utils.DatabaseConnector
+import realworld.com.articles.comments.CommentTable
+import slick.dbio.DBIOAction
 import slick.lifted.CanBeQueryCondition
 
 import scala.collection.JavaConverters._
@@ -29,7 +31,7 @@ trait ArticleStorage {
   def findTagByNames(tagNames: Seq[String]): Future[Seq[TagV]]
   def insertAndGet(tagVs: Seq[TagV]): Future[Seq[TagV]]
   def insertArticleTag(atags: Seq[ArticleTag]): Future[Seq[ArticleTag]]
-  def deleteArticleBySlug(slug: String): Future[Int]
+  def deleteArticleBySlug(slug: String): Future[Unit]
 }
 
 class JdbcArticleStorage(
@@ -41,7 +43,8 @@ class JdbcArticleStorage(
     with UserFollowersTable
     with TagTable
     with ArticleTagTable
-    with FavoriteTable {
+    with FavoriteTable
+    with CommentTable {
   import databaseConnector._
   import databaseConnector.profile.api._
 
@@ -154,8 +157,16 @@ class JdbcArticleStorage(
       .++=(atags)
       .flatMap(ids => articleTags.filter(_.id inSet ids).result))
 
-  def deleteArticleBySlug(slug: String): Future[Int] =
-    db.run(articles.filter(_.slug === slug).delete)
+  def deleteArticleBySlug(slug: String): Future[Unit] = {
+    val deleteA = articleTags.filter(_.articleId in articles.filter(a => a.slug === slug).map(_.id)).delete
+    val deleteB = favorites.filter(_.favoritedId in articles.filter(a => a.slug === slug).map(_.id)).delete
+    val deleteC = comments.filter(_.articleId in articles.filter(a => a.slug === slug).map(_.id)).delete
+    val deleteD = articles.filter(_.slug === slug).delete
+
+    db.run(
+      DBIOAction.seq(deleteA, deleteB, deleteC, deleteD).transactionally
+    )
+  }
 
   def favoriteArticle(userId: Long, articleId: Long): Future[Favorite] = {
     val insertFavorites = favorites returning favorites.map(_.id) into ((favorite, id) => favorite.copy(id = id))

@@ -10,5 +10,6 @@ package object profile {
     following: Boolean
   )
 
+  case class ResponseProfile(profile: Profile)
   case class UserFollower(userId: Long, followeeId: Long, insertedAt: Timestamp)
 }

@@ -10,32 +10,32 @@ class ProfileService(userStorage: UserStorage)(
     implicit
     executionContext: ExecutionContext
 ) {
-  def getProfile(userId: Long, username: String): Future[Option[Profile]] =
+  def getProfile(userId: Long, username: String): Future[Option[ResponseProfile]] =
     userStorage
       .getUserByUsername(username)
       .flatMapTFuture(p =>
         userStorage
           .isFollowing(userId, p.id)
-          .map(isFollowing => Profile(p.username, p.bio, p.image, isFollowing)))
+          .map(isFollowing => ResponseProfile(Profile(p.username, p.bio, p.image, isFollowing))))
 
-  def follow(userId: Long, username: String): Future[Option[Profile]] =
+  def follow(userId: Long, username: String): Future[Option[ResponseProfile]] =
     userStorage
       .getUserByUsername(username)
       .flatMapTFuture(
         p =>
           userStorage
             .follow(userId, p.id)
-            .map(a => Profile(p.username, p.bio, p.image, true))
+            .map(a => ResponseProfile(Profile(p.username, p.bio, p.image, true)))
       )
 
-  def unfollow(userId: Long, username: String): Future[Option[Profile]] =
+  def unfollow(userId: Long, username: String): Future[Option[ResponseProfile]] =
     userStorage
       .getUserByUsername(username)
       .flatMapTFuture(
         p =>
           userStorage
             .unfollow(userId, p.id)
-            .map(a => Profile(p.username, p.bio, p.image, false))
+            .map(a => ResponseProfile(Profile(p.username, p.bio, p.image, false)))
       )
 
   def getFollowees(userId: Long): Future[Seq[User]] =

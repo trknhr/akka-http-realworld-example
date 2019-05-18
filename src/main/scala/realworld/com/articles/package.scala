@@ -8,18 +8,21 @@ import realworld.com.profile.Profile
 import realworld.com.utils.ISO8601
 
 package object articles {
-  case class ForResponseArticles(articles: Seq[ArticleForResponse],
-                                 articlesCount: Int)
+  case class ForResponseArticles(
+    articles: Seq[ArticleForResponse],
+    articlesCount: Int
+  )
+  case class ForResponseArticle(article: ArticleForResponse)
   case class ResponseArticle(
-      id: Long,
-      slug: String,
-      title: String,
-      description: String,
-      body: String,
-      authorId: Long,
-      tagList: Seq[String],
-      createdAt: String,
-      updatedAt: String
+    id: Long,
+    slug: String,
+    title: String,
+    description: String,
+    body: String,
+    authorId: Long,
+    tagList: Seq[String],
+    createdAt: String,
+    updatedAt: String
   )
 
   case class TagV(id: Long, name: String)
@@ -30,9 +33,9 @@ package object articles {
   case class ArticleTag(id: Long, articleId: Long, tagId: Long)
   case class Favorite(id: Long, userId: Long, favoritedId: Long)
   case class ArticleUpdated(
-      title: Option[String],
-      description: Option[String],
-      body: Option[String]
+    title: Option[String],
+    description: Option[String],
+    body: Option[String]
   )
 
   case class ArticlePosted(
@@ -56,26 +59,26 @@ package object articles {
   }
 
   case class ArticleForResponse(
-      slug: String,
-      title: String,
-      description: String,
-      body: String,
-      tagList: Seq[String],
-      createdAt: String,
-      updatedAt: String,
-      favorited: Boolean,
-      favoritesCount: Int,
-      author: Profile
+    slug: String,
+    title: String,
+    description: String,
+    body: String,
+    tagList: Seq[String],
+    createdAt: String,
+    updatedAt: String,
+    favorited: Boolean,
+    favoritesCount: Int,
+    author: Profile
   )
 
   def slugify(title: String): String =
     title.toLowerCase().replaceAll("""\s""", "-")
 
   case class ArticleRequest(
-      tag: Option[String],
-      authorName: Option[String],
-      favorited: Option[String],
-      limit: Option[Long],
-      offset: Option[Long]
+    tag: Option[String],
+    authorName: Option[String],
+    favorited: Option[String],
+    limit: Option[Long],
+    offset: Option[Long]
   )
 }

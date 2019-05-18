@@ -17,13 +17,14 @@ class CommentRoute(
   commentService: CommentService
 )(implicit executionContext: ExecutionContext)
     extends FailFastCirceSupport {
+
   import akka.http.scaladsl.model.StatusCodes._
   import realworld.com.converter.Formatter._
   import realworld.com.utils.JwtAuthDirectives._
   import commentService._
 
-  val route = path(Segment / "comments") { slug =>
-    authenticate(secretKey) { userId =>
+  val route = authenticate(secretKey) { userId =>
+    path(Segment / "comments") { slug =>
       pathEndOrSingleSlash {
         get {
           complete(getComments(slug, userId))
@@ -36,12 +37,13 @@ class CommentRoute(
               })
             }
           }
-      } ~
-        path(LongNumber) { commentId =>
-          delete {
-            complete(deleteComment(commentId))
-          }
-        }
+      }
+    }
+  } ~ path(Segment / "comments" / IntNumber) { (slug: String, commentId: Int) =>
+    pathEndOrSingleSlash {
+      delete {
+        complete(deleteComment(slug, commentId))
+      }
     }
   }
 }

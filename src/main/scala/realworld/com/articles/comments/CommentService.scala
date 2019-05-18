@@ -4,10 +4,9 @@ import realworld.com.articles.{ Article, ArticleStorage, TagV }
 import realworld.com.core.User
 import realworld.com.profile.Profile
 import realworld.com.users.UserStorage
-import realworld.com.utils.FutureOptional
+import realworld.com.utils.{ FutureOptional, ISO8601 }
 
 import scala.concurrent.{ ExecutionContext, Future }
-import realworld.com.utils.MonadTransformers._
 
 class CommentService(
     articleStorage: ArticleStorage,
@@ -29,43 +28,55 @@ class CommentService(
           .map(Some(_))
       )
     } yield CommentResponse(
-      c.id,
-      c.createdAt,
-      c.updatedAt,
-      c.body,
-      u.username,
-      Profile(
+      CommentData(
+        c.id,
+        ISO8601(c.createdAt),
+        ISO8601(c.updatedAt),
+        c.body,
         u.username,
-        u.bio,
-        u.image,
-        false
+        Profile(
+          u.username,
+          u.bio,
+          u.image,
+          false
+        )
       )
     )).future
 
   def getComments(
     slug: String,
     userId: Long
-  ): Future[Seq[CommentResponse]] =
+  ): Future[CommentsResponse] =
     for {
       a <- articleStorage.getArticleBySlug(slug)
-      comments: Seq[Comment] <- commentStorage.getComments(a.map(b => b.id).getOrElse(-1L))
+      comments <- commentStorage.getComments(
+        a.map(b => b.id).getOrElse(-1L)
+      )
       users: Seq[User] <- userStorage.getUsers(comments.map(_.authorId))
-    } yield users.zip(comments).toList.map((a: (User, Comment)) =>
-      CommentResponse(
-        a._2.id,
-        a._2.createdAt,
-        a._2.updatedAt,
-        a._2.body,
-        a._1.username,
-        Profile(
-          a._1.username,
-          a._1.bio,
-          a._1.image,
-          false
+    } yield CommentsResponse(
+      users
+        .zip(comments)
+        .toList
+        .map(
+          (a: (User, Comment)) =>
+            CommentData(
+              a._2.id,
+              ISO8601(a._2.createdAt),
+              ISO8601(a._2.updatedAt),
+              a._2.body,
+              a._1.username,
+              Profile(
+                a._1.username,
+                a._1.bio,
+                a._1.image,
+                false
+              )
+            )
         )
-      ))
+    )
 
   def deleteComment(
+    slug: String,
     id: Long
   ): Future[Int] =
     commentStorage.deleteComments(id)

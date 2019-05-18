@@ -29,12 +29,19 @@ package object comments {
       )
   }
 
-  case class CommentResponse(
+  case class CommentData(
     id: Long,
-    createdAt: Timestamp,
-    updatedAt: Timestamp,
+    createdAt: String,
+    updatedAt: String,
     body: String,
     username: String,
     author: Profile
+  )
+  case class CommentResponse(
+    comment: CommentData
+  )
+  case class CommentsResponse(
+    comments: Seq[CommentData]
+
   )
 }

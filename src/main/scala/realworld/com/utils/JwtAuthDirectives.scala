@@ -21,7 +21,6 @@ object JwtAuthDirectives {
   import RouteDirectives._
 
   def authenticate(secretKey: String): Directive1[Long] = {
-    println(secretKey)
     headerValueByName("Authorization")
       .map(a => Jwt.decodeRaw(a.split(" ").reverse.head, secretKey, Seq(JwtAlgorithm.HS256)))
       .map(_.toOption.flatMap(decode[AuthTokenContent](_).toOption))

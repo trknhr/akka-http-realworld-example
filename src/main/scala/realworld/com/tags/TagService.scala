@@ -11,5 +11,5 @@ import realworld.com.utils.MonadTransformers._
 class TagService(
     tagStorage: TagStorage
 )(implicit executionContext: ExecutionContext) {
-  def getTags(): Future[Seq[TagV]] = tagStorage.getTags()
+  def getTags(): Future[ResponseTags] = tagStorage.getTags().map(ResponseTags)
 }

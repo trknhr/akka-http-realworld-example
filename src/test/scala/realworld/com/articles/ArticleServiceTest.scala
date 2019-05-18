@@ -110,9 +110,9 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         for {
           article <- articleService.getFeeds(1, None, None)
         } {
-          article.length shouldBe 2
-          article.head.title shouldBe "title"
-          article.head.favorited shouldBe false
+          article.articlesCount shouldBe 2
+          article.articles.head.title shouldBe "title"
+          article.articles.head.favorited shouldBe false
         }
       }
     }
@@ -133,7 +133,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           .expects("sample-slug") returning Future(Some(targetArticle))
 
         for {
-          article <- articleService.getArticleBySlug("sample-slug")
+          article <- articleService.getArticleBySlug("sample-slug", 1)
         } {
           article shouldBe Some(targetArticle)
         }
@@ -168,15 +168,16 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         for {
           article <- articleService.updateArticleBySlug(
             sampleSlug,
+            0,
             articleUpdated
           )
         } {
           article.isDefined shouldBe true
           article foreach { a =>
-            a.title shouldBe updateTitle
-            a.slug shouldBe articleExpect.slug
-            a.description shouldBe articleExpect.description
-            a.body shouldBe articleExpect.body
+            a.article.title shouldBe updateTitle
+            a.article.slug shouldBe articleExpect.slug
+            a.article.description shouldBe articleExpect.description
+            a.article.body shouldBe articleExpect.body
           }
         }
 
