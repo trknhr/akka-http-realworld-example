@@ -17,7 +17,7 @@ class ArticleService(
     for {
       articles <- articleStorage.getArticles(request)
       authors <- userStorage
-        .getUsers(articles.map(_.authorId))
+        .getUsersByUserIds(articles.map(_.authorId))
         .map(a => a map (t => t.id -> t) toMap)
     } yield {
       ForResponseArticles(
@@ -71,12 +71,12 @@ class ArticleService(
       articles <- articleStorage.getArticlesByFollowees(userId, limit, offset)
       favorites <- articleStorage
         .isFavoriteArticleIds(userId, articles.map(_.authorId))
-        .map(_.toSet)
       favoriteCount <- articleStorage.countFavorites(articles.map(_.authorId))
       authors <- userStorage
-        .getUsers(articles.map(_.authorId))
-        .map(a => a map (t => t.id -> t) toMap)
+        .getUsersByUserIds(Seq(1, 2))
     } yield {
+      val mapAuthor = authors.map(t => t.id -> t).toMap
+
       ForResponseArticles(
         articles.map(
           a =>
@@ -88,9 +88,9 @@ class ArticleService(
               Seq(""),
               ISO8601(a.createdAt),
               ISO8601(a.updatedAt),
-              favorites.contains(a.id),
+              favorites.toSet.contains(a.id),
               favoriteCount.map(a => a._1 -> a._2).toMap.get(a.id).getOrElse(0),
-              convertUserToProfile(authors.get(a.authorId))
+              convertUserToProfile(mapAuthor.get(a.authorId))
             )
         ),
         articles.length
@@ -170,7 +170,7 @@ class ArticleService(
         })
 
   def deleteArticleBySlug(slug: String): Future[Unit] =
-    articleStorage.deleteArticleBySlug(slug).map(_ => {})
+    articleStorage.deleteArticleBySlug(slug)
 
   def favoriteArticle(userId: Long, slug: String) =
     for {

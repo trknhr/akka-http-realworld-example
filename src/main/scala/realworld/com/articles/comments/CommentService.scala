@@ -52,7 +52,7 @@ class CommentService(
       comments <- commentStorage.getComments(
         a.map(b => b.id).getOrElse(-1L)
       )
-      users: Seq[User] <- userStorage.getUsers(comments.map(_.authorId))
+      users: Seq[User] <- userStorage.getUsersByUserIds(comments.map(_.authorId))
     } yield CommentsResponse(
       users
         .zip(comments)
