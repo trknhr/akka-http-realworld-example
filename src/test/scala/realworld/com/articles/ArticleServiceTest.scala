@@ -19,7 +19,14 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
     currentWhenInserting,
     currentWhenInserting
   )
-  val normalAuthor = User(1, "author", "password", "email", None, image = None, createdAt = currentWhenInserting, updatedAt = currentWhenInserting)
+  val normalAuthor = User(1,
+                          "author",
+                          "password",
+                          "email",
+                          None,
+                          image = None,
+                          createdAt = currentWhenInserting,
+                          updatedAt = currentWhenInserting)
 
   "ArticleService" when {
     "getArticles" should {
@@ -101,20 +108,24 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           )
         )
         (articleStorage.getArticlesByFollowees _)
-          .expects(*, *, *) returning Future { articles }
+          .expects(1, None, None) returning Future { articles }
         (articleStorage.isFavoriteArticleIds _).expects(*, *) returning Future {
           Seq(1L, 2L)
         }
-        (articleStorage.countFavorites _).expects(*) returning Future {
-          Seq((1L, 0))
-        }
+        (articleStorage.countFavorites _)
+          .expects(*)
+          .returning(Future {
+            Seq((1L, 0))
+          })
         (userStorage.getUsersByUserIds _).expects(*) returning Future {
           Seq(normalAuthor)
         }
 
-        for {
-          article <- articleService.getFeeds(1, None, None)
-        } {
+        whenReady(
+          for {
+            article <- articleService.getFeeds(1, None, None)
+          } yield article
+        ) { article =>
           article.articlesCount shouldBe 2
           article.articles.head.title shouldBe "title"
           article.articles.head.favorited shouldBe false
@@ -148,15 +159,27 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
               slug = slugify(updateTitle)
             )
           ) returning Future(
-              normalArticle.copy(title = updateTitle)
+          normalArticle.copy(title = updateTitle)
+        )
+        (articleStorage.favoriteArticle _).expects(*, *) returning Future {
+          Favorite(0, 1L, 1L)
+        }
+        (articleStorage.countFavorite _)
+          .expects(*)
+          .returning(Future { 1 })
+        (userStorage.getUser _).expects(*) returning Future {
+          Some(normalAuthor)
+        }
+
+        whenReady(
+          for {
+            article <- articleService.updateArticleBySlug(
+              sampleSlug,
+              1,
+              articleUpdated
             )
-        for {
-          article <- articleService.updateArticleBySlug(
-            sampleSlug,
-            0,
-            articleUpdated
-          )
-        } {
+          } yield article
+        ) { article =>
           article.isDefined shouldBe true
           article foreach { a =>
             a.article.title shouldBe updateTitle
