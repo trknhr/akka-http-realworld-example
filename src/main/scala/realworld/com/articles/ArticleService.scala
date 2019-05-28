@@ -195,8 +195,8 @@ class ArticleService(
             Seq(""),
             ISO8601(a.createdAt),
             ISO8601(a.updatedAt),
-            f.favoritedId == a.id,
-            favoriteCount + 1,
+            true,
+            favoriteCount,
             convertUserToProfile(author)
           )
         )
@@ -205,6 +205,13 @@ class ArticleService(
   def unFavoriteArticle(userId: Long, slug: String) =
     for {
       article <- articleStorage.getArticleBySlug(slug)
+      f <- articleStorage.unFavoriteArticle(
+        userId,
+        article.map(b => b.id).getOrElse(-1L)
+      )
+      favoriteCount <- articleStorage.countFavorite(
+        article.map(_.authorId).getOrElse(-1L)
+      )
       author <- userStorage
         .getUser(article.map(_.authorId).getOrElse(-1L))
     } yield article.map(
@@ -219,7 +226,7 @@ class ArticleService(
             ISO8601(a.createdAt),
             ISO8601(a.updatedAt),
             false,
-            0,
+            favoriteCount,
             convertUserToProfile(author)
           )
         )

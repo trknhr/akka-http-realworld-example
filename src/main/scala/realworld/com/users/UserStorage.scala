@@ -18,6 +18,7 @@ trait UserStorage {
   def follow(userId: Long, targetUserId: Long): Future[Int]
   def unfollow(userId: Long, targetUserId: Long): Future[Int]
   def isFollowing(userId: Long, targetUserId: Long): Future[Boolean]
+  def followingUsers(userId: Long, targetUserId: Seq[Long]): Future[Seq[Long]]
 }
 
 class JdbcUserStorage(
@@ -88,5 +89,14 @@ class JdbcUserStorage(
       .map(
         _.isDefined
       )
+  )
+  def followingUsers(userId: Long, targetUserIds: Seq[Long]): Future[Seq[Long]] = db.run(
+    followers
+      .filter(m => m.userId === userId)
+      .filter(m => m.followeeId inSet targetUserIds)
+      .map(
+        _.followeeId
+      )
+      .result
   )
 }

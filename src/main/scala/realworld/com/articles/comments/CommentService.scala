@@ -21,12 +21,13 @@ class CommentService(
   ): Future[Option[CommentResponse]] =
     (for {
       a <- FutureOptional(articleStorage.getArticleBySlug(slug))
-      u <- FutureOptional(userStorage.getUser(userId))
+      u <- FutureOptional(userStorage.getUser(a.authorId))
       c <- FutureOptional(
         commentStorage
           .createComment(Comment.create(comment.comment.body, a.id, userId))
           .map(Some(_))
       )
+      follow <- FutureOptional(userStorage.isFollowing(userId, a.authorId).map(Some(_)))
     } yield CommentResponse(
       CommentData(
         c.id,
@@ -38,7 +39,7 @@ class CommentService(
           u.username,
           u.bio,
           u.image,
-          false
+          follow
         )
       )
     )).future
@@ -52,7 +53,8 @@ class CommentService(
       comments <- commentStorage.getComments(
         a.map(b => b.id).getOrElse(-1L)
       )
-      users: Seq[User] <- userStorage.getUsersByUserIds(comments.map(_.authorId))
+      users <- userStorage.getUsersByUserIds(comments.map(_.authorId))
+      follows <- userStorage.followingUsers(userId, comments.map(_.authorId))
     } yield CommentsResponse(
       users
         .zip(comments)
@@ -69,7 +71,7 @@ class CommentService(
                 a._1.username,
                 a._1.bio,
                 a._1.image,
-                false
+                follows.toSet.contains(a._2.authorId)
               )
             )
         )

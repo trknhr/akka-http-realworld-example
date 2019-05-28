@@ -1,12 +1,9 @@
 package realworld.com.articles
 
-import java.sql.Timestamp
-import java.util.Date
-
-import realworld.com.{ BaseServiceTest }
+import realworld.com.BaseServiceTest
 import realworld.com.core.User
-import realworld.com.users.{ JdbcUserStorage, UserStorage }
-import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
+import realworld.com.users.{JdbcUserStorage, UserStorage}
+import realworld.com.utils.{DatabaseCleaner, InMemoryPostgresStorage}
 
 class ArticleStorageTest extends BaseServiceTest {
   override def beforeEach(): Unit = {

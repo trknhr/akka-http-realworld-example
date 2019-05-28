@@ -3,30 +3,30 @@ package realworld.com.articles
 import org.scalamock.scalatest.MockFactory
 import realworld.com.BaseServiceTest
 import realworld.com.core.User
-import realworld.com.profile.Profile
+import realworld.com.test_helpers.{Articles, Authors}
 import realworld.com.users.UserStorage
 
 import scala.concurrent.Future
 
 class ArticleServiceTest extends BaseServiceTest with MockFactory {
-  val normalArticle = Article(
-    0,
-    "slug",
-    "title",
-    "description",
-    "body",
-    1,
-    currentWhenInserting,
-    currentWhenInserting
-  )
-  val normalAuthor = User(1,
-                          "author",
-                          "password",
-                          "email",
-                          None,
-                          image = None,
-                          createdAt = currentWhenInserting,
-                          updatedAt = currentWhenInserting)
+//  val normalArticle = Article(
+//    0,
+//    "slug",
+//    "title",
+//    "description",
+//    "body",
+//    1,
+//    currentWhenInserting,
+//    currentWhenInserting
+//  )
+//  val normalAuthor = User(1,
+//                          "author",
+//                          "password",
+//                          "email",
+//                          None,
+//                          image = None,
+//                          createdAt = currentWhenInserting,
+//                          updatedAt = currentWhenInserting)
 
   "ArticleService" when {
     "getArticles" should {
@@ -72,7 +72,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           offset = None
         )
         (articleStorage.createArticle _).expects(*) returning Future {
-          normalArticle
+          Articles.normalArticle
         }
 
         for {
@@ -118,7 +118,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
             Seq((1L, 0))
           })
         (userStorage.getUsersByUserIds _).expects(*) returning Future {
-          Seq(normalAuthor)
+          Seq(Authors.normalAuthor)
         }
 
         whenReady(
@@ -136,12 +136,12 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
     "getArticleBySlug" should {
       "create an article by specific slug" in new Context {
         (articleStorage.getArticleBySlug _)
-          .expects("sample-slug") returning Future(Some(normalArticle))
+          .expects("sample-slug") returning Future(Some(Articles.normalArticle))
 
         for {
           article <- articleService.getArticleBySlug("sample-slug", 1)
         } {
-          article shouldBe Some(normalArticle)
+          article shouldBe Some(Articles.normalArticle)
         }
       }
     }
@@ -151,15 +151,15 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         val sampleSlug = "sample-slug"
         val articleUpdated = ArticleUpdated(Some(updateTitle), None, None)
         (articleStorage.getArticleBySlug _)
-          .expects(sampleSlug) returning Future { Some(normalArticle) }
+          .expects(sampleSlug) returning Future { Some(Articles.normalArticle) }
         (articleStorage.updateArticle _)
           .expects(
-            normalArticle.copy(
+            Articles.normalArticle.copy(
               title = updateTitle,
               slug = slugify(updateTitle)
             )
           ) returning Future(
-          normalArticle.copy(title = updateTitle)
+          Articles.normalArticle.copy(title = updateTitle)
         )
         (articleStorage.favoriteArticle _).expects(*, *) returning Future {
           Favorite(0, 1L, 1L)
@@ -168,7 +168,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           .expects(*)
           .returning(Future { 1 })
         (userStorage.getUser _).expects(*) returning Future {
-          Some(normalAuthor)
+          Some(Authors.normalAuthor)
         }
 
         whenReady(
@@ -183,9 +183,9 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           article.isDefined shouldBe true
           article foreach { a =>
             a.article.title shouldBe updateTitle
-            a.article.slug shouldBe normalArticle.slug
-            a.article.description shouldBe normalArticle.description
-            a.article.body shouldBe normalArticle.body
+            a.article.slug shouldBe Articles.normalArticle.slug
+            a.article.description shouldBe Articles.normalArticle.description
+            a.article.body shouldBe Articles.normalArticle.body
           }
         }
 
@@ -207,15 +207,70 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
     }
     "favoriteArticle" should {
       "should favorite an article" in new Context {
-        //        (articleStorage.updateArticle _)
-        //          .expects(
-        //            normalArticle.copy(
-        //              title = updateTitle,
-        //              slug = slugify(updateTitle)
-        //            )
-        //          ) returning Future(
-        //          normalArticle.copy(title = updateTitle)
-        //        )
+        val slug = "dragon-dragon"
+
+        (articleStorage.getArticleBySlug _)
+          .expects(slug) returning Future(Some(Articles.normalArticle))
+
+        (articleStorage.countFavorite _)
+          .expects(*)
+          .returning(Future { 1 })
+
+        (articleStorage.favoriteArticle _).expects(*, *) returning Future {
+          Favorite(0, 0, 0)
+        }
+        (userStorage.getUser _).expects(*) returning Future {
+          Some(Authors.normalAuthor)
+        }
+
+        whenReady(
+        for(
+          a <- articleService.favoriteArticle(0, slug)
+        )yield a)  {oa =>
+          oa.map{ a =>
+            a.article.title shouldBe Articles.normalArticle.title
+            a.article.slug shouldBe Articles.normalArticle.slug
+            a.article.description shouldBe Articles.normalArticle.description
+            a.article.body shouldBe Articles.normalArticle.body
+            a.article.favorited shouldBe true
+            a.article.favoritesCount shouldBe 1
+          }
+        }
+      }
+    }
+
+    "unFavoriteArticle" should {
+      "should unfavorite an article" in new Context {
+        val slug = "dragon-dragon"
+
+        (articleStorage.getArticleBySlug _)
+          .expects(slug) returning Future(Some(Articles.normalArticle))
+
+        (articleStorage.countFavorite _)
+          .expects(*)
+          .returning(Future { 0 })
+
+        (articleStorage.unFavoriteArticle _).expects(*, *) returning Future {
+          1
+        }
+
+        (userStorage.getUser _).expects(*) returning Future {
+          Some(Authors.normalAuthor)
+        }
+
+        whenReady(
+          for(
+            a <- articleService.unFavoriteArticle(0, slug)
+          )yield a)  {oa =>
+          oa.map{ a =>
+            a.article.title shouldBe Articles.normalArticle.title
+            a.article.slug shouldBe Articles.normalArticle.slug
+            a.article.description shouldBe Articles.normalArticle.description
+            a.article.body shouldBe Articles.normalArticle.body
+            a.article.favorited shouldBe false
+            a.article.favoritesCount shouldBe 0
+          }
+        }
       }
     }
   }
