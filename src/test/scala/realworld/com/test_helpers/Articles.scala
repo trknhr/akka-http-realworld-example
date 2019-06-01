@@ -4,7 +4,7 @@ import realworld.com.articles.Article
 
 object Articles {
   val normalArticle = Article(
-    0,
+    1,
     "slug",
     "title",
     "description",

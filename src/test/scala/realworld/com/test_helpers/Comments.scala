@@ -3,6 +3,14 @@ package realworld.com.test_helpers
 import realworld.com.articles.comments.Comment
 
 object Comments {
+  val normalComment = Comment(
+    1,
+    "first comment",
+    1,
+    1,
+    Dates.currentWhenInserting,
+    Dates.currentWhenInserting
+  )
   val comments = Seq(
     Comment(
       1,

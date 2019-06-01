@@ -9,9 +9,10 @@ import realworld.com.profile.Profile
 import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 
 class UserStorageTest extends BaseServiceTest {
-  override def beforeEach(): Unit = {
+  override def afterEach(): Unit = {
+    println("=======================================================")
     DatabaseCleaner.cleanDatabase(InMemoryPostgresStorage.databaseConnector)
-    super.beforeEach()
+    super.afterEach()
   }
 
   "getUserByUsername" when {
@@ -19,10 +20,10 @@ class UserStorageTest extends BaseServiceTest {
       awaitForResult(for {
         users <- userStorage.getUsers()
         _ <- userStorage.saveUser(testUser1)
-        _ <- userStorage.saveUser(testUser2)
+        u <- userStorage.saveUser(testUser2)
         maybeProfile <- userStorage.getUserByUsername(testUser2.username)
       } yield {
-        maybeProfile shouldBe Some(testUser2)
+        maybeProfile shouldBe Some(u)
       })
     }
   }
