@@ -2,32 +2,13 @@ package realworld.com.articles
 
 import org.scalamock.scalatest.MockFactory
 import realworld.com.BaseServiceTest
-import realworld.com.core.User
+import realworld.com.tags.TagStorage
 import realworld.com.test_helpers.{Articles, Authors}
 import realworld.com.users.UserStorage
 
 import scala.concurrent.Future
 
 class ArticleServiceTest extends BaseServiceTest with MockFactory {
-//  val normalArticle = Article(
-//    0,
-//    "slug",
-//    "title",
-//    "description",
-//    "body",
-//    1,
-//    currentWhenInserting,
-//    currentWhenInserting
-//  )
-//  val normalAuthor = User(1,
-//                          "author",
-//                          "password",
-//                          "email",
-//                          None,
-//                          image = None,
-//                          createdAt = currentWhenInserting,
-//                          updatedAt = currentWhenInserting)
-
   "ArticleService" when {
     "getArticles" should {
       "return articles by username" in new Context {
@@ -278,6 +259,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
   trait Context {
     val articleStorage = mock[ArticleStorage]
     val userStorage = mock[UserStorage]
-    val articleService = new ArticleService(articleStorage, userStorage)
+    val tagStorage = mock[TagStorage]
+    val articleService = new ArticleService(articleStorage, userStorage, tagStorage)
   }
 }

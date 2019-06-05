@@ -2,6 +2,7 @@ package realworld.com.articles
 
 import realworld.com.BaseServiceTest
 import realworld.com.core.User
+import realworld.com.tags.{JdbcTagStorage, TagStorage}
 import realworld.com.users.{JdbcUserStorage, UserStorage}
 import realworld.com.utils.{DatabaseCleaner, InMemoryPostgresStorage}
 
@@ -138,27 +139,6 @@ class ArticleStorageTest extends BaseServiceTest {
         }
       }
     }
-    "find tag" when {
-      "findTagByNames" should {
-        "should return correct an article" in new Context {
-          awaitForResult(for {
-            a <- articleStorage.insertAndGet(
-              Seq(TagV.create("test"), TagV.create("test2"))
-            )
-            tags <- articleStorage.findTagByNames(Seq("test"))
-          } yield tags shouldBe Vector(TagV(1, "test")))
-        }
-      }
-    }
-    "insert tag" when {
-      "insertArticleTag" should {
-        "should count favorite numbers" in new Context {
-          awaitForResult(for {
-            tags <- articleStorage.insertAndGet(Seq(TagV.create("test")))
-          } yield tags shouldBe Vector(TagV(tags.head.id, "test")))
-        }
-      }
-    }
     "insert tag article" when {
       "insertArticleTag" should {
         "should insert article tag" in new Context {
@@ -167,7 +147,7 @@ class ArticleStorageTest extends BaseServiceTest {
             article <- articleStorage.createArticle(
               testArticle1.copy(authorId = u.id)
             )
-            tags <- articleStorage.insertAndGet(Seq(TagV.create("test")))
+            tags <- tagStorage.insertAndGet(Seq(TagV.create("test")))
             a <- articleStorage.insertArticleTag(Seq(ArticleTag(0, article.id, tags.head.id)))
           } yield a shouldBe Vector(ArticleTag(a.head.id, article.id, tags.head.id)))
         }
@@ -180,6 +160,9 @@ class ArticleStorageTest extends BaseServiceTest {
       InMemoryPostgresStorage.databaseConnector
     )
     val userStorage: UserStorage = new JdbcUserStorage(
+      InMemoryPostgresStorage.databaseConnector
+    )
+    val tagStorage: TagStorage = new JdbcTagStorage(
       InMemoryPostgresStorage.databaseConnector
     )
 

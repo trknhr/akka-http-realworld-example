@@ -1,14 +1,13 @@
 package realworld.com.articles
 
+import realworld.com.articles.comments.CommentTable
 import realworld.com.profile.UserFollowersTable
 import realworld.com.users.UserProfileTable
 import realworld.com.utils.DatabaseConnector
-import realworld.com.articles.comments.CommentTable
 import slick.dbio.DBIOAction
 import slick.lifted.CanBeQueryCondition
 
-import scala.collection.JavaConverters._
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 trait ArticleStorage {
   def getArticles(pageRequest: ArticleRequest): Future[Seq[Article]]
@@ -28,8 +27,6 @@ trait ArticleStorage {
   def unFavoriteArticle(userId: Long, articleId: Long): Future[Int];
   def countFavorites(articleIds: Seq[Long]): Future[Seq[(Long, Int)]]
   def countFavorite(articleId: Long): Future[Int]
-  def findTagByNames(tagNames: Seq[String]): Future[Seq[TagV]]
-  def insertAndGet(tagVs: Seq[TagV]): Future[Seq[TagV]]
   def insertArticleTag(atags: Seq[ArticleTag]): Future[Seq[ArticleTag]]
   def deleteArticleBySlug(slug: String): Future[Unit]
 }
@@ -135,21 +132,6 @@ class JdbcArticleStorage(
       .length
       .result
     )
-
-  def findTagByNames(tagNames: Seq[String]): Future[Seq[TagV]] =
-    db.run(
-      tags.filter(_.name inSet tagNames).result
-    )
-
-  def insertAndGet(tagVs: Seq[TagV]): Future[Seq[TagV]] = {
-    val articlesIds =
-      tags
-        .returning(tags.map(_.id))
-        .++=(tagVs)
-        .flatMap(ids => tags.filter(_.id inSet ids).result)
-
-    db.run(articlesIds)
-  }
 
   def insertArticleTag(atags: Seq[ArticleTag]): Future[Seq[ArticleTag]] =
     db.run(articleTags

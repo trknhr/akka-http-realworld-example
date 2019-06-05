@@ -38,9 +38,6 @@ class UserRoute(
       }
     } ~
       pathEndOrSingleSlash {
-        get {
-          complete(getUsers().map(_.asJson))
-        }
         post {
           entity(as[ResisterRequest]) { req =>
             complete(register(req.user).map { user =>

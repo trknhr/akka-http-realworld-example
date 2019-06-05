@@ -48,7 +48,7 @@ object Main extends App {
 
     val profileService = new ProfileService(userStorage)
 
-    val articleService = new ArticleService(articleStorage, userStorage)
+    val articleService = new ArticleService(articleStorage, userStorage, tagStorage)
 
     val commentService = new CommentService(articleStorage, commentStorage, userStorage)
 

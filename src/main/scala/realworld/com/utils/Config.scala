@@ -2,9 +2,6 @@ package realworld.com.utils
 
 import pureconfig.loadConfig
 
-/**
- * Created by kunihiro on 2018/06/13.
- */
 case class Config(secretKey: String, http: HttpConfig, database: DatabaseConfig)
 
 object Config {
