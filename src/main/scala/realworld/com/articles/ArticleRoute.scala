@@ -17,7 +17,6 @@ class ArticleRoute(
 )(implicit executionContext: ExecutionContext)
     extends FailFastCirceSupport {
   import akka.http.scaladsl.model.StatusCodes._
-  import realworld.com.converter.Formatter._
   import articleService._
   import realworld.com.utils.JwtAuthDirectives._
 

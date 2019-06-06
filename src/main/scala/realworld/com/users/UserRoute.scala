@@ -16,7 +16,6 @@ class UserRoute(
 )(implicit executionContext: ExecutionContext)
     extends FailFastCirceSupport {
 
-  import realworld.com.converter.Formatter._
   import realworld.com.utils.JwtAuthDirectives._
   import StatusCodes._
   import usersService._

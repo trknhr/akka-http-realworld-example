@@ -17,7 +17,6 @@ class TagRoute(
     extends FailFastCirceSupport {
 
   import akka.http.scaladsl.model.StatusCodes._
-  import realworld.com.converter.Formatter._
   import tagService._
   import realworld.com.utils.JwtAuthDirectives._
 

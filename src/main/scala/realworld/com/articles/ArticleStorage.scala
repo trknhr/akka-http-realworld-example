@@ -46,18 +46,22 @@ class JdbcArticleStorage(
   import databaseConnector.profile.api._
 
   def getArticles(pageRequest: ArticleRequest): Future[Seq[Article]] = {
-    val joins = articles.join(users).on(_.authorId === _.id)
+    val query = articles.join(users).on(_.authorId === _.id)
 
     db.run(
-      MaybeFilter(joins)
-      //      .filter(pageRequest.authorName)(authorname =>
-      //        tables => {
-      //          println("authorname", authorname)
-      //          println("tables._2.username", tables._2.username)
-      //          tables._2.username === authorname
-      //        })
-      .query
-      .map(_._1)
+      query.filter{st =>
+        pageRequest.authorName.fold(true.bind)(st._2.username === _)
+      }.filter {st =>
+        pageRequest.tag.fold(true.bind){tag =>
+          st._1.id in articleTags.join(tags).on(_.tagId === _.id).filter(_._2.name === tag).map(_._1.articleId)
+        }
+      }.filter { st =>
+        pageRequest.favorited.fold(true.bind) { favoritedUsername =>
+          st._1.id in users.filter(_.username === favoritedUsername).map(_.id)
+        }
+      }.map(_._1)
+      .drop(pageRequest.offset.getOrElse(0L))
+      .take(pageRequest.limit.getOrElse(Long.MaxValue))
       .result
     )
   }
@@ -157,13 +161,4 @@ class JdbcArticleStorage(
 
   def unFavoriteArticle(userId: Long, articleId: Long): Future[Int] =
     db.run(favorites.filter(a => a.userId === userId && a.favoritedId === articleId).delete)
-
-  case class MaybeFilter[X, Y](query: Query[X, Y, Seq]) {
-    def filter[T, R <: Rep[_]: CanBeQueryCondition](data: Option[T])(
-      f: T => X => R
-    ): MaybeFilter[X, Y] = {
-      data.map(v => MaybeFilter(query.filter(f(v)))).getOrElse(this)
-    }
-  }
-
 }
