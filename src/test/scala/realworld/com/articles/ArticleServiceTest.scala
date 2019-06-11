@@ -101,6 +101,9 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         (userStorage.getUsersByUserIds _).expects(*) returning Future {
           Seq(Authors.normalAuthor)
         }
+        (tagStorage.getTagsByArticles _).expects(*) returning Future {
+          Seq((0, TagV(1, "tag first")), (1, TagV(1, "tag second")))
+        }
 
         whenReady(
           for {
@@ -110,6 +113,8 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           article.articlesCount shouldBe 2
           article.articles.head.title shouldBe "title"
           article.articles.head.favorited shouldBe false
+          article.articles.head.tagList shouldBe Seq("tag first")
+          article.articles(1).tagList shouldBe Seq("tag second")
         }
       }
     }
@@ -151,6 +156,9 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         (userStorage.getUser _).expects(*) returning Future {
           Some(Authors.normalAuthor)
         }
+        (tagStorage.getTagsByArticle _).expects(*) returning Future{
+          Seq(TagV(1, "first"))
+        }
 
         whenReady(
           for {
@@ -167,6 +175,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
             a.article.slug shouldBe Articles.normalArticle.slug
             a.article.description shouldBe Articles.normalArticle.description
             a.article.body shouldBe Articles.normalArticle.body
+            a.article.tagList shouldBe Seq("first")
           }
         }
 
@@ -203,6 +212,9 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         (userStorage.getUser _).expects(*) returning Future {
           Some(Authors.normalAuthor)
         }
+        (tagStorage.getTagsByArticle _).expects(*) returning Future{
+          Seq(TagV(1, "first"))
+        }
 
         whenReady(
         for(
@@ -215,6 +227,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
             a.article.body shouldBe Articles.normalArticle.body
             a.article.favorited shouldBe true
             a.article.favoritesCount shouldBe 1
+            a.article.tagList shouldBe Seq("first")
           }
         }
       }
@@ -239,10 +252,15 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           Some(Authors.normalAuthor)
         }
 
+        (tagStorage.getTagsByArticle _).expects(*) returning Future{
+          Seq(TagV(1, "first"))
+        }
+
         whenReady(
           for(
             a <- articleService.unFavoriteArticle(0, slug)
           )yield a)  {oa =>
+          println(oa)
           oa.map{ a =>
             a.article.title shouldBe Articles.normalArticle.title
             a.article.slug shouldBe Articles.normalArticle.slug
@@ -250,6 +268,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
             a.article.body shouldBe Articles.normalArticle.body
             a.article.favorited shouldBe false
             a.article.favoritesCount shouldBe 0
+            a.article.tagList shouldBe Seq("first")
           }
         }
       }

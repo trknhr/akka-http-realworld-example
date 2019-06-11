@@ -204,7 +204,7 @@ class ArticleService(
               ISO8601(a.createdAt),
               ISO8601(a.updatedAt),
               true,
-              favoriteCount,
+              favoriteCount + 1,
               convertUserToProfile(author)
             )
         )

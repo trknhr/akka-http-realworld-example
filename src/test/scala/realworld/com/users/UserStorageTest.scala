@@ -10,7 +10,6 @@ import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 
 class UserStorageTest extends BaseServiceTest {
   override def afterEach(): Unit = {
-    println("=======================================================")
     DatabaseCleaner.cleanDatabase(InMemoryPostgresStorage.databaseConnector)
     super.afterEach()
   }

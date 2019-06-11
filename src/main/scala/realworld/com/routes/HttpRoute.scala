@@ -27,14 +27,16 @@ class HttpRoute(
 
   val route: Route =
     cors() {
-      usersRouter.route ~
-        profileRouter.route ~
-        articleRouter.route ~
-        tagRouter.route ~
-        pathPrefix("healthcheck") {
-          get {
-            complete("OK")
+      pathPrefix("api") {
+        usersRouter.route ~
+          profileRouter.route ~
+          articleRouter.route ~
+          tagRouter.route ~
+          pathPrefix("healthcheck") {
+            get {
+              complete("OK")
+            }
           }
-        }
+      }
     }
 }
