@@ -4,10 +4,9 @@ import realworld.com.core.User
 import realworld.com.profile.Profile
 import realworld.com.tags.TagStorage
 import realworld.com.users.UserStorage
-import realworld.com.utils.ISO8601
+import realworld.com.utils.{FutureOptional, ISO8601}
 
 import scala.concurrent.{ExecutionContext, Future}
-import realworld.com.utils.MonadTransformers._
 
 class ArticleService(
     articleStorage: ArticleStorage,
@@ -46,12 +45,6 @@ class ArticleService(
       )
     }
   }
-
-  private def convertUserToProfile(author: Option[User]) =
-    author match {
-      case Some(a) => Profile(a.username, a.bio, a.image, false)
-      case None    => Profile("", None, None, false)
-    }
 
   def createArticle(
       authorId: Long,
@@ -105,75 +98,121 @@ class ArticleService(
       slug: String,
       userId: Long
   ): Future[Option[ForResponseArticle]] =
-    for {
-      article <- articleStorage.getArticleBySlug(slug)
-      f <- articleStorage.favoriteArticle(
-        userId,
-        article.map(b => b.id).getOrElse(-1L)
-      )
-      favoriteCount <- articleStorage.countFavorite(
-        article.map(_.authorId).getOrElse(-1L)
-      )
-      author <- userStorage
-        .getUser(article.map(a => a.authorId).getOrElse(-1L))
-      tags <- tagStorage.getTagsByArticle(article.map(_.id).getOrElse(-1L))
-    } yield {
-      article.map { a =>
-        ForResponseArticle(
-          ArticleForResponse(
-            a.slug,
-            a.title,
-            a.description,
-            a.body,
-            tags.map(_.name),
-            ISO8601(a.createdAt),
-            ISO8601(a.updatedAt),
-            f.favoritedId == a.id,
-            favoriteCount,
-            convertUserToProfile(author)
+    (for {
+      article <- FutureOptional(articleStorage.getArticleBySlug(slug))
+      f <- FutureOptional(
+        articleStorage
+          .favoriteArticle(
+            userId,
+            article.id
           )
+          .map(Some(_)))
+      favoriteCount <- FutureOptional(
+        articleStorage
+          .countFavorite(
+            article.authorId
+          )
+          .map(Some(_)))
+      author <- FutureOptional(
+        userStorage
+          .getUser(article.authorId))
+      tags <- FutureOptional(
+        tagStorage.getTagsByArticle(article.id).map(Some(_)))
+    } yield
+      ForResponseArticle(
+        ArticleForResponse(
+          article.slug,
+          article.title,
+          article.description,
+          article.body,
+          tags.map(_.name),
+          ISO8601(article.createdAt),
+          ISO8601(article.updatedAt),
+          f.favoritedId == article.id,
+          favoriteCount,
+          convertUserToProfile(Some(author))
         )
-      }
-    }
+      )).future
 
   def updateArticleBySlug(
       slug: String,
       userId: Long,
       articleUpdated: ArticleUpdated
   ): Future[Option[ForResponseArticle]] =
-    articleStorage
-      .getArticleBySlug(slug)
-      .flatMapTFuture(a =>
-        for {
-          article <- articleStorage.updateArticle(
+    (for {
+      a <- FutureOptional(articleStorage.getArticleBySlug(slug))
+      article <- FutureOptional(
+        articleStorage
+          .updateArticle(
             updateArticle(a, articleUpdated)
           )
-          f <- articleStorage.favoriteArticle(
+          .map(Some(_)))
+      f <- FutureOptional(
+        articleStorage
+          .favoriteArticle(
             userId,
             article.id
           )
-          favoriteCount <- articleStorage.countFavorite(
+          .map(Some(_)))
+      favoriteCount <- FutureOptional(
+        articleStorage
+          .countFavorite(
             article.authorId
           )
-          author <- userStorage
-            .getUser(article.authorId)
-          tags <- tagStorage.getTagsByArticle(article.id)
-        } yield {
-          ForResponseArticle(
-            ArticleForResponse(
-              article.slug,
-              article.title,
-              article.description,
-              article.body,
-              tags.map(_.name),
-              ISO8601(article.createdAt),
-              ISO8601(article.updatedAt),
-              f.favoritedId == article.id,
-              favoriteCount,
-              convertUserToProfile(author)
-            )
-          )
-      })
+          .map(Some(_)))
+      author <- FutureOptional(
+        userStorage
+          .getUser(article.authorId))
+      tags <- FutureOptional(
+        tagStorage.getTagsByArticle(article.id).map(Some(_)))
+    } yield
+      ForResponseArticle(
+        ArticleForResponse(
+          article.slug,
+          article.title,
+          article.description,
+          article.body,
+          tags.map(_.name),
+          ISO8601(article.createdAt),
+          ISO8601(article.updatedAt),
+          f.favoritedId == article.id,
+          favoriteCount,
+          convertUserToProfile(Some(author))
+        )
+      )).future
+//    articleStorage
+//      .getArticleBySlug(slug)
+//      .flatMapTFuture(a =>
+//        for {
+//          article <- articleStorage.updateArticle(
+//            updateArticle(a, articleUpdated)
+//          )
+//          f <- articleStorage.favoriteArticle(
+//            userId,
+//            article.id
+//          )
+//          favoriteCount <- articleStorage.countFavorite(
+//            article.authorId
+//          )
+//          author <- userStorage
+//            .getUser(article.authorId)
+//          tags <- tagStorage.getTagsByArticle(article.id)
+//        } yield {
+//          ForResponseArticle(
+//            ArticleForResponse(
+//              article.slug,
+//              article.title,
+//              article.description,
+//              article.body,
+//              tags.map(_.name),
+//              ISO8601(article.createdAt),
+//              ISO8601(article.updatedAt),
+//              f.favoritedId == article.id,
+//              favoriteCount,
+//              convertUserToProfile(author)
+//            )
+//          )
+////      })
 
   def deleteArticleBySlug(slug: String): Future[Unit] =
     articleStorage.deleteArticleBySlug(slug)
@@ -283,12 +322,12 @@ class ArticleService(
       article: Article,
       tags: Seq[TagV],
       currentUserId: Option[Long]
-  ) =
-    userStorage
-      .getUser(article.authorId)
-      .flatMapTFuture(
-        author => getArticleWithTags(article, author, tags, currentUserId)
-      )
+  ): Future[Option[ForResponseArticle]] =
+    (for {
+      u <- FutureOptional(userStorage.getUser(article.authorId))
+      a <- FutureOptional(
+        getArticleWithTags(article, u, tags, currentUserId).map(Some(_)))
+    } yield a).future
 
   private def getArticleWithTags(
       article: Article,
@@ -326,6 +365,12 @@ class ArticleService(
           )
         )
       )
+    }
+
+  private def convertUserToProfile(author: Option[User]) =
+    author match {
+      case Some(a) => Profile(a.username, a.bio, a.image, false)
+      case None    => Profile("", None, None, false)
     }
 
 }

@@ -226,7 +226,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
             a.article.description shouldBe Articles.normalArticle.description
             a.article.body shouldBe Articles.normalArticle.body
             a.article.favorited shouldBe true
-            a.article.favoritesCount shouldBe 1
+            a.article.favoritesCount shouldBe 2
             a.article.tagList shouldBe Seq("first")
           }
         }
