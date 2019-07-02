@@ -2,9 +2,9 @@ package realworld.com.articles
 
 import realworld.com.BaseServiceTest
 import realworld.com.core.User
-import realworld.com.tags.{JdbcTagStorage, TagStorage}
-import realworld.com.users.{JdbcUserStorage, UserStorage}
-import realworld.com.utils.{DatabaseCleaner, InMemoryPostgresStorage}
+import realworld.com.tags.{ JdbcTagStorage, TagStorage }
+import realworld.com.users.{ JdbcUserStorage, UserStorage }
+import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 
 class ArticleStorageTest extends BaseServiceTest {
   override def beforeEach(): Unit = {

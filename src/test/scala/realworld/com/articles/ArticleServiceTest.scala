@@ -3,7 +3,7 @@ package realworld.com.articles
 import org.scalamock.scalatest.MockFactory
 import realworld.com.BaseServiceTest
 import realworld.com.tags.TagStorage
-import realworld.com.test_helpers.{Articles, Authors}
+import realworld.com.test_helpers.{ Articles, Authors }
 import realworld.com.users.UserStorage
 
 import scala.concurrent.Future
@@ -110,12 +110,12 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
             article <- articleService.getFeeds(1, None, None)
           } yield article
         ) { article =>
-          article.articlesCount shouldBe 2
-          article.articles.head.title shouldBe "title"
-          article.articles.head.favorited shouldBe false
-          article.articles.head.tagList shouldBe Seq("tag first")
-          article.articles(1).tagList shouldBe Seq("tag second")
-        }
+            article.articlesCount shouldBe 2
+            article.articles.head.title shouldBe "title"
+            article.articles.head.favorited shouldBe false
+            article.articles.head.tagList shouldBe Seq("tag first")
+            article.articles(1).tagList shouldBe Seq("tag second")
+          }
       }
     }
 
@@ -145,8 +145,8 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
               slug = slugify(updateTitle)
             )
           ) returning Future(
-          Articles.normalArticle.copy(title = updateTitle)
-        )
+              Articles.normalArticle.copy(title = updateTitle)
+            )
         (articleStorage.favoriteArticle _).expects(*, *) returning Future {
           Favorite(0, 1L, 1L)
         }
@@ -156,7 +156,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         (userStorage.getUser _).expects(*) returning Future {
           Some(Authors.normalAuthor)
         }
-        (tagStorage.getTagsByArticle _).expects(*) returning Future{
+        (tagStorage.getTagsByArticle _).expects(*) returning Future {
           Seq(TagV(1, "first"))
         }
 
@@ -169,15 +169,15 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
             )
           } yield article
         ) { article =>
-          article.isDefined shouldBe true
-          article foreach { a =>
-            a.article.title shouldBe updateTitle
-            a.article.slug shouldBe Articles.normalArticle.slug
-            a.article.description shouldBe Articles.normalArticle.description
-            a.article.body shouldBe Articles.normalArticle.body
-            a.article.tagList shouldBe Seq("first")
+            article.isDefined shouldBe true
+            article foreach { a =>
+              a.article.title shouldBe updateTitle
+              a.article.slug shouldBe Articles.normalArticle.slug
+              a.article.description shouldBe Articles.normalArticle.description
+              a.article.body shouldBe Articles.normalArticle.body
+              a.article.tagList shouldBe Seq("first")
+            }
           }
-        }
 
       }
     }
@@ -212,24 +212,25 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         (userStorage.getUser _).expects(*) returning Future {
           Some(Authors.normalAuthor)
         }
-        (tagStorage.getTagsByArticle _).expects(*) returning Future{
+        (tagStorage.getTagsByArticle _).expects(*) returning Future {
           Seq(TagV(1, "first"))
         }
 
         whenReady(
-        for(
-          a <- articleService.favoriteArticle(0, slug)
-        )yield a)  {oa =>
-          oa.map{ a =>
-            a.article.title shouldBe Articles.normalArticle.title
-            a.article.slug shouldBe Articles.normalArticle.slug
-            a.article.description shouldBe Articles.normalArticle.description
-            a.article.body shouldBe Articles.normalArticle.body
-            a.article.favorited shouldBe true
-            a.article.favoritesCount shouldBe 2
-            a.article.tagList shouldBe Seq("first")
+          for (
+            a <- articleService.favoriteArticle(0, slug)
+          ) yield a
+        ) { oa =>
+            oa.map { a =>
+              a.article.title shouldBe Articles.normalArticle.title
+              a.article.slug shouldBe Articles.normalArticle.slug
+              a.article.description shouldBe Articles.normalArticle.description
+              a.article.body shouldBe Articles.normalArticle.body
+              a.article.favorited shouldBe true
+              a.article.favoritesCount shouldBe 2
+              a.article.tagList shouldBe Seq("first")
+            }
           }
-        }
       }
     }
 
@@ -252,25 +253,26 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           Some(Authors.normalAuthor)
         }
 
-        (tagStorage.getTagsByArticle _).expects(*) returning Future{
+        (tagStorage.getTagsByArticle _).expects(*) returning Future {
           Seq(TagV(1, "first"))
         }
 
         whenReady(
-          for(
+          for (
             a <- articleService.unFavoriteArticle(0, slug)
-          )yield a)  {oa =>
-          println(oa)
-          oa.map{ a =>
-            a.article.title shouldBe Articles.normalArticle.title
-            a.article.slug shouldBe Articles.normalArticle.slug
-            a.article.description shouldBe Articles.normalArticle.description
-            a.article.body shouldBe Articles.normalArticle.body
-            a.article.favorited shouldBe false
-            a.article.favoritesCount shouldBe 0
-            a.article.tagList shouldBe Seq("first")
+          ) yield a
+        ) { oa =>
+            println(oa)
+            oa.map { a =>
+              a.article.title shouldBe Articles.normalArticle.title
+              a.article.slug shouldBe Articles.normalArticle.slug
+              a.article.description shouldBe Articles.normalArticle.description
+              a.article.body shouldBe Articles.normalArticle.body
+              a.article.favorited shouldBe false
+              a.article.favoritesCount shouldBe 0
+              a.article.tagList shouldBe Seq("first")
+            }
           }
-        }
       }
     }
   }

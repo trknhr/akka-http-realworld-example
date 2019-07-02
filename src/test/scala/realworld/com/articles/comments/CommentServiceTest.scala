@@ -3,7 +3,7 @@ package realworld.com.articles.comments
 import org.scalamock.scalatest.MockFactory
 import realworld.com.BaseServiceTest
 import realworld.com.articles.ArticleStorage
-import realworld.com.test_helpers.{Articles, Authors, Comments, Dates}
+import realworld.com.test_helpers.{ Articles, Authors, Comments, Dates }
 import realworld.com.users.UserStorage
 
 import scala.concurrent.Future
@@ -22,7 +22,8 @@ class CommentServiceTest extends BaseServiceTest with MockFactory {
           .expects(testSlug) returning Future(Some(Articles.normalArticle))
         (userStorage.getUser _)
           .expects(Articles.normalArticle.authorId) returning Future(
-          Some(Authors.normalAuthor))
+            Some(Authors.normalAuthor)
+          )
         (commentStorage.createComment _).expects(*) returning Future(
           Comment(
             1,
@@ -31,25 +32,29 @@ class CommentServiceTest extends BaseServiceTest with MockFactory {
             Authors.normalAuthor.id,
             Dates.currentWhenInserting,
             Dates.currentWhenInserting
-          ))
+          )
+        )
 
         (userStorage.isFollowing _).expects(
           testUserId,
-          Articles.normalArticle.authorId) returning Future(true)
+          Articles.normalArticle.authorId
+        ) returning Future(true)
 
         whenReady(
-          for (c <- commentService
-                 .createComment(testSlug, testUserId, testComment)) yield c
+          for (
+            c <- commentService
+              .createComment(testSlug, testUserId, testComment)
+          ) yield c
         ) { c =>
-          c.foreach(cr => {
-            cr.comment.body shouldBe testBody
-            cr.comment.id shouldBe 1
-            cr.comment.author.username shouldBe Authors.normalAuthor.username
-            cr.comment.author.bio shouldBe Authors.normalAuthor.bio
-            cr.comment.author.image shouldBe Authors.normalAuthor.image
-            cr.comment.author.following shouldBe true
-          })
-        }
+            c.foreach(cr => {
+              cr.comment.body shouldBe testBody
+              cr.comment.id shouldBe 1
+              cr.comment.author.username shouldBe Authors.normalAuthor.username
+              cr.comment.author.bio shouldBe Authors.normalAuthor.bio
+              cr.comment.author.image shouldBe Authors.normalAuthor.image
+              cr.comment.author.following shouldBe true
+            })
+          }
       }
     }
     "getComments" should {
@@ -60,29 +65,31 @@ class CommentServiceTest extends BaseServiceTest with MockFactory {
           Some(Articles.normalArticle)
         }
         (commentStorage.getComments _).expects(*) returning Future(
-          Comments.comments)
+          Comments.comments
+        )
         (userStorage.getUsersByUserIds _)
           .expects(Comments.comments.map(_.authorId)) returning Future(
-          Seq(
-            Authors.normalAuthor.copy(id = 3, username = "first"),
-            Authors.normalAuthor.copy(id = 4, username = "second"),
-            Authors.normalAuthor.copy(id = 5, username = "third")
+            Seq(
+              Authors.normalAuthor.copy(id = 3, username = "first"),
+              Authors.normalAuthor.copy(id = 4, username = "second"),
+              Authors.normalAuthor.copy(id = 5, username = "third")
+            )
           )
-        )
         (userStorage.followingUsers _).expects(
           testUserId,
-          Comments.comments.map(_.authorId)) returning Future(
-          Seq(3, 4)
-        )
+          Comments.comments.map(_.authorId)
+        ) returning Future(
+            Seq(3, 4)
+          )
 
         whenReady(
           for (res <- commentService.getComments(testSlug, testUserId))
             yield res
         ) { res =>
-          res.comments.length shouldBe 3
-          res.comments.map(_.body) shouldBe Comments.comments.map(_.body)
-          res.comments.map(a => (a.author.username, a.author.following)) shouldBe Seq(("first", true), ("second", true), ("third", false))
-        }
+            res.comments.length shouldBe 3
+            res.comments.map(_.body) shouldBe Comments.comments.map(_.body)
+            res.comments.map(a => (a.author.username, a.author.following)) shouldBe Seq(("first", true), ("second", true), ("third", false))
+          }
       }
     }
   }

@@ -7,7 +7,7 @@ import realworld.com.utils.DatabaseConnector
 import slick.dbio.DBIOAction
 import slick.lifted.CanBeQueryCondition
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait ArticleStorage {
   def getArticles(pageRequest: ArticleRequest): Future[Seq[Article]]
@@ -49,17 +49,17 @@ class JdbcArticleStorage(
     val query = articles.join(users).on(_.authorId === _.id)
 
     db.run(
-      query.filter{st =>
-        pageRequest.authorName.fold(true.bind)(st._2.username === _)
-      }.filter {st =>
-        pageRequest.tag.fold(true.bind){tag =>
-          st._1.id in articleTags.join(tags).on(_.tagId === _.id).filter(_._2.name === tag).map(_._1.articleId)
-        }
-      }.filter { st =>
-        pageRequest.favorited.fold(true.bind) { favoritedUsername =>
-          st._1.id in users.filter(_.username === favoritedUsername).map(_.id)
-        }
-      }.map(_._1)
+      query.filter { st =>
+      pageRequest.authorName.fold(true.bind)(st._2.username === _)
+    }.filter { st =>
+      pageRequest.tag.fold(true.bind) { tag =>
+        st._1.id in articleTags.join(tags).on(_.tagId === _.id).filter(_._2.name === tag).map(_._1.articleId)
+      }
+    }.filter { st =>
+      pageRequest.favorited.fold(true.bind) { favoritedUsername =>
+        st._1.id in users.filter(_.username === favoritedUsername).map(_.id)
+      }
+    }.map(_._1)
       .drop(pageRequest.offset.getOrElse(0L))
       .take(pageRequest.limit.getOrElse(Long.MaxValue))
       .result

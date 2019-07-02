@@ -1,9 +1,9 @@
 package realworld.com.tags
 
-import realworld.com.articles.{ArticleTagTable, TagTable, TagV}
+import realworld.com.articles.{ ArticleTagTable, TagTable, TagV }
 import realworld.com.utils.DatabaseConnector
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait TagStorage {
   def getTags(): Future[Seq[TagV]]

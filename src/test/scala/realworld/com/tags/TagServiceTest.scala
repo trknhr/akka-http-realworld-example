@@ -17,8 +17,7 @@ class TagServiceTest extends BaseServiceTest with MockFactory {
         awaitForResult(
           for {
             tags <- tagService.getTags()
-          } yield
-            tags shouldBe ResponseTags(List(TagV(1, "one"), TagV(1, "two")))
+          } yield tags shouldBe ResponseTags(List(TagV(1, "one"), TagV(1, "two")))
         )
       }
     }

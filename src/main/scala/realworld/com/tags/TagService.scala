@@ -1,12 +1,6 @@
 package realworld.com.tags
 
-import realworld.com.articles.TagV
-import realworld.com.core.User
-import realworld.com.profile.Profile
-import realworld.com.users.UserStorage
-
-import scala.concurrent.{ ExecutionContext, Future }
-import realworld.com.utils.MonadTransformers._
+import scala.concurrent.{ExecutionContext, Future}
 
 class TagService(
     tagStorage: TagStorage

@@ -1,11 +1,12 @@
 package realworld.com.users
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 import com.roundeights.hasher.Implicits._
-import pdi.jwt.{ Jwt, JwtAlgorithm }
+import pdi.jwt.{Jwt, JwtAlgorithm}
 import realworld.com.core._
 import io.circe.syntax._
 import io.circe.generic.auto._
+import realworld.com.utils.FutureOptional
 import realworld.com.utils.MonadTransformers._
 
 class UserService(userStorage: UserStorage, secretKey: String)(
@@ -16,67 +17,64 @@ class UserService(userStorage: UserStorage, secretKey: String)(
     userStorage.getUsers()
 
   def getCurrentUser(userId: Long): Future[Option[ResponseUser]] =
-    userStorage
-      .getUser(userId)
-      .mapT(a => {
-        ResponseUser(
-          UserWithToken(a.username, a.email, a.bio, a.image, encodeToken(a.id))
-        )
-      })
+    (for {
+      a <- FutureOptional(userStorage.getUser(userId))
+    } yield {
+      ResponseUser(
+        UserWithToken(a.username, a.email, a.bio, a.image, encodeToken(a.id))
+      )
+    }).future
 
   def updateUser(
-    id: Long,
-    userUpdate: UserUpdate
+      id: Long,
+      userUpdate: UserUpdate
   ): Future[Option[ResponseUser]] =
-    userStorage
-      .getUser(id)
-      .mapT(userUpdate.merge)
-      .flatMapTFuture(userStorage.saveUser)
-      .mapT(
-        a =>
-          ResponseUser(
-            UserWithToken(
-              a.username,
-              a.email,
-              a.bio,
-              a.image,
-              encodeToken(a.id)
-            )
-          )
+    (for {
+      u <- FutureOptional(userStorage.getUser(id))
+      a <- FutureOptional(
+        userStorage.saveUser(userUpdate.merge(u)).map(Some(_)))
+    } yield {
+      ResponseUser(
+        UserWithToken(
+          a.username,
+          a.email,
+          a.bio,
+          a.image,
+          encodeToken(a.id)
+        )
       )
+    }).future
 
   def register(userRegistration: UserRegistration): Future[ResponseUser] =
-    userStorage
-      .register(userRegistration.create())
-      .map(
-        a =>
-          ResponseUser(
-            UserWithToken(
-              a.username,
-              a.email,
-              a.bio,
-              a.image,
-              encodeToken(a.id)
-            )
-          )
-      )
+    for {
+      a <- userStorage.register(userRegistration.create())
+    } yield {
+      ResponseUser(
+        UserWithToken(
+          a.username,
+          a.email,
+          a.bio,
+          a.image,
+          encodeToken(a.id)
+        ))
+    }
 
   def login(email: String, password: String): Future[Option[ResponseUser]] =
-    userStorage
-      .findUserByEmail(email)
-      .filterT(_.password == password.sha256.hex)
-      .mapT(
-        user =>
-          ResponseUser(
-            UserWithToken(
-              user.username,
-              user.email,
-              user.bio,
-              user.image,
-              encodeToken(user.id)
-            )
-          )
+    (for {
+      user <- FutureOptional(userStorage.findUserByEmail(email))
+      _ <- FutureOptional(
+        if(user.password == password.sha256.hex) Future{Some(user)} else Future{None}
       )
+    } yield {
+      ResponseUser(
+        UserWithToken(
+          user.username,
+          user.email,
+          user.bio,
+          user.image,
+          encodeToken(user.id)
+        ))
+    }).future
 
   private def encodeToken(userId: Long): AuthToken = {
     Jwt.encode(

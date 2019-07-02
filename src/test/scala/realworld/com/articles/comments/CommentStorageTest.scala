@@ -1,11 +1,11 @@
 package realworld.com.articles.comments
 
-import org.scalatest.time.{Seconds, Span}
+import org.scalatest.time.{ Seconds, Span }
 import realworld.com.BaseServiceTest
 import realworld.com.articles.JdbcArticleStorage
-import realworld.com.test_helpers.{Articles, Authors, Comments}
+import realworld.com.test_helpers.{ Articles, Authors, Comments }
 import realworld.com.users.JdbcUserStorage
-import realworld.com.utils.{DatabaseCleaner, InMemoryPostgresStorage}
+import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 
 class CommentStorageTest extends BaseServiceTest {
   override def afterEach(): Unit = {
@@ -21,12 +21,14 @@ class CommentStorageTest extends BaseServiceTest {
           a <- articleStorage.createArticle(Articles.normalArticle.copy(authorId = u.id))
           _ <- commentStorage.createComment(Comments.normalComment.copy(authorId = commentUser.id, articleId = a.id))
           _ <- commentStorage.createComment(
-            Comments.normalComment.copy(id = 2, body = "second comment", authorId = commentUser.id, articleId = a.id))
+            Comments.normalComment.copy(id = 2, body = "second comment", authorId = commentUser.id, articleId = a.id)
+          )
           comments <- commentStorage.getComments(a.id)
         } yield {
           comments shouldBe Seq(
             Comments.normalComment.copy(articleId = a.id, authorId = commentUser.id),
-            Comments.normalComment.copy(id = 2, body = "second comment", articleId = a.id, authorId = commentUser.id))
+            Comments.normalComment.copy(id = 2, body = "second comment", articleId = a.id, authorId = commentUser.id)
+          )
         }
       )
     }
@@ -38,11 +40,10 @@ class CommentStorageTest extends BaseServiceTest {
         u <- userStorage.saveUser(Authors.normalAuthor)
         a <- articleStorage.createArticle(Articles.normalArticle.copy(authorId = u.id))
         c <- commentStorage.createComment(Comments.normalComment.copy(authorId = u.id, articleId = a.id))
-        res <- commentStorage.deleteComments(a.id)
-        comments <- commentStorage.getComments(c.id)
+        res <- commentStorage.deleteComments(c.id)
+        comments <- commentStorage.getComments(a.id)
       } yield {
-        res shouldBe 0
-        println(comments)
+        res shouldBe 1
         comments.length shouldBe 0
       })
     }
@@ -50,11 +51,14 @@ class CommentStorageTest extends BaseServiceTest {
 
   trait Context {
     val commentStorage: CommentStorage = new JdbcCommentStorage(
-      InMemoryPostgresStorage.databaseConnector)
+      InMemoryPostgresStorage.databaseConnector
+    )
     val articleStorage = new JdbcArticleStorage(
-      InMemoryPostgresStorage.databaseConnector)
+      InMemoryPostgresStorage.databaseConnector
+    )
     val userStorage = new JdbcUserStorage(
-      InMemoryPostgresStorage.databaseConnector)
+      InMemoryPostgresStorage.databaseConnector
+    )
   }
 }
 //package realworld.com.users

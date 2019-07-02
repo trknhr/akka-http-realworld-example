@@ -92,11 +92,11 @@ class JdbcUserStorage(
   )
   def followingUsers(userId: Long, targetUserIds: Seq[Long]): Future[Seq[Long]] = db.run(
     followers
-      .filter(m => m.userId === userId)
-      .filter(m => m.followeeId inSet targetUserIds)
-      .map(
-        _.followeeId
-      )
-      .result
+    .filter(m => m.userId === userId)
+    .filter(m => m.followeeId inSet targetUserIds)
+    .map(
+      _.followeeId
+    )
+    .result
   )
 }

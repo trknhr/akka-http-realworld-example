@@ -2,7 +2,7 @@ package realworld.com.tags
 
 import realworld.com.BaseServiceTest
 import realworld.com.articles.TagV
-import realworld.com.utils.{DatabaseCleaner, InMemoryPostgresStorage}
+import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 
 class TagStorageTest extends BaseServiceTest {
   override def beforeEach(): Unit = {

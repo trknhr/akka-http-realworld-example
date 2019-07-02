@@ -8,10 +8,10 @@ import org.scalatest._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.BeforeAndAfter
 import org.scalatest.concurrent.ScalaFutures
-import realworld.com.utils.{DatabaseCleaner, InMemoryPostgresStorage}
+import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{ Await, Future }
 
 /**
  * Created by kunihiro on 2018/08/02.

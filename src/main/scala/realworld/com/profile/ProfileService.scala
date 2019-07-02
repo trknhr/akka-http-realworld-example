@@ -2,41 +2,42 @@ package realworld.com.profile
 
 import realworld.com.core.User
 import realworld.com.users.UserStorage
+import realworld.com.utils.FutureOptional
 
-import scala.concurrent.{ ExecutionContext, Future }
-import realworld.com.utils.MonadTransformers._
+import scala.concurrent.{ExecutionContext, Future}
 
 class ProfileService(userStorage: UserStorage)(
     implicit
     executionContext: ExecutionContext
 ) {
-  def getProfile(userId: Long, username: String): Future[Option[ResponseProfile]] =
-    userStorage
-      .getUserByUsername(username)
-      .flatMapTFuture(p =>
+  def getProfile(userId: Long,
+                 username: String): Future[Option[ResponseProfile]] =
+    (for {
+      p <- FutureOptional(userStorage.getUserByUsername(username))
+      isFollowing <- FutureOptional(
         userStorage
           .isFollowing(userId, p.id)
-          .map(isFollowing => ResponseProfile(Profile(p.username, p.bio, p.image, isFollowing))))
+          .map(Some(_)))
+    } yield {
+      ResponseProfile(Profile(p.username, p.bio, p.image, isFollowing))
+    }).future
 
   def follow(userId: Long, username: String): Future[Option[ResponseProfile]] =
-    userStorage
-      .getUserByUsername(username)
-      .flatMapTFuture(
-        p =>
-          userStorage
-            .follow(userId, p.id)
-            .map(a => ResponseProfile(Profile(p.username, p.bio, p.image, true)))
-      )
+    (for {
+      p <- FutureOptional(userStorage.getUserByUsername(username))
+      _ <- FutureOptional(userStorage.follow(userId, p.id).map(Some(_)))
+    } yield {
+      ResponseProfile(Profile(p.username, p.bio, p.image, true))
+    }).future
 
-  def unfollow(userId: Long, username: String): Future[Option[ResponseProfile]] =
-    userStorage
-      .getUserByUsername(username)
-      .flatMapTFuture(
-        p =>
-          userStorage
-            .unfollow(userId, p.id)
-            .map(a => ResponseProfile(Profile(p.username, p.bio, p.image, false)))
-      )
+  def unfollow(userId: Long,
+               username: String): Future[Option[ResponseProfile]] =
+    (for {
+      p <- FutureOptional(userStorage.getUserByUsername(username))
+      _ <- FutureOptional(userStorage.unfollow(userId, p.id).map(Some(_)))
+    } yield {
+      ResponseProfile(Profile(p.username, p.bio, p.image, false))
+    }).future
 
   def getFollowees(userId: Long): Future[Seq[User]] =
     userStorage.getFollowees(userId)
