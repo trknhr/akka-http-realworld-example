@@ -4,12 +4,12 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import profile.ProfileService
-import realworld.com.articles.comments.{ CommentService, JdbcCommentStorage }
-import realworld.com.articles.{ ArticleService, JdbcArticleStorage }
+import realworld.com.articles.comments.{CommentService, JdbcCommentStorage}
+import realworld.com.articles.{ArticleService, JdbcArticleStorage}
 import realworld.com.routes.routes.HttpRoute
-import realworld.com.tags.{ JdbcTagStorage, TagService }
-import users.{ JdbcUserStorage, UserService }
-import utils.{ Config, DatabaseConnector, DatabaseMigrationManager }
+import realworld.com.tags.{JdbcTagStorage, TagService}
+import users.{JdbcUserStorage, UserService}
+import utils.{Config, DatabaseConnector, DatabaseMigrationManager, StorageRunner}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -36,6 +36,7 @@ object Main extends App {
     )
     flywayService.migrateDatabaseSchema()
 
+
     val userStorage = new JdbcUserStorage(databaseConnector)
 
     val articleStorage = new JdbcArticleStorage(databaseConnector)
@@ -44,7 +45,8 @@ object Main extends App {
 
     val tagStorage = new JdbcTagStorage(databaseConnector)
 
-    val userService = new UserService(userStorage, config.secretKey)
+    val storageRunner = new StorageRunner(databaseConnector)
+    val userService = new UserService(storageRunner, userStorage, config.secretKey)
 
     val profileService = new ProfileService(userStorage)
 

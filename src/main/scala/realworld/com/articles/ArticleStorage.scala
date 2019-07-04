@@ -5,9 +5,8 @@ import realworld.com.profile.UserFollowersTable
 import realworld.com.users.UserProfileTable
 import realworld.com.utils.DatabaseConnector
 import slick.dbio.DBIOAction
-import slick.lifted.CanBeQueryCondition
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 trait ArticleStorage {
   def getArticles(pageRequest: ArticleRequest): Future[Seq[Article]]
