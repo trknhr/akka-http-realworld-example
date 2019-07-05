@@ -46,15 +46,16 @@ object Main extends App {
     val tagStorage = new JdbcTagStorage(databaseConnector)
 
     val storageRunner = new StorageRunner(databaseConnector)
+
     val userService = new UserService(storageRunner, userStorage, config.secretKey)
 
-    val profileService = new ProfileService(userStorage)
+    val profileService = new ProfileService(storageRunner, userStorage)
 
-    val articleService = new ArticleService(articleStorage, userStorage, tagStorage)
+    val articleService = new ArticleService(storageRunner, articleStorage, userStorage, tagStorage)
 
-    val commentService = new CommentService(articleStorage, commentStorage, userStorage)
+    val commentService = new CommentService(storageRunner, articleStorage, commentStorage, userStorage)
 
-    val tagService = new TagService(tagStorage)
+    val tagService = new TagService(storageRunner, tagStorage)
 
     val httpRoute = new HttpRoute(
       userService,

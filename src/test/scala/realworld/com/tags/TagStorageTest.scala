@@ -13,7 +13,7 @@ class TagStorageTest extends BaseServiceTest {
   "find tag" when {
     "findTagByNames" should {
       "should return correct an article" in new Context {
-        awaitForResult(for {
+        dbRun(for {
           a <- tagStorage.insertAndGet(
             Seq(TagV.create("test"), TagV.create("test2"))
           )
@@ -25,7 +25,7 @@ class TagStorageTest extends BaseServiceTest {
   "insert tag" when {
     "insertArticleTag" should {
       "should count favorite numbers" in new Context {
-        awaitForResult(for {
+        dbRun(for {
           tags <- tagStorage.insertAndGet(Seq(TagV.create("test")))
         } yield tags shouldBe Vector(TagV(tags.head.id, "test")))
       }
@@ -34,7 +34,7 @@ class TagStorageTest extends BaseServiceTest {
   "getTags" when {
     "return all tags " in new Context {
       val tags = Seq(TagV(1, "one"), TagV(2, "two"))
-      awaitForResult(
+      dbRun(
         for {
           _ <- tagStorage.insertAndGet(tags)
           all <- tagStorage.getTags()

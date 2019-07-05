@@ -2,7 +2,7 @@ package realworld.com.utils
 
 import slick.dbio.DBIO
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 case class DBIOOptional[+A](dbio: DBIO[Option[A]]) extends AnyVal {
   def flatMap[B](f: A => DBIOOptional[B])(

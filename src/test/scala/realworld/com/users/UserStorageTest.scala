@@ -44,7 +44,7 @@ class UserStorageTest extends Hoge {
 
   "getUserByUsername" when {
     "return profile by id" in new Context {
-      awaitForResult(for {
+      dbRun(for {
         users <- userStorage.getUsers()
         _ <- userStorage.saveUser(testUser1)
         u <- userStorage.saveUser(testUser2)
@@ -56,7 +56,7 @@ class UserStorageTest extends Hoge {
   }
   "follow" when {
     "success" in new Context {
-      awaitForResult(for {
+      dbRun(for {
         a <- userStorage.saveUser(testUser1)
         b <- userStorage.saveUser(testUser2)
         successFlag <- userStorage.follow(a.id, b.id)
@@ -68,7 +68,7 @@ class UserStorageTest extends Hoge {
 
   "isFollowing" when {
     "return true" in new Context {
-      awaitForResult(for {
+      dbRun(for {
         a <- userStorage.saveUser(testUser1)
         b <- userStorage.saveUser(testUser2)
         _ <- userStorage.follow(a.id, b.id)
@@ -77,7 +77,7 @@ class UserStorageTest extends Hoge {
     }
 
     "return false" in new Context {
-      awaitForResult(for {
+      dbRun(for {
         a <- userStorage.saveUser(testUser1)
         b <- userStorage.saveUser(testUser2)
         _ <- userStorage.follow(a.id, b.id)

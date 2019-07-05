@@ -3,10 +3,10 @@ package realworld.com.users
 import realworld.com.core.User
 import realworld.com.profile.{UserFollower, UserFollowersTable}
 import realworld.com.utils.DatabaseConnector
-import slick.dbio.{DBIO, DBIOAction, Effect, NoStream}
+import slick.dbio.DBIO
 import slick.jdbc.PostgresProfile.api.{DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 trait UserStorage {
   def getUsers(): DBIO[Seq[User]]
