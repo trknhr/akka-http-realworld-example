@@ -1,10 +1,10 @@
 package realworld.com.users
 
 import realworld.com.core.User
-import realworld.com.profile.{UserFollower, UserFollowersTable}
+import realworld.com.profile.{ UserFollower, UserFollowersTable }
 import realworld.com.utils.DatabaseConnector
 import slick.dbio.DBIO
-import slick.jdbc.PostgresProfile.api.{DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _}
+import slick.jdbc.PostgresProfile.api.{ DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _ }
 
 import scala.concurrent.ExecutionContext
 
@@ -33,16 +33,16 @@ class JdbcUserStorage(
   def getUsers(): DBIO[Seq[User]] = users.result
 
   def getUsersByUserIds(userIds: Seq[Long]): DBIO[Seq[User]] =
-      users.filter(_.id inSet userIds).result
+    users.filter(_.id inSet userIds).result
 
   def getUserByUsername(username: String): DBIO[Option[User]] =
-      users.filter(_.username === username).result.headOption
+    users.filter(_.username === username).result.headOption
 
   def getUser(userId: Long): DBIO[Option[User]] =
     users.filter(_.id === userId).result.headOption
 
   def getFollowees(userId: Long): DBIO[Seq[User]] =
-      followers
+    followers
       .join(users)
       .on(_.followeeId === _.id)
       .filter(a => a._1.userId === userId)
@@ -50,8 +50,7 @@ class JdbcUserStorage(
       .result
 
   def register(user: User): DBIO[User] =
-      (users returning users.map(_.id) into ((u, id) => u.copy(id = id + 1))) += user
-
+    (users returning users.map(_.id) into ((u, id) => u.copy(id = id + 1))) += user
 
   def saveUser(user: User): DBIO[User] = {
     (users returning users).insertOrUpdate(user).map(_.getOrElse(user))
@@ -61,7 +60,7 @@ class JdbcUserStorage(
     users.filter(a => a.email === email && a.password === password).result.headOption
 
   def follow(userId: Long, targetUserId: Long): DBIO[Int] =
-      followers += UserFollower(userId, targetUserId, currentWhenInserting)
+    followers += UserFollower(userId, targetUserId, currentWhenInserting)
 
   def unfollow(userId: Long, targetUserId: Long): DBIO[Int] = {
     followers.filter(a =>
@@ -75,14 +74,14 @@ class JdbcUserStorage(
       .headOption
       .map(
         _.isDefined
-  )
+      )
 
   def followingUsers(userId: Long, targetUserIds: Seq[Long]): DBIO[Seq[Long]] =
     followers
-    .filter(m => m.userId === userId)
-    .filter(m => m.followeeId inSet targetUserIds)
-    .map(
-      _.followeeId
-    )
-    .result
+      .filter(m => m.userId === userId)
+      .filter(m => m.followeeId inSet targetUserIds)
+      .map(
+        _.followeeId
+      )
+      .result
 }

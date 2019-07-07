@@ -7,7 +7,7 @@ import org.scalamock.scalatest.MockFactory
 import realworld.com.BaseServiceTest
 import realworld.com.core.User
 import realworld.com.users.UserStorage
-import realworld.com.utils.{InMemoryPostgresStorage, StorageRunner}
+import realworld.com.utils.{ InMemoryPostgresStorage, StorageRunner }
 
 import slick.dbio.DBIO
 
@@ -78,7 +78,8 @@ class ProfileServiceTest extends BaseServiceTest with MockFactory {
   trait Context {
     val userStorage = mock[UserStorage]
     val storageRunner = new StorageRunner(
-      InMemoryPostgresStorage.databaseConnector)
+      InMemoryPostgresStorage.databaseConnector
+    )
     val profileService = new ProfileService(storageRunner, userStorage)
 
     def currentWhenInserting = new Timestamp((new Date).getTime)

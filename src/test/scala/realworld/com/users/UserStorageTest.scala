@@ -21,22 +21,7 @@ import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 import scala.concurrent.duration._
 import scala.concurrent.{ Await, Future }
 
-class Hoge
-    extends WordSpec
-    with Matchers
-    with ScalatestRouteTest
-    with BeforeAndAfter
-    with BeforeAndAfterEach
-    with BeforeAndAfterAll
-    with BeforeAndAfterEachTestData
-    with ScalaFutures {
-  def awaitForResult[T](futureResult: Future[T]): T =
-    Await.result(futureResult, 5.seconds)
-
-  def currentWhenInserting = new Timestamp((new Date).getTime)
-}
-
-class UserStorageTest extends Hoge {
+class UserStorageTest extends BaseServiceTest {
   override def afterEach(): Unit = {
     DatabaseCleaner.cleanDatabase(InMemoryPostgresStorage.databaseConnector)
     super.afterEach()

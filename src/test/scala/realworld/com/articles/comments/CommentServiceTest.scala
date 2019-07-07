@@ -3,9 +3,9 @@ package realworld.com.articles.comments
 import org.scalamock.scalatest.MockFactory
 import realworld.com.BaseServiceTest
 import realworld.com.articles.ArticleStorage
-import realworld.com.test_helpers.{Articles, Authors, Comments, Dates}
+import realworld.com.test_helpers.{ Articles, Authors, Comments, Dates }
 import realworld.com.users.UserStorage
-import realworld.com.utils.{InMemoryPostgresStorage, StorageRunner}
+import realworld.com.utils.{ InMemoryPostgresStorage, StorageRunner }
 import slick.dbio.DBIO
 
 class CommentServiceTest extends BaseServiceTest with MockFactory {
@@ -98,7 +98,8 @@ class CommentServiceTest extends BaseServiceTest with MockFactory {
     val commentStorage = mock[CommentStorage]
     val userStorage = mock[UserStorage]
     val storageRunner = new StorageRunner(
-      InMemoryPostgresStorage.databaseConnector)
+      InMemoryPostgresStorage.databaseConnector
+    )
     val commentService =
       new CommentService(storageRunner, articleStorage, commentStorage, userStorage)
   }

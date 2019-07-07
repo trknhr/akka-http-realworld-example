@@ -1,10 +1,10 @@
 package realworld.com.tags
 
-import realworld.com.articles.{ArticleTagTable, TagTable, TagV}
+import realworld.com.articles.{ ArticleTagTable, TagTable, TagV }
 import realworld.com.utils.DatabaseConnector
 
-import scala.concurrent.{ExecutionContext, Future}
-import slick.dbio.{DBIO, DBIOAction}
+import scala.concurrent.{ ExecutionContext, Future }
+import slick.dbio.{ DBIO, DBIOAction }
 
 import slick.jdbc.PostgresProfile.api.{
   DBIO => _,
@@ -22,7 +22,7 @@ trait TagStorage {
   def insertAndGet(tagVs: Seq[TagV]): DBIO[Seq[TagV]]
 }
 class JdbcTagStorage(
-    val databaseConnector: DatabaseConnector
+  val databaseConnector: DatabaseConnector
 )(implicit executionContext: ExecutionContext)
     extends TagStorage
     with TagTable

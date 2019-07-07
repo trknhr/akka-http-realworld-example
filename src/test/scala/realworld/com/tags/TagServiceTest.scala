@@ -3,7 +3,7 @@ package realworld.com.tags
 import org.scalamock.scalatest.MockFactory
 import realworld.com.BaseServiceTest
 import realworld.com.articles.TagV
-import realworld.com.utils.{InMemoryPostgresStorage, StorageRunner}
+import realworld.com.utils.{ InMemoryPostgresStorage, StorageRunner }
 
 import scala.concurrent.Future
 import slick.dbio.DBIO
@@ -28,7 +28,8 @@ class TagServiceTest extends BaseServiceTest with MockFactory {
   trait Context {
     val tagStorage = mock[TagStorage]
     val storageRunner = new StorageRunner(
-      InMemoryPostgresStorage.databaseConnector)
+      InMemoryPostgresStorage.databaseConnector
+    )
     val tagService = new TagService(storageRunner, tagStorage)
   }
 }
