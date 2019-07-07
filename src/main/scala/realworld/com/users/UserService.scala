@@ -6,7 +6,7 @@ import pdi.jwt.{ Jwt, JwtAlgorithm }
 import realworld.com.core._
 import io.circe.syntax._
 import io.circe.generic.auto._
-import realworld.com.utils.{DBIOOptional, StorageRunner}
+import realworld.com.utils.{ DBIOOptional, StorageRunner }
 
 class UserService(runner: StorageRunner, userStorage: UserStorage, secretKey: String)(
     implicit
@@ -19,23 +19,25 @@ class UserService(runner: StorageRunner, userStorage: UserStorage, secretKey: St
 
   def getCurrentUser(userId: Long): Future[Option[ResponseUser]] =
     runner.run(
-      (for{
-        a <- DBIOOptional(userStorage.getUser(userId))
-      } yield {
-        ResponseUser(
-          UserWithToken(a.username, a.email, a.bio, a.image, encodeToken(a.id))
-        )
-    }).dbio)
+      (for {
+      a <- DBIOOptional(userStorage.getUser(userId))
+    } yield {
+      ResponseUser(
+        UserWithToken(a.username, a.email, a.bio, a.image, encodeToken(a.id))
+      )
+    }).dbio
+    )
 
   def updateUser(
     id: Long,
     userUpdate: UserUpdate
   ): Future[Option[ResponseUser]] =
     runner.runInTransaction(
-    (for {
+      (for {
       u <- DBIOOptional(userStorage.getUser(id))
       a <- DBIOOptional(
-        userStorage.saveUser(userUpdate.merge(u)).map(Some(_)))
+        userStorage.saveUser(userUpdate.merge(u)).map(Some(_))
+      )
     } yield {
       ResponseUser(
         UserWithToken(
@@ -46,26 +48,29 @@ class UserService(runner: StorageRunner, userStorage: UserStorage, secretKey: St
           encodeToken(a.id)
         )
       )
-    }).dbio)
+    }).dbio
+    )
 
   def register(userRegistration: UserRegistration): Future[ResponseUser] =
     runner.runInTransaction(
       for {
-      a <- userStorage.register(userRegistration.create())
-    } yield {
-      ResponseUser(
-        UserWithToken(
-          a.username,
-          a.email,
-          a.bio,
-          a.image,
-          encodeToken(a.id)
-        ))
-    })
+        a <- userStorage.register(userRegistration.create())
+      } yield {
+        ResponseUser(
+          UserWithToken(
+            a.username,
+            a.email,
+            a.bio,
+            a.image,
+            encodeToken(a.id)
+          )
+        )
+      }
+    )
 
   def login(email: String, password: String): Future[Option[ResponseUser]] =
     runner.run(
-    (for {
+      (for {
       user <- DBIOOptional(userStorage.findUserByEmail(email, password.sha256.hex))
     } yield {
       ResponseUser(
@@ -75,8 +80,10 @@ class UserService(runner: StorageRunner, userStorage: UserStorage, secretKey: St
           user.bio,
           user.image,
           encodeToken(user.id)
-        ))
-    }).dbio)
+        )
+      )
+    }).dbio
+    )
 
   private def encodeToken(userId: Long): AuthToken = {
     Jwt.encode(

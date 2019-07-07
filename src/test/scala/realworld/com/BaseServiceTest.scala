@@ -4,13 +4,13 @@ import java.sql.Timestamp
 import java.util.Date
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import org.scalatest.{BeforeAndAfter, _}
+import org.scalatest.{ BeforeAndAfter, _ }
 import org.scalatest.concurrent.ScalaFutures
-import realworld.com.utils.{InMemoryPostgresStorage, StorageRunner}
+import realworld.com.utils.{ InMemoryPostgresStorage, StorageRunner }
 import slick.dbio.DBIO
 
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{ Await, Future }
 
 class BaseServiceTest
     extends WordSpec

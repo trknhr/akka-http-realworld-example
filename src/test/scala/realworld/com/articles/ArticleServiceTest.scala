@@ -3,9 +3,9 @@ package realworld.com.articles
 import org.scalamock.scalatest.MockFactory
 import realworld.com.BaseServiceTest
 import realworld.com.tags.TagStorage
-import realworld.com.test_helpers.{Articles, Authors}
+import realworld.com.test_helpers.{ Articles, Authors }
 import realworld.com.users.UserStorage
-import realworld.com.utils.{InMemoryPostgresStorage, StorageRunner}
+import realworld.com.utils.{ InMemoryPostgresStorage, StorageRunner }
 
 import slick.dbio.DBIO
 
@@ -31,8 +31,8 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           offset = None
         )
         (articleStorage.getArticles _).expects(request) returning DBIO.successful(
-          List(article1))
-
+          List(article1)
+        )
 
         for {
           article <- articleService.getArticles(request)
@@ -284,7 +284,8 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
     val tagStorage = mock[TagStorage]
 
     val storageRunner = new StorageRunner(
-      InMemoryPostgresStorage.databaseConnector)
+      InMemoryPostgresStorage.databaseConnector
+    )
 
     val articleService = new ArticleService(storageRunner, articleStorage, userStorage, tagStorage)
   }
