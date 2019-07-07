@@ -5,7 +5,5 @@ scala:
   - 2.11.11
   - 2.12.2
 script:
-  - sbt -jvm-opts travis/jvmopts.compile ... compile
-  - sbt -jvm-opts travis/jvmopts.test ... test
-sbt_args: -no-colors -J-Xss2m
+  - sbt clean coverage test coverageReport
 
