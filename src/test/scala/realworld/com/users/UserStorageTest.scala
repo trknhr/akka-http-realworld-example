@@ -5,7 +5,7 @@ import java.util.Date
 
 import realworld.com.BaseServiceTest
 import realworld.com.core.User
-import realworld.com.utils.{DatabaseCleaner, InMemoryPostgresStorage}
+import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 
 class UserStorageTest extends BaseServiceTest {
   override def afterEach(): Unit = {
