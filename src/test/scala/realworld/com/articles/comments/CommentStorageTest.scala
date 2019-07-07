@@ -14,7 +14,7 @@ class CommentStorageTest extends BaseServiceTest {
   }
   "createComment and getComments" when {
     "return comments and create comments" in new Context {
-      awaitForResult(
+      dbRun(
         for {
           u <- userStorage.saveUser(Authors.normalAuthor)
           commentUser <- userStorage.saveUser(Authors.normalAuthor.copy(email = "second email", username = "second usernam"))
@@ -36,7 +36,7 @@ class CommentStorageTest extends BaseServiceTest {
 
   "deleteComment" when {
     "delete a comment" in new Context {
-      awaitForResult(for {
+      dbRun(for {
         u <- userStorage.saveUser(Authors.normalAuthor)
         a <- articleStorage.createArticle(Articles.normalArticle.copy(authorId = u.id))
         c <- commentStorage.createComment(Comments.normalComment.copy(authorId = u.id, articleId = a.id))
@@ -61,3 +61,4 @@ class CommentStorageTest extends BaseServiceTest {
     )
   }
 }
+

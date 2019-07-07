@@ -3,10 +3,11 @@ package realworld.com.articles
 import org.scalamock.scalatest.MockFactory
 import realworld.com.BaseServiceTest
 import realworld.com.tags.TagStorage
-import realworld.com.test_helpers.{ Articles, Authors }
+import realworld.com.test_helpers.{Articles, Authors}
 import realworld.com.users.UserStorage
+import realworld.com.utils.{InMemoryPostgresStorage, StorageRunner}
 
-import scala.concurrent.Future
+import slick.dbio.DBIO
 
 class ArticleServiceTest extends BaseServiceTest with MockFactory {
   "ArticleService" when {
@@ -29,9 +30,9 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           limit = None,
           offset = None
         )
-        (articleStorage.getArticles _).expects(request) returning Future {
-          List(article1)
-        }
+        (articleStorage.getArticles _).expects(request) returning DBIO.successful(
+          List(article1))
+
 
         for {
           article <- articleService.getArticles(request)
@@ -52,7 +53,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           limit = None,
           offset = None
         )
-        (articleStorage.createArticle _).expects(*) returning Future {
+        (articleStorage.createArticle _).expects(*) returning DBIO.successful {
           Articles.normalArticle
         }
 
@@ -89,19 +90,19 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           )
         )
         (articleStorage.getArticlesByFollowees _)
-          .expects(1, None, None) returning Future { articles }
-        (articleStorage.isFavoriteArticleIds _).expects(*, *) returning Future {
+          .expects(1, None, None) returning DBIO.successful { articles }
+        (articleStorage.isFavoriteArticleIds _).expects(*, *) returning DBIO.successful {
           Seq(1L, 2L)
         }
         (articleStorage.countFavorites _)
           .expects(*)
-          .returning(Future {
+          .returning(DBIO.successful {
             Seq((1L, 0))
           })
-        (userStorage.getUsersByUserIds _).expects(*) returning Future {
+        (userStorage.getUsersByUserIds _).expects(*) returning DBIO.successful {
           Seq(Authors.normalAuthor)
         }
-        (tagStorage.getTagsByArticles _).expects(*) returning Future {
+        (tagStorage.getTagsByArticles _).expects(*) returning DBIO.successful {
           Seq((0, TagV(1, "tag first")), (1, TagV(1, "tag second")))
         }
 
@@ -122,7 +123,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
     "getArticleBySlug" should {
       "create an article by specific slug" in new Context {
         (articleStorage.getArticleBySlug _)
-          .expects("sample-slug") returning Future(Some(Articles.normalArticle))
+          .expects("sample-slug") returning DBIO.successful(Some(Articles.normalArticle))
 
         for {
           article <- articleService.getArticleBySlug("sample-slug", 1)
@@ -137,26 +138,26 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         val sampleSlug = "sample-slug"
         val articleUpdated = ArticleUpdated(Some(updateTitle), None, None)
         (articleStorage.getArticleBySlug _)
-          .expects(sampleSlug) returning Future { Some(Articles.normalArticle) }
+          .expects(sampleSlug) returning DBIO.successful { Some(Articles.normalArticle) }
         (articleStorage.updateArticle _)
           .expects(
             Articles.normalArticle.copy(
               title = updateTitle,
               slug = slugify(updateTitle)
             )
-          ) returning Future(
+          ) returning DBIO.successful(
               Articles.normalArticle.copy(title = updateTitle)
             )
-        (articleStorage.favoriteArticle _).expects(*, *) returning Future {
+        (articleStorage.favoriteArticle _).expects(*, *) returning DBIO.successful {
           Favorite(0, 1L, 1L)
         }
         (articleStorage.countFavorite _)
           .expects(*)
-          .returning(Future { 1 })
-        (userStorage.getUser _).expects(*) returning Future {
+          .returning(DBIO.successful { 1 })
+        (userStorage.getUser _).expects(*) returning DBIO.successful {
           Some(Authors.normalAuthor)
         }
-        (tagStorage.getTagsByArticle _).expects(*) returning Future {
+        (tagStorage.getTagsByArticle _).expects(*) returning DBIO.successful {
           Seq(TagV(1, "first"))
         }
 
@@ -185,7 +186,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
       "should delete an article" in new Context {
         val slug = "dragon-dragon"
         (articleStorage.deleteArticleBySlug _)
-          .expects(slug) returning Future { () }
+          .expects(slug) returning DBIO.successful { () }
 
         for {
           f <- articleService.deleteArticleBySlug(slug)
@@ -200,19 +201,19 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         val slug = "dragon-dragon"
 
         (articleStorage.getArticleBySlug _)
-          .expects(slug) returning Future(Some(Articles.normalArticle))
+          .expects(slug) returning DBIO.successful(Some(Articles.normalArticle))
 
         (articleStorage.countFavorite _)
           .expects(*)
-          .returning(Future { 1 })
+          .returning(DBIO.successful { 1 })
 
-        (articleStorage.favoriteArticle _).expects(*, *) returning Future {
+        (articleStorage.favoriteArticle _).expects(*, *) returning DBIO.successful {
           Favorite(0, 0, 0)
         }
-        (userStorage.getUser _).expects(*) returning Future {
+        (userStorage.getUser _).expects(*) returning DBIO.successful {
           Some(Authors.normalAuthor)
         }
-        (tagStorage.getTagsByArticle _).expects(*) returning Future {
+        (tagStorage.getTagsByArticle _).expects(*) returning DBIO.successful {
           Seq(TagV(1, "first"))
         }
 
@@ -239,21 +240,21 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         val slug = "dragon-dragon"
 
         (articleStorage.getArticleBySlug _)
-          .expects(slug) returning Future(Some(Articles.normalArticle))
+          .expects(slug) returning DBIO.successful(Some(Articles.normalArticle))
 
         (articleStorage.countFavorite _)
           .expects(*)
-          .returning(Future { 0 })
+          .returning(DBIO.successful { 0 })
 
-        (articleStorage.unFavoriteArticle _).expects(*, *) returning Future {
+        (articleStorage.unFavoriteArticle _).expects(*, *) returning DBIO.successful {
           1
         }
 
-        (userStorage.getUser _).expects(*) returning Future {
+        (userStorage.getUser _).expects(*) returning DBIO.successful {
           Some(Authors.normalAuthor)
         }
 
-        (tagStorage.getTagsByArticle _).expects(*) returning Future {
+        (tagStorage.getTagsByArticle _).expects(*) returning DBIO.successful {
           Seq(TagV(1, "first"))
         }
 
@@ -281,6 +282,10 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
     val articleStorage = mock[ArticleStorage]
     val userStorage = mock[UserStorage]
     val tagStorage = mock[TagStorage]
-    val articleService = new ArticleService(articleStorage, userStorage, tagStorage)
+
+    val storageRunner = new StorageRunner(
+      InMemoryPostgresStorage.databaseConnector)
+
+    val articleService = new ArticleService(storageRunner, articleStorage, userStorage, tagStorage)
   }
 }

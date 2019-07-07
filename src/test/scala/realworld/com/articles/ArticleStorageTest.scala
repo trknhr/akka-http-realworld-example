@@ -14,7 +14,7 @@ class ArticleStorageTest extends BaseServiceTest {
 
   "getArticles" when {
     "return article by author id" in new Context {
-      awaitForResult(
+      dbRun(
         for {
           user <- userStorage.saveUser(author)
           article <- articleStorage.createArticle(
@@ -37,7 +37,7 @@ class ArticleStorageTest extends BaseServiceTest {
     }
     "getArticleBySlug" when {
       "return article by slug" in new Context {
-        awaitForResult(for {
+        dbRun(for {
           u <- userStorage.saveUser(author)
           _ <- articleStorage.createArticle(testArticle1.copy(authorId = u.id))
           article <- articleStorage.getArticleBySlug(
@@ -53,7 +53,7 @@ class ArticleStorageTest extends BaseServiceTest {
     "updateArticle" when {
       "update an existing article" in new Context {
         val updatedBody = "updated body"
-        awaitForResult(for {
+        dbRun(for {
           u <- userStorage.saveUser(author)
           a <- articleStorage.createArticle(testArticle1.copy(authorId = u.id))
         } yield {
@@ -72,7 +72,7 @@ class ArticleStorageTest extends BaseServiceTest {
     "delete article" when {
       "deleteArticleBySlug" should {
         "should remove an article by slug" in new Context {
-          awaitForResult(
+          dbRun(
             for {
               u <- userStorage.saveUser(author)
               a <- articleStorage.createArticle(
@@ -90,7 +90,7 @@ class ArticleStorageTest extends BaseServiceTest {
     "favorite" when {
       "favoriteArticle" should {
         "should set favorite" in new Context {
-          awaitForResult(for {
+          dbRun(for {
             u <- userStorage.saveUser(author)
             a <- articleStorage.createArticle(
               testArticle1.copy(authorId = u.id)
@@ -107,7 +107,7 @@ class ArticleStorageTest extends BaseServiceTest {
     "unfavorite" when {
       "unfavariteArticle" should {
         "should unset favorite" in new Context {
-          awaitForResult(for {
+          dbRun(for {
             u <- userStorage.saveUser(author)
             a <- articleStorage.createArticle(
               testArticle1.copy(authorId = u.id)
@@ -124,7 +124,7 @@ class ArticleStorageTest extends BaseServiceTest {
     "count favorite" when {
       "countFavorite" should {
         "should count favorite numbers" in new Context {
-          awaitForResult(for {
+          dbRun(for {
             u <- userStorage.saveUser(author)
             someone <- userStorage.saveUser(someone)
             a <- articleStorage.createArticle(
@@ -142,7 +142,7 @@ class ArticleStorageTest extends BaseServiceTest {
     "insert tag article" when {
       "insertArticleTag" should {
         "should insert article tag" in new Context {
-          awaitForResult(for {
+          dbRun(for {
             u <- userStorage.saveUser(author)
             article <- articleStorage.createArticle(
               testArticle1.copy(authorId = u.id)

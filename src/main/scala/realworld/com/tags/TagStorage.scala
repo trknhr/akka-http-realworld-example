@@ -1,50 +1,59 @@
 package realworld.com.tags
 
-import realworld.com.articles.{ ArticleTagTable, TagTable, TagV }
+import realworld.com.articles.{ArticleTagTable, TagTable, TagV}
 import realworld.com.utils.DatabaseConnector
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
+import slick.dbio.{DBIO, DBIOAction}
+
+import slick.jdbc.PostgresProfile.api.{
+  DBIO => _,
+  MappedTo => _,
+  Rep => _,
+  TableQuery => _,
+  _
+}
 
 trait TagStorage {
-  def getTags(): Future[Seq[TagV]]
-  def getTagsByArticles(articleIds: Seq[Long]): Future[Seq[(Long, TagV)]]
-  def getTagsByArticle(articleId: Long): Future[Seq[TagV]]
-  def findTagByNames(tagNames: Seq[String]): Future[Seq[TagV]]
-  def insertAndGet(tagVs: Seq[TagV]): Future[Seq[TagV]]
+  def getTags(): DBIO[Seq[TagV]]
+  def getTagsByArticles(articleIds: Seq[Long]): DBIO[Seq[(Long, TagV)]]
+  def getTagsByArticle(articleId: Long): DBIO[Seq[TagV]]
+  def findTagByNames(tagNames: Seq[String]): DBIO[Seq[TagV]]
+  def insertAndGet(tagVs: Seq[TagV]): DBIO[Seq[TagV]]
 }
 class JdbcTagStorage(
-  val databaseConnector: DatabaseConnector
+    val databaseConnector: DatabaseConnector
 )(implicit executionContext: ExecutionContext)
     extends TagStorage
-    with TagTable with ArticleTagTable {
-  import databaseConnector._
-  import databaseConnector.profile.api._
+    with TagTable
+    with ArticleTagTable {
 
-  def getTags(): Future[Seq[TagV]] =
-    db.run(tags.result)
+  def getTags(): DBIO[Seq[TagV]] =
+    tags.result
 
-  def getTagsByArticles(articleIds: Seq[Long]): Future[Seq[(Long, TagV)]] =
-    db.run(
-      articleTags.join(tags).on(_.tagId === _.id).filter(_._1.articleId inSet articleIds).map(a => (a._1.articleId, a._2)).result
-    )
+  def getTagsByArticles(articleIds: Seq[Long]): DBIO[Seq[(Long, TagV)]] =
+    articleTags
+      .join(tags)
+      .on(_.tagId === _.id)
+      .filter(_._1.articleId inSet articleIds)
+      .map(a => (a._1.articleId, a._2))
+      .result
 
-  def getTagsByArticle(articleId: Long): Future[Seq[TagV]] =
-    db.run(
-      articleTags.join(tags).on(_.tagId === _.id).filter(_._1.articleId === articleId).map(_._2).result
-    )
+  def getTagsByArticle(articleId: Long): DBIO[Seq[TagV]] =
+    articleTags
+      .join(tags)
+      .on(_.tagId === _.id)
+      .filter(_._1.articleId === articleId)
+      .map(_._2)
+      .result
 
-  def findTagByNames(tagNames: Seq[String]): Future[Seq[TagV]] =
-    db.run(
-      tags.filter(_.name inSet tagNames).result
-    )
+  def findTagByNames(tagNames: Seq[String]): DBIO[Seq[TagV]] =
+    tags.filter(_.name inSet tagNames).result
 
-  def insertAndGet(tagVs: Seq[TagV]): Future[Seq[TagV]] = {
-    val articlesIds =
-      tags
-        .returning(tags.map(_.id))
-        .++=(tagVs)
-        .flatMap(ids => tags.filter(_.id inSet ids).result)
+  def insertAndGet(tagVs: Seq[TagV]): DBIO[Seq[TagV]] =
+    tags
+      .returning(tags.map(_.id))
+      .++=(tagVs)
+      .flatMap(ids => tags.filter(_.id inSet ids).result)
 
-    db.run(articlesIds)
-  }
 }
