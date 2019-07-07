@@ -1,25 +1,11 @@
 package realworld.com.users
 
-import java.sql.{ JDBCType, Timestamp }
+import java.sql.Timestamp
 import java.util.Date
 
 import realworld.com.BaseServiceTest
 import realworld.com.core.User
-import realworld.com.profile.Profile
-import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
-
-import java.sql.Timestamp
-import java.util.Date
-
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import org.scalatest._
-import org.scalatest.mockito.MockitoSugar
-import org.scalatest.BeforeAndAfter
-import org.scalatest.concurrent.ScalaFutures
-import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
-
-import scala.concurrent.duration._
-import scala.concurrent.{ Await, Future }
+import realworld.com.utils.{DatabaseCleaner, InMemoryPostgresStorage}
 
 class UserStorageTest extends BaseServiceTest {
   override def afterEach(): Unit = {
