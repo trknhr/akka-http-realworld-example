@@ -4,20 +4,23 @@ import realworld.com.core.User
 import realworld.com.users.UserStorage
 import realworld.com.utils.FutureOptional
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 class ProfileService(userStorage: UserStorage)(
     implicit
     executionContext: ExecutionContext
 ) {
-  def getProfile(userId: Long,
-                 username: String): Future[Option[ResponseProfile]] =
+  def getProfile(
+    userId: Long,
+    username: String
+  ): Future[Option[ResponseProfile]] =
     (for {
       p <- FutureOptional(userStorage.getUserByUsername(username))
       isFollowing <- FutureOptional(
         userStorage
           .isFollowing(userId, p.id)
-          .map(Some(_)))
+          .map(Some(_))
+      )
     } yield {
       ResponseProfile(Profile(p.username, p.bio, p.image, isFollowing))
     }).future
@@ -30,8 +33,10 @@ class ProfileService(userStorage: UserStorage)(
       ResponseProfile(Profile(p.username, p.bio, p.image, true))
     }).future
 
-  def unfollow(userId: Long,
-               username: String): Future[Option[ResponseProfile]] =
+  def unfollow(
+    userId: Long,
+    username: String
+  ): Future[Option[ResponseProfile]] =
     (for {
       p <- FutureOptional(userStorage.getUserByUsername(username))
       _ <- FutureOptional(userStorage.unfollow(userId, p.id).map(Some(_)))

@@ -1,13 +1,12 @@
 package realworld.com.users
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 import com.roundeights.hasher.Implicits._
-import pdi.jwt.{Jwt, JwtAlgorithm}
+import pdi.jwt.{ Jwt, JwtAlgorithm }
 import realworld.com.core._
 import io.circe.syntax._
 import io.circe.generic.auto._
 import realworld.com.utils.FutureOptional
-import realworld.com.utils.MonadTransformers._
 
 class UserService(userStorage: UserStorage, secretKey: String)(
     implicit
@@ -26,13 +25,14 @@ class UserService(userStorage: UserStorage, secretKey: String)(
     }).future
 
   def updateUser(
-      id: Long,
-      userUpdate: UserUpdate
+    id: Long,
+    userUpdate: UserUpdate
   ): Future[Option[ResponseUser]] =
     (for {
       u <- FutureOptional(userStorage.getUser(id))
       a <- FutureOptional(
-        userStorage.saveUser(userUpdate.merge(u)).map(Some(_)))
+        userStorage.saveUser(userUpdate.merge(u)).map(Some(_))
+      )
     } yield {
       ResponseUser(
         UserWithToken(
@@ -56,14 +56,15 @@ class UserService(userStorage: UserStorage, secretKey: String)(
           a.bio,
           a.image,
           encodeToken(a.id)
-        ))
+        )
+      )
     }
 
   def login(email: String, password: String): Future[Option[ResponseUser]] =
     (for {
       user <- FutureOptional(userStorage.findUserByEmail(email))
       _ <- FutureOptional(
-        if(user.password == password.sha256.hex) Future{Some(user)} else Future{None}
+        if (user.password == password.sha256.hex) Future { Some(user) } else Future { None }
       )
     } yield {
       ResponseUser(
@@ -73,7 +74,8 @@ class UserService(userStorage: UserStorage, secretKey: String)(
           user.bio,
           user.image,
           encodeToken(user.id)
-        ))
+        )
+      )
     }).future
 
   private def encodeToken(userId: Long): AuthToken = {

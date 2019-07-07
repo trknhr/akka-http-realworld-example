@@ -1,6 +1,6 @@
 package realworld.com.tags
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 class TagService(
     tagStorage: TagStorage

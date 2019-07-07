@@ -52,4 +52,3 @@ class TagStorageTest extends BaseServiceTest {
     )
   }
 }
-

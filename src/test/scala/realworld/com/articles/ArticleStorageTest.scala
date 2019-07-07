@@ -148,7 +148,9 @@ class ArticleStorageTest extends BaseServiceTest {
               testArticle1.copy(authorId = u.id)
             )
             tags <- tagStorage.insertAndGet(Seq(TagV.create("test")))
-            a <- articleStorage.insertArticleTag(Seq(ArticleTag(0, article.id, tags.head.id)))
+            a <- articleStorage.insertArticleTag(
+              Seq(ArticleTag(0, article.id, tags.head.id))
+            )
           } yield a shouldBe Vector(ArticleTag(a.head.id, article.id, tags.head.id)))
         }
       }

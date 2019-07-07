@@ -8,7 +8,35 @@ import realworld.com.core.User
 import realworld.com.profile.Profile
 import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
 
-class UserStorageTest extends BaseServiceTest {
+import java.sql.Timestamp
+import java.util.Date
+
+import akka.http.scaladsl.testkit.ScalatestRouteTest
+import org.scalatest._
+import org.scalatest.mockito.MockitoSugar
+import org.scalatest.BeforeAndAfter
+import org.scalatest.concurrent.ScalaFutures
+import realworld.com.utils.{ DatabaseCleaner, InMemoryPostgresStorage }
+
+import scala.concurrent.duration._
+import scala.concurrent.{ Await, Future }
+
+class Hoge
+    extends WordSpec
+    with Matchers
+    with ScalatestRouteTest
+    with BeforeAndAfter
+    with BeforeAndAfterEach
+    with BeforeAndAfterAll
+    with BeforeAndAfterEachTestData
+    with ScalaFutures {
+  def awaitForResult[T](futureResult: Future[T]): T =
+    Await.result(futureResult, 5.seconds)
+
+  def currentWhenInserting = new Timestamp((new Date).getTime)
+}
+
+class UserStorageTest extends Hoge {
   override def afterEach(): Unit = {
     DatabaseCleaner.cleanDatabase(InMemoryPostgresStorage.databaseConnector)
     super.afterEach()
@@ -58,14 +86,35 @@ class UserStorageTest extends BaseServiceTest {
     }
   }
   trait Context {
-    val userStorage: UserStorage = new JdbcUserStorage(InMemoryPostgresStorage.databaseConnector)
+    val userStorage: UserStorage = new JdbcUserStorage(
+      InMemoryPostgresStorage.databaseConnector
+    )
 
     def currentWhenInserting = new Timestamp((new Date).getTime)
-    def testUser(testUser: TestUser) = User(testUser.userId, testUser.username, testUser.password, testUser.email, None, image = None, createdAt = currentWhenInserting, updatedAt = currentWhenInserting)
+    def testUser(testUser: TestUser) =
+      User(
+        testUser.userId,
+        testUser.username,
+        testUser.password,
+        testUser.email,
+        None,
+        image = None,
+        createdAt = currentWhenInserting,
+        updatedAt = currentWhenInserting
+      )
 
-    val testUser1 = testUser(TestUser(1, "username-1", "username-email-1", "user-password-1"))
-    val testUser2 = testUser(TestUser(2, "username-2", "username-email-2", "user-password-2"))
+    val testUser1 = testUser(
+      TestUser(1, "username-1", "username-email-1", "user-password-1")
+    )
+    val testUser2 = testUser(
+      TestUser(2, "username-2", "username-email-2", "user-password-2")
+    )
 
-    case class TestUser(userId: Long, username: String, email: String, password: String)
+    case class TestUser(
+      userId: Long,
+      username: String,
+      email: String,
+      password: String
+    )
   }
 }

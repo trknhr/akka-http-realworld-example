@@ -3,6 +3,9 @@ lazy val akkaVersion    = "2.5.11"
 
 val circeVersion = "0.9.3"
 val sttpV = "1.1.13"
+fork in Test := true
+parallelExecution in Test := false
+
 
 lazy val root = (project in file(".")).
   settings(
