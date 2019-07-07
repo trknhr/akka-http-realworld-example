@@ -22,8 +22,7 @@ class CommentServiceTest extends BaseServiceTest with MockFactory {
           .expects(testSlug) returning DBIO.successful(Some(Articles.normalArticle))
         (userStorage.getUser _)
           .expects(Articles.normalArticle.authorId) returning DBIO.successful(
-            Some(Authors.normalAuthor)
-          )
+            Some(Authors.normalAuthor))
         (commentStorage.createComment _).expects(*) returning DBIO.successful(
           Comment(
             1,
@@ -31,21 +30,17 @@ class CommentServiceTest extends BaseServiceTest with MockFactory {
             1,
             Authors.normalAuthor.id,
             Dates.currentWhenInserting,
-            Dates.currentWhenInserting
-          )
-        )
+            Dates.currentWhenInserting))
 
         (userStorage.isFollowing _).expects(
           testUserId,
-          Articles.normalArticle.authorId
-        ) returning DBIO.successful(true)
+          Articles.normalArticle.authorId) returning DBIO.successful(true)
 
         whenReady(
           for (
             c <- commentService
               .createComment(testSlug, testUserId, testComment)
-          ) yield c
-        ) { c =>
+          ) yield c) { c =>
             c.foreach(cr => {
               cr.comment.body shouldBe testBody
               cr.comment.id shouldBe 1
@@ -65,27 +60,21 @@ class CommentServiceTest extends BaseServiceTest with MockFactory {
           Some(Articles.normalArticle)
         }
         (commentStorage.getComments _).expects(*) returning DBIO.successful(
-          Comments.comments
-        )
+          Comments.comments)
         (userStorage.getUsersByUserIds _)
           .expects(Comments.comments.map(_.authorId)) returning DBIO.successful(
             Seq(
               Authors.normalAuthor.copy(id = 3, username = "first"),
               Authors.normalAuthor.copy(id = 4, username = "second"),
-              Authors.normalAuthor.copy(id = 5, username = "third")
-            )
-          )
+              Authors.normalAuthor.copy(id = 5, username = "third")))
         (userStorage.followingUsers _).expects(
           testUserId,
-          Comments.comments.map(_.authorId)
-        ) returning DBIO.successful(
-            Seq(3, 4)
-          )
+          Comments.comments.map(_.authorId)) returning DBIO.successful(
+            Seq(3, 4))
 
         whenReady(
           for (res <- commentService.getComments(testSlug, testUserId))
-            yield res
-        ) { res =>
+            yield res) { res =>
             res.comments.length shouldBe 3
             res.comments.map(_.body) shouldBe Comments.comments.map(_.body)
             res.comments.map(a => (a.author.username, a.author.following)) shouldBe Seq(("first", true), ("second", true), ("third", false))
@@ -98,8 +87,7 @@ class CommentServiceTest extends BaseServiceTest with MockFactory {
     val commentStorage = mock[CommentStorage]
     val userStorage = mock[UserStorage]
     val storageRunner = new StorageRunner(
-      InMemoryPostgresStorage.databaseConnector
-    )
+      InMemoryPostgresStorage.databaseConnector)
     val commentService =
       new CommentService(storageRunner, articleStorage, commentStorage, userStorage)
   }

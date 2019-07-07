@@ -15,8 +15,7 @@ class TagStorageTest extends BaseServiceTest {
       "should return correct an article" in new Context {
         dbRun(for {
           a <- tagStorage.insertAndGet(
-            Seq(TagV.create("test"), TagV.create("test2"))
-          )
+            Seq(TagV.create("test"), TagV.create("test2")))
           tags <- tagStorage.findTagByNames(Seq("test"))
         } yield tags(0).name shouldBe "test")
       }
@@ -41,14 +40,12 @@ class TagStorageTest extends BaseServiceTest {
         } yield {
           all.length shouldBe tags.length
           all.map(_.name) shouldBe Seq("one", "two")
-        }
-      )
+        })
     }
   }
 
   trait Context {
     val tagStorage: TagStorage = new JdbcTagStorage(
-      InMemoryPostgresStorage.databaseConnector
-    )
+      InMemoryPostgresStorage.databaseConnector)
   }
 }

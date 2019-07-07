@@ -17,14 +17,12 @@ object CreateAllData {
     val databaseConnector = new DatabaseConnector(
       config.database.jdbcUrl,
       config.database.username,
-      config.database.password
-    )
+      config.database.password)
 
     val flywayService = new DatabaseMigrationManager(
       config.database.jdbcUrl,
       config.database.username,
-      config.database.password
-    )
+      config.database.password)
 
     flywayService.dropDatabase()
     flywayService.migrateDatabaseSchema()

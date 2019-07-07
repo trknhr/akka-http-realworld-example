@@ -17,8 +17,7 @@ object InMemoryPostgresStorage {
   val psqlConfig = new PostgresConfig(
     Version.V9_6_3, new Net(dbHost, dbPort),
     new Storage(dbName), new Timeout(),
-    new Credentials(dbUser, dbPassword)
-  )
+    new Credentials(dbUser, dbPassword))
   val psqlInstance = PostgresStarter.getDefaultInstance
   val flywayService = new DatabaseMigrationManager(jdbcUrl, dbUser, dbPassword)
 
@@ -29,6 +28,5 @@ object InMemoryPostgresStorage {
   val databaseConnector = new DatabaseConnector(
     InMemoryPostgresStorage.jdbcUrl,
     InMemoryPostgresStorage.dbUser,
-    InMemoryPostgresStorage.dbPassword
-  )
+    InMemoryPostgresStorage.dbPassword)
 }

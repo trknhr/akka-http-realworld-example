@@ -15,8 +15,7 @@ package object comments {
     articleId: Long,
     authorId: Long,
     createdAt: Timestamp,
-    updatedAt: Timestamp
-  )
+    updatedAt: Timestamp)
   object Comment {
     def create(body: String, articleId: Long, authorId: Long): Comment =
       Comment(
@@ -25,8 +24,7 @@ package object comments {
         articleId,
         authorId,
         new Timestamp((new Date).getTime),
-        new Timestamp((new Date).getTime)
-      )
+        new Timestamp((new Date).getTime))
   }
 
   case class CommentData(
@@ -35,13 +33,9 @@ package object comments {
     updatedAt: String,
     body: String,
     username: String,
-    author: Profile
-  )
+    author: Profile)
   case class CommentResponse(
-    comment: CommentData
-  )
+    comment: CommentData)
   case class CommentsResponse(
-    comments: Seq[CommentData]
-
-  )
+    comments: Seq[CommentData])
 }

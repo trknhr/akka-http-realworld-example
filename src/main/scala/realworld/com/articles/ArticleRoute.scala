@@ -13,9 +13,8 @@ import scala.concurrent.ExecutionContext
 class ArticleRoute(
   commentRoute: CommentRoute,
   secretKey: String,
-  articleService: ArticleService
-)(implicit executionContext: ExecutionContext)
-    extends FailFastCirceSupport {
+  articleService: ArticleService)(implicit executionContext: ExecutionContext)
+  extends FailFastCirceSupport {
   import akka.http.scaladsl.model.StatusCodes._
   import articleService._
   import realworld.com.utils.JwtAuthDirectives._
@@ -34,8 +33,7 @@ class ArticleRoute(
                 createArticle(authorId, article.article, Some(authorId)).map {
                   article =>
                     article.asJson
-                }
-              )
+                })
             }
           }
         }
@@ -93,5 +91,4 @@ private case class UpdateArticle(article: ArticleUpdated)
 private case class CreateArticle(article: ArticlePosted)
 case class FeedRequest(
   limit: Option[Long] = Some(100),
-  offset: Option[Long] = Some(0)
-)
+  offset: Option[Long] = Some(0))

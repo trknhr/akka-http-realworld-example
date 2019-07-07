@@ -22,11 +22,10 @@ trait TagStorage {
   def insertAndGet(tagVs: Seq[TagV]): DBIO[Seq[TagV]]
 }
 class JdbcTagStorage(
-  val databaseConnector: DatabaseConnector
-)(implicit executionContext: ExecutionContext)
-    extends TagStorage
-    with TagTable
-    with ArticleTagTable {
+  val databaseConnector: DatabaseConnector)(implicit executionContext: ExecutionContext)
+  extends TagStorage
+  with TagTable
+  with ArticleTagTable {
 
   def getTags(): DBIO[Seq[TagV]] =
     tags.result

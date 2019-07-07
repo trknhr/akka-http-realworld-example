@@ -9,9 +9,8 @@ import scala.concurrent.ExecutionContext
 
 class ProfileRoute(
   secretKey: String,
-  profileService: ProfileService
-)(implicit executionContext: ExecutionContext)
-    extends FailFastCirceSupport {
+  profileService: ProfileService)(implicit executionContext: ExecutionContext)
+  extends FailFastCirceSupport {
 
   import StatusCodes._
   import profileService._

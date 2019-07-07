@@ -7,8 +7,7 @@ package object profile {
     username: String,
     bio: Option[String],
     image: Option[String],
-    following: Boolean
-  )
+    following: Boolean)
 
   case class ResponseProfile(profile: Profile)
   case class UserFollower(userId: Long, followeeId: Long, insertedAt: Timestamp)

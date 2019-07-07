@@ -3,10 +3,9 @@ package realworld.com.utils
 import org.flywaydb.core.Flyway
 
 class DatabaseMigrationManager(
-    jdbcUrl: String,
-    dbUser: String,
-    dbPassword: String
-) {
+  jdbcUrl: String,
+  dbUser: String,
+  dbPassword: String) {
   private val flyway = new Flyway()
   flyway.setDataSource(jdbcUrl, dbUser, dbPassword)
 

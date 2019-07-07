@@ -12,15 +12,13 @@ object DatabaseCleaner {
 
   def cleanDatabase(databaseConnector: DatabaseConnector)(
     implicit
-    executionContext: ExecutionContext
-  ): Unit = {
+    executionContext: ExecutionContext): Unit = {
     import databaseConnector._
     import databaseConnector.profile.api._
 
     val truncatesFuture = db
       .run(
-        MTable.getTables
-      )
+        MTable.getTables)
       .map {
         _.filter {
           case MTable(tableName, "TABLE", _, _, _, _) => true
@@ -32,13 +30,10 @@ object DatabaseCleaner {
       }
 
     val truncates = Await.result(
-      truncatesFuture, Duration.Inf
-    )
+      truncatesFuture, Duration.Inf)
 
     Await.result(db.run(
       DBIO.sequence(
-        truncates
-      )
-    ), Duration.Inf)
+        truncates)), Duration.Inf)
   }
 }

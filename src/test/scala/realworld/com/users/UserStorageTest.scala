@@ -58,8 +58,7 @@ class UserStorageTest extends BaseServiceTest {
   }
   trait Context {
     val userStorage: UserStorage = new JdbcUserStorage(
-      InMemoryPostgresStorage.databaseConnector
-    )
+      InMemoryPostgresStorage.databaseConnector)
 
     def currentWhenInserting = new Timestamp((new Date).getTime)
     def testUser(testUser: TestUser) =
@@ -71,21 +70,17 @@ class UserStorageTest extends BaseServiceTest {
         None,
         image = None,
         createdAt = currentWhenInserting,
-        updatedAt = currentWhenInserting
-      )
+        updatedAt = currentWhenInserting)
 
     val testUser1 = testUser(
-      TestUser(1, "username-1", "username-email-1", "user-password-1")
-    )
+      TestUser(1, "username-1", "username-email-1", "user-password-1"))
     val testUser2 = testUser(
-      TestUser(2, "username-2", "username-email-2", "user-password-2")
-    )
+      TestUser(2, "username-2", "username-email-2", "user-password-2"))
 
     case class TestUser(
       userId: Long,
       username: String,
       email: String,
-      password: String
-    )
+      password: String)
   }
 }

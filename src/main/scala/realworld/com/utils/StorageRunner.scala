@@ -12,8 +12,7 @@ trait Runner {
 }
 
 class StorageRunner(
-    val databaseConnector: DatabaseConnector
-) extends Runner {
+  val databaseConnector: DatabaseConnector) extends Runner {
   import databaseConnector._
 
   def run[T](actions: DBIO[T]): Future[T] = db.run(actions)

@@ -13,8 +13,7 @@ object UserSeed {
     "baby",
     "pink",
     "little",
-    "butterfly"
-  )
+    "butterfly")
   def data: Seq[User] =
     userNames.zipWithIndex.map {
       case (name, index) =>
@@ -26,7 +25,6 @@ object UserSeed {
           None,
           None,
           CreateAllData.currentWhenInserting,
-          CreateAllData.currentWhenInserting
-        )
+          CreateAllData.currentWhenInserting)
     }
 }

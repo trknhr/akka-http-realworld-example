@@ -9,8 +9,7 @@ object ISO8601 {
 
   def apply(s: String) =
     new SimpleDateFormat(millisFormatString).parse(
-      s
-    )
+      s)
 
   def apply(d: Date) =
     new SimpleDateFormat(millisFormatString) {

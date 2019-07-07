@@ -21,16 +21,13 @@ class CommentStorageTest extends BaseServiceTest {
           a <- articleStorage.createArticle(Articles.normalArticle.copy(authorId = u.id))
           _ <- commentStorage.createComment(Comments.normalComment.copy(authorId = commentUser.id, articleId = a.id))
           _ <- commentStorage.createComment(
-            Comments.normalComment.copy(id = 2, body = "second comment", authorId = commentUser.id, articleId = a.id)
-          )
+            Comments.normalComment.copy(id = 2, body = "second comment", authorId = commentUser.id, articleId = a.id))
           comments <- commentStorage.getComments(a.id)
         } yield {
           comments shouldBe Seq(
             Comments.normalComment.copy(articleId = a.id, authorId = commentUser.id),
-            Comments.normalComment.copy(id = 2, body = "second comment", articleId = a.id, authorId = commentUser.id)
-          )
-        }
-      )
+            Comments.normalComment.copy(id = 2, body = "second comment", articleId = a.id, authorId = commentUser.id))
+        })
     }
   }
 
@@ -51,14 +48,11 @@ class CommentStorageTest extends BaseServiceTest {
 
   trait Context {
     val commentStorage: CommentStorage = new JdbcCommentStorage(
-      InMemoryPostgresStorage.databaseConnector
-    )
+      InMemoryPostgresStorage.databaseConnector)
     val articleStorage = new JdbcArticleStorage(
-      InMemoryPostgresStorage.databaseConnector
-    )
+      InMemoryPostgresStorage.databaseConnector)
     val userStorage = new JdbcUserStorage(
-      InMemoryPostgresStorage.databaseConnector
-    )
+      InMemoryPostgresStorage.databaseConnector)
   }
 }
 

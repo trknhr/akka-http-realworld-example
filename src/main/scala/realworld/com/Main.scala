@@ -26,14 +26,12 @@ object Main extends App {
     val databaseConnector = new DatabaseConnector(
       config.database.jdbcUrl,
       config.database.username,
-      config.database.password
-    )
+      config.database.password)
 
     val flywayService = new DatabaseMigrationManager(
       config.database.jdbcUrl,
       config.database.username,
-      config.database.password
-    )
+      config.database.password)
     flywayService.migrateDatabaseSchema()
 
     val userStorage = new JdbcUserStorage(databaseConnector)
@@ -62,8 +60,7 @@ object Main extends App {
       articleService,
       commentService,
       tagService,
-      config.secretKey
-    )
+      config.secretKey)
 
     Http().bindAndHandle(httpRoute.route, config.http.host, config.http.port)
 
