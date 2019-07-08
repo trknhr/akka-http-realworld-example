@@ -6,8 +6,7 @@ class DatabaseMigrationManager(
   jdbcUrl: String,
   dbUser: String,
   dbPassword: String) {
-  private val flyway = new Flyway()
-  flyway.setDataSource(jdbcUrl, dbUser, dbPassword)
+  val flyway = Flyway.configure().dataSource(jdbcUrl, dbUser, dbPassword).load()
 
   def migrateDatabaseSchema(): Unit = flyway.migrate()
 
