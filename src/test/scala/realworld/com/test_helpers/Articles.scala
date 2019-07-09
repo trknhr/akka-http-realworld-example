@@ -11,6 +11,5 @@ object Articles {
     "body",
     1,
     Dates.currentWhenInserting,
-    Dates.currentWhenInserting
-  )
+    Dates.currentWhenInserting)
 }

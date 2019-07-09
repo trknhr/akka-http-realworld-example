@@ -12,13 +12,12 @@ import realworld.com.users.{ UserRoute, UserService }
 import scala.concurrent.ExecutionContext
 
 class HttpRoute(
-    userService: UserService,
-    profileService: ProfileService,
-    articleService: ArticleService,
-    commentService: CommentService,
-    tagService: TagService,
-    secretKey: String
-)(implicit executionContext: ExecutionContext) {
+  userService: UserService,
+  profileService: ProfileService,
+  articleService: ArticleService,
+  commentService: CommentService,
+  tagService: TagService,
+  secretKey: String)(implicit executionContext: ExecutionContext) {
   private val usersRouter = new UserRoute(secretKey, userService)
   private val profileRouter = new ProfileRoute(secretKey, profileService)
   private val commentRouter = new CommentRoute(secretKey, commentService)

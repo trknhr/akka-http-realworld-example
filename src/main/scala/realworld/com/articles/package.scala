@@ -10,8 +10,7 @@ import realworld.com.utils.ISO8601
 package object articles {
   case class ForResponseArticles(
     articles: Seq[ArticleForResponse],
-    articlesCount: Int
-  )
+    articlesCount: Int)
   case class ForResponseArticle(article: ArticleForResponse)
   case class ResponseArticle(
     id: Long,
@@ -22,8 +21,7 @@ package object articles {
     authorId: Long,
     tagList: Seq[String],
     createdAt: String,
-    updatedAt: String
-  )
+    updatedAt: String)
 
   case class TagV(id: Long, name: String)
   object TagV {
@@ -35,15 +33,13 @@ package object articles {
   case class ArticleUpdated(
     title: Option[String],
     description: Option[String],
-    body: Option[String]
-  )
+    body: Option[String])
 
   case class ArticlePosted(
-      title: String,
-      description: String,
-      body: String,
-      tagList: Seq[String]
-  ) {
+    title: String,
+    description: String,
+    body: String,
+    tagList: Seq[String]) {
     def create(authorId: Long): Article = {
       Article(
         0,
@@ -53,8 +49,7 @@ package object articles {
         body,
         authorId,
         new Timestamp((new Date).getTime),
-        new Timestamp((new Date).getTime)
-      )
+        new Timestamp((new Date).getTime))
     }
   }
 
@@ -68,8 +63,7 @@ package object articles {
     updatedAt: String,
     favorited: Boolean,
     favoritesCount: Int,
-    author: Profile
-  )
+    author: Profile)
 
   def slugify(title: String): String =
     title.toLowerCase().replaceAll("""\s""", "-")
@@ -79,6 +73,5 @@ package object articles {
     authorName: Option[String],
     favorited: Option[String],
     limit: Option[Long],
-    offset: Option[Long]
-  )
+    offset: Option[Long])
 }

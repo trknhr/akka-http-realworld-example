@@ -13,8 +13,7 @@ case class Article(
   body: String,
   authorId: Long,
   createdAt: Timestamp,
-  updatedAt: Timestamp
-)
+  updatedAt: Timestamp)
 
 trait ArticleTable {
   protected val databaseConnector: DatabaseConnector

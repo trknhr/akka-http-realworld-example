@@ -15,11 +15,10 @@ import slick.dbio.DBIO
 import scala.concurrent.{ ExecutionContext, Future }
 
 class ArticleService(
-    runner: StorageRunner,
-    articleStorage: ArticleStorage,
-    userStorage: UserStorage,
-    tagStorage: TagStorage
-)(implicit executionContext: ExecutionContext) {
+  runner: StorageRunner,
+  articleStorage: ArticleStorage,
+  userStorage: UserStorage,
+  tagStorage: TagStorage)(implicit executionContext: ExecutionContext) {
 
   def getArticles(request: ArticleRequest): Future[ForResponseArticles] = {
     runner.run(
@@ -43,35 +42,28 @@ class ArticleService(
                 ISO8601(a.updatedAt),
                 false,
                 0,
-                convertUserToProfile(authors.get(a.authorId))
-              )
-            }
-          ),
-          articles.length
-        )
-      }
-    )
+                convertUserToProfile(authors.get(a.authorId)))
+            }),
+          articles.length)
+      })
   }
 
   def createArticle(
     authorId: Long,
     newArticle: ArticlePosted,
-    currentUserId: Option[Long]
-  ): Future[Option[ForResponseArticle]] =
+    currentUserId: Option[Long]): Future[Option[ForResponseArticle]] =
     runner.runInTransaction(
       for {
         article <- articleStorage.createArticle(newArticle.create(authorId))
         tags <- createTags(newArticle.tagList)
         _ <- connectTagArticle(tags, article.id)
         res <- getArticleResponse(article, tags, currentUserId)
-      } yield res
-    )
+      } yield res)
 
   def getFeeds(
     userId: Long,
     limit: Option[Int],
-    offset: Option[Int]
-  ): Future[ForResponseArticles] =
+    offset: Option[Int]): Future[ForResponseArticles] =
     runner.run(
       for {
         articles <- articleStorage.getArticlesByFollowees(userId, limit, offset)
@@ -101,115 +93,88 @@ class ArticleService(
                   .toMap
                   .get(a.id)
                   .getOrElse(0),
-                convertUserToProfile(mapAuthor.get(a.authorId))
-              )
-          ),
-          articles.length
-        )
-      }
-    )
+                convertUserToProfile(mapAuthor.get(a.authorId)))),
+          articles.length)
+      })
 
   def getArticleBySlug(
     slug: String,
-    userId: Long
-  ): Future[Option[ForResponseArticle]] =
+    userId: Long): Future[Option[ForResponseArticle]] =
     runner.run(
       (for {
-      article <- DBIOOptional(articleStorage.getArticleBySlug(slug))
-      f <- DBIOOptional(
-        articleStorage
-          .favoriteArticle(
-            userId,
-            article.id
-          )
-          .map(Some(_))
-      )
-      favoriteCount <- DBIOOptional(
-        articleStorage
-          .countFavorite(
-            article.authorId
-          )
-          .map(Some(_))
-      )
-      author <- DBIOOptional(
-        userStorage
-          .getUser(article.authorId)
-      )
-      tags <- DBIOOptional(
-        tagStorage.getTagsByArticle(article.id).map(Some(_))
-      )
-    } yield ForResponseArticle(
-      ArticleForResponse(
-        article.slug,
-        article.title,
-        article.description,
-        article.body,
-        tags.map(_.name),
-        ISO8601(article.createdAt),
-        ISO8601(article.updatedAt),
-        f.favoritedId == article.id,
-        favoriteCount,
-        convertUserToProfile(Some(author))
-      )
-    )).dbio
-    )
+        article <- DBIOOptional(articleStorage.getArticleBySlug(slug))
+        f <- DBIOOptional(
+          articleStorage
+            .favoriteArticle(
+              userId,
+              article.id)
+            .map(Some(_)))
+        favoriteCount <- DBIOOptional(
+          articleStorage
+            .countFavorite(
+              article.authorId)
+            .map(Some(_)))
+        author <- DBIOOptional(
+          userStorage
+            .getUser(article.authorId))
+        tags <- DBIOOptional(
+          tagStorage.getTagsByArticle(article.id).map(Some(_)))
+      } yield ForResponseArticle(
+        ArticleForResponse(
+          article.slug,
+          article.title,
+          article.description,
+          article.body,
+          tags.map(_.name),
+          ISO8601(article.createdAt),
+          ISO8601(article.updatedAt),
+          f.favoritedId == article.id,
+          favoriteCount,
+          convertUserToProfile(Some(author))))).dbio)
   def updateArticleBySlug(
     slug: String,
     userId: Long,
-    articleUpdated: ArticleUpdated
-  ): Future[Option[ForResponseArticle]] =
+    articleUpdated: ArticleUpdated): Future[Option[ForResponseArticle]] =
     runner.runInTransaction(
       (for {
-      a <- DBIOOptional(articleStorage.getArticleBySlug(slug))
-      article <- DBIOOptional(
-        articleStorage
-          .updateArticle(
-            updateArticle(a, articleUpdated)
-          )
-          .map(Some(_))
-      )
-      f <- DBIOOptional(
-        articleStorage
-          .favoriteArticle(
-            userId,
-            article.id
-          )
-          .map(Some(_))
-      )
-      favoriteCount <- DBIOOptional(
-        articleStorage
-          .countFavorite(
-            article.authorId
-          )
-          .map(Some(_))
-      )
-      author <- DBIOOptional(
-        userStorage
-          .getUser(article.authorId)
-      )
-      tags <- DBIOOptional(
-        tagStorage.getTagsByArticle(article.id).map(Some(_))
-      )
-    } yield ForResponseArticle(
-      ArticleForResponse(
-        article.slug,
-        article.title,
-        article.description,
-        article.body,
-        tags.map(_.name),
-        ISO8601(article.createdAt),
-        ISO8601(article.updatedAt),
-        f.favoritedId == article.id,
-        favoriteCount,
-        convertUserToProfile(Some(author))
-      )
-    )).dbio
-    )
+        a <- DBIOOptional(articleStorage.getArticleBySlug(slug))
+        article <- DBIOOptional(
+          articleStorage
+            .updateArticle(
+              updateArticle(a, articleUpdated))
+            .map(Some(_)))
+        f <- DBIOOptional(
+          articleStorage
+            .favoriteArticle(
+              userId,
+              article.id)
+            .map(Some(_)))
+        favoriteCount <- DBIOOptional(
+          articleStorage
+            .countFavorite(
+              article.authorId)
+            .map(Some(_)))
+        author <- DBIOOptional(
+          userStorage
+            .getUser(article.authorId))
+        tags <- DBIOOptional(
+          tagStorage.getTagsByArticle(article.id).map(Some(_)))
+      } yield ForResponseArticle(
+        ArticleForResponse(
+          article.slug,
+          article.title,
+          article.description,
+          article.body,
+          tags.map(_.name),
+          ISO8601(article.createdAt),
+          ISO8601(article.updatedAt),
+          f.favoritedId == article.id,
+          favoriteCount,
+          convertUserToProfile(Some(author))))).dbio)
 
   def deleteArticleBySlug(slug: String): Future[Unit] =
     runner.runInTransaction(
-      articleStorage.deleteArticleBySlug(slug)
-    )
+      articleStorage.deleteArticleBySlug(slug))
 
   def favoriteArticle(userId: Long, slug: String) =
     runner.runInTransaction(
@@ -217,11 +182,9 @@ class ArticleService(
         article <- articleStorage.getArticleBySlug(slug)
         f <- articleStorage.favoriteArticle(
           userId,
-          article.map(b => b.id).getOrElse(-1L)
-        )
+          article.map(b => b.id).getOrElse(-1L))
         favoriteCount <- articleStorage.countFavorite(
-          article.map(_.authorId).getOrElse(-1L)
-        )
+          article.map(_.authorId).getOrElse(-1L))
         author <- userStorage
           .getUser(article.map(_.authorId).getOrElse(-1L))
         tags <- tagStorage.getTagsByArticle(article.map(_.id).getOrElse(-1L))
@@ -238,11 +201,7 @@ class ArticleService(
               ISO8601(a.updatedAt),
               true,
               favoriteCount + 1,
-              convertUserToProfile(author)
-            )
-          )
-      )
-    )
+              convertUserToProfile(author)))))
 
   def unFavoriteArticle(userId: Long, slug: String) =
     runner.runInTransaction(
@@ -250,11 +209,9 @@ class ArticleService(
         article <- articleStorage.getArticleBySlug(slug)
         f <- articleStorage.unFavoriteArticle(
           userId,
-          article.map(b => b.id).getOrElse(-1L)
-        )
+          article.map(b => b.id).getOrElse(-1L))
         favoriteCount <- articleStorage.countFavorite(
-          article.map(_.authorId).getOrElse(-1L)
-        )
+          article.map(_.authorId).getOrElse(-1L))
         author <- userStorage
           .getUser(article.map(_.authorId).getOrElse(-1L))
         tags <- tagStorage.getTagsByArticle(article.map(_.id).getOrElse(-1L))
@@ -271,16 +228,11 @@ class ArticleService(
               ISO8601(a.updatedAt),
               false,
               favoriteCount,
-              convertUserToProfile(author)
-            )
-          )
-      )
-    )
+              convertUserToProfile(author)))))
 
   private def updateArticle(
     article: Article,
-    update: ArticleUpdated
-  ): Article = {
+    update: ArticleUpdated): Article = {
     val title = update.title.getOrElse(article.title)
     val slug = slugify(title)
     val description = update.description.getOrElse(article.description)
@@ -290,8 +242,7 @@ class ArticleService(
       title = title,
       slug = slug,
       description = description,
-      body = body
-    )
+      body = body)
   }
 
   private def createTags(tagNames: Seq[String]) =
@@ -317,26 +268,22 @@ class ArticleService(
   private def getArticleResponse(
     article: Article,
     tags: Seq[TagV],
-    currentUserId: Option[Long]
-  ): DBIO[Option[ForResponseArticle]] =
+    currentUserId: Option[Long]): DBIO[Option[ForResponseArticle]] =
     (for {
       u <- DBIOOptional(userStorage.getUser(article.authorId))
       a <- DBIOOptional(
-        getArticleWithTags(article, u, tags, currentUserId).map(Some(_))
-      )
+        getArticleWithTags(article, u, tags, currentUserId).map(Some(_)))
     } yield a).dbio
 
   private def getArticleWithTags(
     article: Article,
     author: User,
     tags: Seq[TagV],
-    currentUserId: Option[Long]
-  ) =
+    currentUserId: Option[Long]) =
     for {
       favorites <- articleStorage.isFavoriteArticleIds(
         currentUserId.getOrElse(0),
-        Seq(article.id)
-      )
+        Seq(article.id))
       favoriteCount <- articleStorage.countFavorites(Seq(article.id))
     } yield {
       ForResponseArticle(
@@ -358,10 +305,7 @@ class ArticleService(
             author.username,
             author.bio,
             author.image,
-            false
-          )
-        )
-      )
+            false)))
     }
 
   private def convertUserToProfile(author: Option[User]) =

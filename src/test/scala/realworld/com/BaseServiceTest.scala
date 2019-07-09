@@ -13,14 +13,14 @@ import scala.concurrent.duration._
 import scala.concurrent.{ Await, Future }
 
 class BaseServiceTest
-    extends WordSpec
-    with Matchers
-    with ScalatestRouteTest
-    with BeforeAndAfter
-    with BeforeAndAfterEach
-    with BeforeAndAfterAll
-    with BeforeAndAfterEachTestData
-    with ScalaFutures {
+  extends WordSpec
+  with Matchers
+  with ScalatestRouteTest
+  with BeforeAndAfter
+  with BeforeAndAfterEach
+  with BeforeAndAfterAll
+  with BeforeAndAfterEachTestData
+  with ScalaFutures {
 
   val runner = new StorageRunner(InMemoryPostgresStorage.databaseConnector)
 
@@ -30,10 +30,8 @@ class BaseServiceTest
   def dbRun[T](dbio: DBIO[T]): T = {
     Await.result(
       runner.run(
-        dbio
-      ),
-      5.seconds
-    )
+        dbio),
+      5.seconds)
   }
 
   def currentWhenInserting = new Timestamp((new Date).getTime)

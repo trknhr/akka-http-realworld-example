@@ -24,11 +24,10 @@ trait UserStorage {
 }
 
 class JdbcUserStorage(
-  val databaseConnector: DatabaseConnector
-)(implicit executionContext: ExecutionContext)
-    extends UserProfileTable
-    with UserStorage
-    with UserFollowersTable {
+  val databaseConnector: DatabaseConnector)(implicit executionContext: ExecutionContext)
+  extends UserProfileTable
+  with UserStorage
+  with UserFollowersTable {
 
   def getUsers(): DBIO[Seq[User]] = users.result
 
@@ -73,15 +72,13 @@ class JdbcUserStorage(
       .result
       .headOption
       .map(
-        _.isDefined
-      )
+        _.isDefined)
 
   def followingUsers(userId: Long, targetUserIds: Seq[Long]): DBIO[Seq[Long]] =
     followers
       .filter(m => m.userId === userId)
       .filter(m => m.followeeId inSet targetUserIds)
       .map(
-        _.followeeId
-      )
+        _.followeeId)
       .result
 }

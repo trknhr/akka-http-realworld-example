@@ -21,18 +21,15 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           "body",
           1,
           currentWhenInserting,
-          currentWhenInserting
-        )
+          currentWhenInserting)
         var request = ArticleRequest(
           tag = None,
           authorName = Some("testAuthor"),
           favorited = None,
           limit = None,
-          offset = None
-        )
+          offset = None)
         (articleStorage.getArticles _).expects(request) returning DBIO.successful(
-          List(article1)
-        )
+          List(article1))
 
         for {
           article <- articleService.getArticles(request)
@@ -51,8 +48,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           authorName = Some("testAuthor"),
           favorited = None,
           limit = None,
-          offset = None
-        )
+          offset = None)
         (articleStorage.createArticle _).expects(*) returning DBIO.successful {
           Articles.normalArticle
         }
@@ -76,8 +72,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
             "body",
             1,
             currentWhenInserting,
-            currentWhenInserting
-          ),
+            currentWhenInserting),
           Article(
             1,
             "slug-2",
@@ -86,9 +81,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
             "body-2",
             2,
             currentWhenInserting,
-            currentWhenInserting
-          )
-        )
+            currentWhenInserting))
         (articleStorage.getArticlesByFollowees _)
           .expects(1, None, None) returning DBIO.successful { articles }
         (articleStorage.isFavoriteArticleIds _).expects(*, *) returning DBIO.successful {
@@ -109,8 +102,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         whenReady(
           for {
             article <- articleService.getFeeds(1, None, None)
-          } yield article
-        ) { article =>
+          } yield article) { article =>
             article.articlesCount shouldBe 2
             article.articles.head.title shouldBe "title"
             article.articles.head.favorited shouldBe false
@@ -143,11 +135,8 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
           .expects(
             Articles.normalArticle.copy(
               title = updateTitle,
-              slug = slugify(updateTitle)
-            )
-          ) returning DBIO.successful(
-              Articles.normalArticle.copy(title = updateTitle)
-            )
+              slug = slugify(updateTitle))) returning DBIO.successful(
+              Articles.normalArticle.copy(title = updateTitle))
         (articleStorage.favoriteArticle _).expects(*, *) returning DBIO.successful {
           Favorite(0, 1L, 1L)
         }
@@ -166,10 +155,8 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
             article <- articleService.updateArticleBySlug(
               sampleSlug,
               1,
-              articleUpdated
-            )
-          } yield article
-        ) { article =>
+              articleUpdated)
+          } yield article) { article =>
             article.isDefined shouldBe true
             article foreach { a =>
               a.article.title shouldBe updateTitle
@@ -220,8 +207,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         whenReady(
           for (
             a <- articleService.favoriteArticle(0, slug)
-          ) yield a
-        ) { oa =>
+          ) yield a) { oa =>
             oa.map { a =>
               a.article.title shouldBe Articles.normalArticle.title
               a.article.slug shouldBe Articles.normalArticle.slug
@@ -261,9 +247,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
         whenReady(
           for (
             a <- articleService.unFavoriteArticle(0, slug)
-          ) yield a
-        ) { oa =>
-            println(oa)
+          ) yield a) { oa =>
             oa.map { a =>
               a.article.title shouldBe Articles.normalArticle.title
               a.article.slug shouldBe Articles.normalArticle.slug
@@ -284,8 +268,7 @@ class ArticleServiceTest extends BaseServiceTest with MockFactory {
     val tagStorage = mock[TagStorage]
 
     val storageRunner = new StorageRunner(
-      InMemoryPostgresStorage.databaseConnector
-    )
+      InMemoryPostgresStorage.databaseConnector)
 
     val articleService = new ArticleService(storageRunner, articleStorage, userStorage, tagStorage)
   }

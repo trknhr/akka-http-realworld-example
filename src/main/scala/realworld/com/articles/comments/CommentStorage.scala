@@ -13,8 +13,7 @@ trait CommentStorage {
 }
 
 class JdbcCommentStorage(
-    val databaseConnector: DatabaseConnector
-)(implicit executionContext: ExecutionContext) extends CommentTable with CommentStorage {
+  val databaseConnector: DatabaseConnector)(implicit executionContext: ExecutionContext) extends CommentTable with CommentStorage {
 
   def createComment(comment: Comment): DBIO[Comment] =
     (comments returning (comments)) += comment

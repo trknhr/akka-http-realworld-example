@@ -19,8 +19,7 @@ class TagServiceTest extends BaseServiceTest with MockFactory {
         awaitForResult(
           for {
             tags <- tagService.getTags()
-          } yield tags shouldBe ResponseTags(List(TagV(1, "one"), TagV(1, "two")))
-        )
+          } yield tags shouldBe ResponseTags(List(TagV(1, "one"), TagV(1, "two"))))
       }
     }
   }
@@ -28,8 +27,7 @@ class TagServiceTest extends BaseServiceTest with MockFactory {
   trait Context {
     val tagStorage = mock[TagStorage]
     val storageRunner = new StorageRunner(
-      InMemoryPostgresStorage.databaseConnector
-    )
+      InMemoryPostgresStorage.databaseConnector)
     val tagService = new TagService(storageRunner, tagStorage)
   }
 }

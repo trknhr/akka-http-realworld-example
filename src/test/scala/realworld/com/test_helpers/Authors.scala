@@ -11,7 +11,6 @@ object Authors {
     None,
     image = None,
     createdAt = Dates.currentWhenInserting,
-    updatedAt = Dates.currentWhenInserting
-  )
+    updatedAt = Dates.currentWhenInserting)
 
 }

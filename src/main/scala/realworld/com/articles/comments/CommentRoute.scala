@@ -14,9 +14,8 @@ import scala.concurrent.ExecutionContext
 
 class CommentRoute(
   secretKey: String,
-  commentService: CommentService
-)(implicit executionContext: ExecutionContext)
-    extends FailFastCirceSupport {
+  commentService: CommentService)(implicit executionContext: ExecutionContext)
+  extends FailFastCirceSupport {
 
   import akka.http.scaladsl.model.StatusCodes._
   import realworld.com.utils.JwtAuthDirectives._

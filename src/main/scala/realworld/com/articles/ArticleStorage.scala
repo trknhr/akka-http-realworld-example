@@ -14,15 +14,13 @@ trait ArticleStorage {
   def getArticlesByFollowees(
     userId: Long,
     limit: Option[Int],
-    offset: Option[Int]
-  ): DBIO[Seq[Article]]
+    offset: Option[Int]): DBIO[Seq[Article]]
   def createArticle(newArticle: Article): DBIO[Article]
   def getArticleBySlug(slug: String): DBIO[Option[Article]]
   def updateArticle(article: Article): DBIO[Article]
   def isFavoriteArticleIds(
     userId: Long,
-    articleIds: Seq[Long]
-  ): DBIO[Seq[Long]]
+    articleIds: Seq[Long]): DBIO[Seq[Long]]
   def favoriteArticle(userId: Long, articleId: Long): DBIO[Favorite];
   def unFavoriteArticle(userId: Long, articleId: Long): DBIO[Int];
   def countFavorites(articleIds: Seq[Long]): DBIO[Seq[(Long, Int)]]
@@ -32,16 +30,15 @@ trait ArticleStorage {
 }
 
 class JdbcArticleStorage(
-  val databaseConnector: DatabaseConnector
-)(implicit executionContext: ExecutionContext)
-    extends ArticleStorage
-    with ArticleTable
-    with UserProfileTable
-    with UserFollowersTable
-    with TagTable
-    with ArticleTagTable
-    with FavoriteTable
-    with CommentTable {
+  val databaseConnector: DatabaseConnector)(implicit executionContext: ExecutionContext)
+  extends ArticleStorage
+  with ArticleTable
+  with UserProfileTable
+  with UserFollowersTable
+  with TagTable
+  with ArticleTagTable
+  with FavoriteTable
+  with CommentTable {
 
   def getArticles(pageRequest: ArticleRequest): DBIO[Seq[Article]] = {
     val query = articles.join(users).on(_.authorId === _.id)
@@ -73,8 +70,7 @@ class JdbcArticleStorage(
   def getArticlesByFollowees(
     userId: Long,
     limit: Option[Int],
-    offset: Option[Int]
-  ): DBIO[Seq[Article]] =
+    offset: Option[Int]): DBIO[Seq[Article]] =
     followers
       .join(articles)
       .on(_.followeeId === _.id)
@@ -88,9 +84,7 @@ class JdbcArticleStorage(
     (articles returning articles.map(_.id) into (
       (
         u,
-        id
-      ) => u.copy(id = id)
-    )) += newArticle
+        id) => u.copy(id = id))) += newArticle
 
   private def getArticleById(id: Long) =
     articles.filter(_.id === id).result.headOption
@@ -108,8 +102,7 @@ class JdbcArticleStorage(
 
   def isFavoriteArticleIds(
     userId: Long,
-    articleIds: Seq[Long]
-  ): DBIO[Seq[Long]] =
+    articleIds: Seq[Long]): DBIO[Seq[Long]] =
     favorites
       .filter(_.userId === userId)
       .filter(_.favoritedId inSet articleIds)
@@ -154,9 +147,7 @@ class JdbcArticleStorage(
     val insertFavorites = favorites returning favorites.map(_.id) into (
       (
         favorite,
-        id
-      ) => favorite.copy(id = id)
-    )
+        id) => favorite.copy(id = id))
     insertFavorites += Favorite(-1, userId, articleId)
   }
 

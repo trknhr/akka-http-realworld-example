@@ -9,8 +9,7 @@ object Comments {
     1,
     1,
     Dates.currentWhenInserting,
-    Dates.currentWhenInserting
-  )
+    Dates.currentWhenInserting)
   val comments = Seq(
     Comment(
       1,
@@ -18,23 +17,19 @@ object Comments {
       2,
       3,
       Dates.currentWhenInserting,
-      Dates.currentWhenInserting
-    ),
+      Dates.currentWhenInserting),
     Comment(
       2,
       "second comment",
       2,
       4,
       Dates.currentWhenInserting,
-      Dates.currentWhenInserting
-    ),
+      Dates.currentWhenInserting),
     Comment(
       3,
       "third comment",
       2,
       5,
       Dates.currentWhenInserting,
-      Dates.currentWhenInserting
-    )
-  )
+      Dates.currentWhenInserting))
 }

@@ -7,28 +7,27 @@ import ru.yandex.qatools.embed.postgresql.config.PostgresConfig
 import ru.yandex.qatools.embed.postgresql.distribution.Version
 
 object InMemoryPostgresStorage {
-  val dbHost = getLocalHost.getHostAddress
-  val dbPort = 25535
-  val dbName = "database-name"
-  val dbUser = "user"
-  val dbPassword = "password"
+  val dbHost = "127.0.0.1"
+  val dbPort = 5999
+  val dbName = "real_world_dev_test"
+  val dbUser = "postgres"
+  val dbPassword = "postgres"
   val jdbcUrl = s"jdbc:postgresql://$dbHost:$dbPort/$dbName"
 
   val psqlConfig = new PostgresConfig(
-    Version.V9_6_3, new Net(dbHost, dbPort),
+    Version.V9_6_11, new Net(dbHost, dbPort),
     new Storage(dbName), new Timeout(),
-    new Credentials(dbUser, dbPassword)
-  )
+    new Credentials(dbUser, dbPassword))
   val psqlInstance = PostgresStarter.getDefaultInstance
   val flywayService = new DatabaseMigrationManager(jdbcUrl, dbUser, dbPassword)
 
   val process = psqlInstance.prepare(psqlConfig).start()
+
   flywayService.dropDatabase()
   flywayService.migrateDatabaseSchema()
 
   val databaseConnector = new DatabaseConnector(
     InMemoryPostgresStorage.jdbcUrl,
     InMemoryPostgresStorage.dbUser,
-    InMemoryPostgresStorage.dbPassword
-  )
+    InMemoryPostgresStorage.dbPassword)
 }

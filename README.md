@@ -1,6 +1,6 @@
 # ![RealWorld Example Applications](logo.png)
 
-
+[![Build Status](https://travis-ci.org/1984weed/akka-http-realworld-example.svg?branch=master)](https://travis-ci.org/1984weed/akka-http-realworld-example)
 
 # Getting started
 

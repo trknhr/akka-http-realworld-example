@@ -24,8 +24,7 @@ class ProfileServiceTest extends BaseServiceTest with MockFactory {
           profile <- profileService.getProfile(1, "username-1")
         } yield {
           profile shouldBe Some(
-            ResponseProfile(Profile("username-1", None, None, true))
-          )
+            ResponseProfile(Profile("username-1", None, None, true)))
         })
       }
     }
@@ -39,8 +38,7 @@ class ProfileServiceTest extends BaseServiceTest with MockFactory {
           profile <- profileService.follow(1, "username-1")
         } yield {
           profile shouldBe Some(
-            ResponseProfile(Profile("username-1", None, None, true))
-          )
+            ResponseProfile(Profile("username-1", None, None, true)))
         })
       }
     }
@@ -54,8 +52,7 @@ class ProfileServiceTest extends BaseServiceTest with MockFactory {
           profile <- profileService.unfollow(1, "username-1")
         } yield {
           profile shouldBe Some(
-            ResponseProfile(Profile("username-1", None, None, false))
-          )
+            ResponseProfile(Profile("username-1", None, None, false)))
         })
       }
     }
@@ -78,8 +75,7 @@ class ProfileServiceTest extends BaseServiceTest with MockFactory {
   trait Context {
     val userStorage = mock[UserStorage]
     val storageRunner = new StorageRunner(
-      InMemoryPostgresStorage.databaseConnector
-    )
+      InMemoryPostgresStorage.databaseConnector)
     val profileService = new ProfileService(storageRunner, userStorage)
 
     def currentWhenInserting = new Timestamp((new Date).getTime)
@@ -92,21 +88,17 @@ class ProfileServiceTest extends BaseServiceTest with MockFactory {
         None,
         image = None,
         createdAt = currentWhenInserting,
-        updatedAt = currentWhenInserting
-      )
+        updatedAt = currentWhenInserting)
 
     val testUser1 = testUser(
-      TestUser(1, "username-1", "username-email-1", "user-password-1")
-    )
+      TestUser(1, "username-1", "username-email-1", "user-password-1"))
     val testUser2 = testUser(
-      TestUser(2, "username-2", "username-email-2", "user-password-2")
-    )
+      TestUser(2, "username-2", "username-email-2", "user-password-2"))
 
     case class TestUser(
       userId: Long,
       username: String,
       email: String,
-      password: String
-    )
+      password: String)
   }
 }
