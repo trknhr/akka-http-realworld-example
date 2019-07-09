@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext
 
 object Main extends App {
   def startApplication() = {
-    implicit val system: ActorSystem = ActorSystem("helloAkkaHttpServer")
+    implicit val system: ActorSystem = ActorSystem("real-world-akka-http")
     implicit val executor: ExecutionContext = system.dispatcher
     implicit val materializer: ActorMaterializer = ActorMaterializer()
 
@@ -64,7 +64,7 @@ object Main extends App {
 
     Http().bindAndHandle(httpRoute.route, config.http.host, config.http.port)
 
-    println(s"Server online at http://${config.http.host}:${config.http.port}/")
+    println(s"Working at http://${config.http.host}:${config.http.port}/")
 
     Await.result(system.whenTerminated, Duration.Inf)
   }

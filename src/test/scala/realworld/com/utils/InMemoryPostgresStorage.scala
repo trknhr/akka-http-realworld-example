@@ -7,12 +7,14 @@ import ru.yandex.qatools.embed.postgresql.config.PostgresConfig
 import ru.yandex.qatools.embed.postgresql.distribution.Version
 
 object InMemoryPostgresStorage {
+  val config = Config.load()
+
   val dbHost = getLocalHost.getHostAddress
   val dbPort = 18080
-  val dbName = "database-name"
-  val dbUser = "user"
-  val dbPassword = "password"
-  val jdbcUrl = s"jdbc:postgresql://$dbHost:$dbPort/$dbName"
+  val dbName = "real_world_dev_test"
+  val dbUser = config.database.username
+  val dbPassword = config.database.password
+  val jdbcUrl = config.database.jdbcUrl
 
   val psqlConfig = new PostgresConfig(
     Version.V9_6_11, new Net(dbHost, dbPort),
