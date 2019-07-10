@@ -145,12 +145,9 @@ class ArticleStorageTest extends BaseServiceTest {
   }
 
   trait Context {
-    val articleStorage: ArticleStorage = new JdbcArticleStorage(
-      InMemoryPostgresStorage.databaseConnector)
-    val userStorage: UserStorage = new JdbcUserStorage(
-      InMemoryPostgresStorage.databaseConnector)
-    val tagStorage: TagStorage = new JdbcTagStorage(
-      InMemoryPostgresStorage.databaseConnector)
+    val articleStorage: ArticleStorage = new JdbcArticleStorage()
+    val userStorage: UserStorage = new JdbcUserStorage()
+    val tagStorage: TagStorage = new JdbcTagStorage()
 
     val testArticle1 = Article(
       0,

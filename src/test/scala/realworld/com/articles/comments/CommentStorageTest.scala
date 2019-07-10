@@ -47,12 +47,9 @@ class CommentStorageTest extends BaseServiceTest {
   }
 
   trait Context {
-    val commentStorage: CommentStorage = new JdbcCommentStorage(
-      InMemoryPostgresStorage.databaseConnector)
-    val articleStorage = new JdbcArticleStorage(
-      InMemoryPostgresStorage.databaseConnector)
-    val userStorage = new JdbcUserStorage(
-      InMemoryPostgresStorage.databaseConnector)
+    val commentStorage: CommentStorage = new JdbcCommentStorage()
+    val articleStorage = new JdbcArticleStorage()
+    val userStorage = new JdbcUserStorage()
   }
 }
 

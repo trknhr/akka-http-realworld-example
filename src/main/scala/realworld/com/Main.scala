@@ -34,13 +34,13 @@ object Main extends App {
       config.database.password)
     flywayService.migrateDatabaseSchema()
 
-    val userStorage = new JdbcUserStorage(databaseConnector)
+    val userStorage = new JdbcUserStorage()
 
-    val articleStorage = new JdbcArticleStorage(databaseConnector)
+    val articleStorage = new JdbcArticleStorage()
 
-    val commentStorage = new JdbcCommentStorage(databaseConnector)
+    val commentStorage = new JdbcCommentStorage()
 
-    val tagStorage = new JdbcTagStorage(databaseConnector)
+    val tagStorage = new JdbcTagStorage()
 
     val storageRunner = new StorageRunner(databaseConnector)
 

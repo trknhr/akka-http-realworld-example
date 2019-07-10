@@ -5,6 +5,14 @@ import java.util.Date
 
 import realworld.com.utils.DatabaseConnector
 
+import slick.jdbc.PostgresProfile.api.{
+  DBIO => _,
+  MappedTo => _,
+  Rep => _,
+  TableQuery => _,
+  _
+}
+import slick.lifted.TableQuery
 case class Article(
   id: Long,
   slug: String,
@@ -16,8 +24,6 @@ case class Article(
   updatedAt: Timestamp)
 
 trait ArticleTable {
-  protected val databaseConnector: DatabaseConnector
-  import databaseConnector.profile.api._
 
   class Articles(tag: Tag) extends Table[Article](tag, "articles") {
     def currentWhenInserting = new Timestamp((new Date).getTime)

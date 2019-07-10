@@ -11,9 +11,6 @@ import realworld.com.utils.{ DBIOOptional, StorageRunner }
 class UserService(runner: StorageRunner, userStorage: UserStorage, secretKey: String)(
   implicit
   executionContext: ExecutionContext) {
-  def getUsers(): Future[Seq[User]] =
-    runner.run(
-      userStorage.getUsers())
 
   def getCurrentUser(userId: Long): Future[Option[ResponseUser]] =
     runner.run(

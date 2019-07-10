@@ -45,7 +45,6 @@ class TagStorageTest extends BaseServiceTest {
   }
 
   trait Context {
-    val tagStorage: TagStorage = new JdbcTagStorage(
-      InMemoryPostgresStorage.databaseConnector)
+    val tagStorage: TagStorage = new JdbcTagStorage()
   }
 }

@@ -7,7 +7,7 @@ import realworld.com.utils.DatabaseConnector
 import slick.dbio.{ DBIO, DBIOAction }
 import slick.jdbc.PostgresProfile.api.{ DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _ }
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait ArticleStorage {
   def getArticles(pageRequest: ArticleRequest): DBIO[Seq[Article]]
@@ -29,8 +29,7 @@ trait ArticleStorage {
   def deleteArticleBySlug(slug: String): DBIO[Unit]
 }
 
-class JdbcArticleStorage(
-  val databaseConnector: DatabaseConnector)(implicit executionContext: ExecutionContext)
+class JdbcArticleStorage
   extends ArticleStorage
   with ArticleTable
   with UserProfileTable

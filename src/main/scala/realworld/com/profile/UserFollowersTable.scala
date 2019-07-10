@@ -3,11 +3,10 @@ package realworld.com.profile
 import java.sql.Timestamp
 import java.util.Date
 
-import realworld.com.utils.DatabaseConnector
+import slick.jdbc.PostgresProfile.api.{ DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _ }
+import slick.lifted.TableQuery
 
 trait UserFollowersTable {
-  protected val databaseConnector: DatabaseConnector
-  import databaseConnector.profile.api._
 
   def currentWhenInserting = new Timestamp((new Date).getTime)
 

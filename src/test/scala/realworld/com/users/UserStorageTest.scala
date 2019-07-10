@@ -57,8 +57,7 @@ class UserStorageTest extends BaseServiceTest {
     }
   }
   trait Context {
-    val userStorage: UserStorage = new JdbcUserStorage(
-      InMemoryPostgresStorage.databaseConnector)
+    val userStorage: UserStorage = new JdbcUserStorage()
 
     def currentWhenInserting = new Timestamp((new Date).getTime)
     def testUser(testUser: TestUser) =

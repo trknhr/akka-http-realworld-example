@@ -2,11 +2,10 @@ package realworld.com.users
 
 import realworld.com.core.User
 import realworld.com.profile.{ UserFollower, UserFollowersTable }
-import realworld.com.utils.DatabaseConnector
 import slick.dbio.DBIO
 import slick.jdbc.PostgresProfile.api.{ DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _ }
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait UserStorage {
   def getUsers(): DBIO[Seq[User]]
@@ -23,9 +22,7 @@ trait UserStorage {
   def followingUsers(userId: Long, targetUserId: Seq[Long]): DBIO[Seq[Long]]
 }
 
-class JdbcUserStorage(
-  val databaseConnector: DatabaseConnector)(implicit executionContext: ExecutionContext)
-  extends UserProfileTable
+class JdbcUserStorage extends UserProfileTable
   with UserStorage
   with UserFollowersTable {
 

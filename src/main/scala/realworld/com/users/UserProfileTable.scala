@@ -4,12 +4,10 @@ import java.sql.Timestamp
 import java.util.Date
 
 import realworld.com.core.User
-import realworld.com.utils.DatabaseConnector
+import slick.jdbc.PostgresProfile.api.{ DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _ }
+import slick.lifted.TableQuery
 
 trait UserProfileTable {
-  protected val databaseConnector: DatabaseConnector
-  import databaseConnector.profile.api._
-
   class Users(tag: Tag) extends Table[User](tag, "users") {
     def currentWhenInserting = new Timestamp((new Date).getTime)
 

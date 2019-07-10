@@ -6,7 +6,6 @@ import realworld.com.tags.TagStorage
 import realworld.com.users.UserStorage
 import realworld.com.utils.{
   DBIOOptional,
-  FutureOptional,
   ISO8601,
   StorageRunner
 }

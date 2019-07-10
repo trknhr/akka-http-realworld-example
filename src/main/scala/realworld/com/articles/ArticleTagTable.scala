@@ -1,10 +1,9 @@
 package realworld.com.articles
 
-import realworld.com.utils.DatabaseConnector
+import slick.jdbc.PostgresProfile.api.{ DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _ }
+import slick.lifted.TableQuery
 
 trait ArticleTagTable {
-  protected val databaseConnector: DatabaseConnector
-  import databaseConnector.profile.api._
 
   class ArticleTags(tag: Tag) extends Table[ArticleTag](tag, "articles_tags") {
     def id = column[Long]("id", O.AutoInc, O.PrimaryKey)

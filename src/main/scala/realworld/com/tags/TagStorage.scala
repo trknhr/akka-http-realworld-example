@@ -13,6 +13,7 @@ import slick.jdbc.PostgresProfile.api.{
   TableQuery => _,
   _
 }
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait TagStorage {
   def getTags(): DBIO[Seq[TagV]]
@@ -21,9 +22,7 @@ trait TagStorage {
   def findTagByNames(tagNames: Seq[String]): DBIO[Seq[TagV]]
   def insertAndGet(tagVs: Seq[TagV]): DBIO[Seq[TagV]]
 }
-class JdbcTagStorage(
-  val databaseConnector: DatabaseConnector)(implicit executionContext: ExecutionContext)
-  extends TagStorage
+class JdbcTagStorage extends TagStorage
   with TagTable
   with ArticleTagTable {
 
