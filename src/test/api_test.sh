@@ -8,10 +8,10 @@ echo "> Getting data..."
 git clone https://github.com/gothinkster/realworld.git ./$WORKING_DIR
 
 echo "> Start DB"
-docker-compose up -d
+nohup docker-compose up -d > /dev/null &
 
 echo "> Start API"
-#sbt run start &
+nohup sbt run start &> /dev/null &
 
 echo "> Start Test"
 #APIURL=localhost:9000/api ./$WORKING_DIR/api/run-api-tests.sh
