@@ -11,10 +11,10 @@ echo "> Start DB"
 docker-compose up -d
 
 echo "> Start API"
-sbt run start &
+#sbt run start &
 
 echo "> Start Test"
-APIURL=localhost:9000/api ./$WORKING_DIR/api/run-api-tests.sh
+#APIURL=localhost:9000/api ./$WORKING_DIR/api/run-api-tests.sh
 
 # Clean after test
 docker-compose down
