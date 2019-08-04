@@ -13,6 +13,7 @@ docker-compose up -d
 echo "> Start API"
 sbt run start &
 
+echo "> Start Test"
 APIURL=localhost:9000/api ./$WORKING_DIR/api/run-api-tests.sh
 
 # Clean after test
