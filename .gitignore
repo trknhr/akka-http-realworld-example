@@ -2,3 +2,5 @@
 .idea
 target/
 sbt-dist/
+
+api_test

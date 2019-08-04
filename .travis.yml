@@ -3,4 +3,5 @@ scala:
   - 2.12.2
 script:
   - sbt clean coverage test coverageReport
+  - ./src/test/api_test.sh
 
