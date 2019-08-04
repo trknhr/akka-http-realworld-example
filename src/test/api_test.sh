@@ -2,10 +2,10 @@
 
 export WORKING_DIR='api_test'
 echo "> Working dir: $WORKING_DIR"
-mkdir $WORKING_DIR
+mkdir ./$WORKING_DIR
 
 echo "> Getting data..."
-git clone https://github.com/gothinkster/realworld.git $WORKING_DIR
+git clone https://github.com/gothinkster/realworld.git ./$WORKING_DIR
 
 echo "> Start DB"
 docker-compose up -d
