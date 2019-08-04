@@ -14,7 +14,7 @@ echo "> Start API"
 nohup sbt run start &> /dev/null &
 
 echo "> Start Test"
-#APIURL=localhost:9000/api ./$WORKING_DIR/api/run-api-tests.sh
+APIURL=localhost:9000/api ./$WORKING_DIR/api/run-api-tests.sh
 
 # Clean after test
 docker-compose down
