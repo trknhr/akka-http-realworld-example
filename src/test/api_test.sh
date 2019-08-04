@@ -13,9 +13,7 @@ docker-compose up -d
 echo "> Start API"
 sbt run start &
 
-cd ${WORKING_DIR}/realworld/api
-
-APIURL=localhost:9000/api ./$WORKING_DIR/realworld/api/run-api-tests.sh
+APIURL=localhost:9000/api ./$WORKING_DIR/api/run-api-tests.sh
 
 # Clean after test
 docker-compose down
