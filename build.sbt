@@ -17,7 +17,7 @@ lazy val root = (project in file(".")).enablePlugins(JavaAppPackaging).
       organization    := "realworld.com",
       scalaVersion    := "2.12.4"
     )),
-    packageName in Docker := "akka-http-docker-minimal-seed",
+    packageName in Docker := "akka-http-realworld-example-docker",
     dockerExposedPorts := Seq(5000),
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
