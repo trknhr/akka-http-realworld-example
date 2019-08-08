@@ -2,11 +2,11 @@ package realworld.com.utils
 
 import com.zaxxer.hikari.{ HikariConfig, HikariDataSource }
 
-class DatabaseConnector(jdbcUrl: String, dbUser: String, dbPassword: String) {
+class DatabaseConnector(jdbcURL: String, dbUser: String, dbPassword: String) {
 
   private val hikariDataSource = {
     val hikariConfig = new HikariConfig()
-    hikariConfig.setJdbcUrl(jdbcUrl)
+    hikariConfig.setJdbcUrl(jdbcURL)
     hikariConfig.setUsername(dbUser)
     hikariConfig.setPassword(dbPassword)
 

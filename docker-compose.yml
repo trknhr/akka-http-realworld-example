@@ -4,6 +4,19 @@ volumes:
   database:
 
 services:
+  app:
+    image: akka-http-realworld-example-docker:0.1.0
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DB_HOST_ENV: "db"
+      DB_PORT_ENV: 5432
+      DB_DB_ENV: "real_world_dev"
+      DB_USER_ENV: "postgres"
+      DB_PASS_ENV: "postgres"
+    ports:
+      - 9000:9000
   db:
     image: postgres
     restart: always

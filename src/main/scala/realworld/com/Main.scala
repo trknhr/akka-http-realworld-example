@@ -23,13 +23,14 @@ object Main extends App {
 
     val config = Config.load()
 
+    val jdbcURL = s"jdbc:postgresql://${config.database.host}:${config.database.port}/${config.database.db}"
     val databaseConnector = new DatabaseConnector(
-      config.database.jdbcUrl,
+      jdbcURL,
       config.database.username,
       config.database.password)
 
     val flywayService = new DatabaseMigrationManager(
-      config.database.jdbcUrl,
+      jdbcURL,
       config.database.username,
       config.database.password)
     flywayService.migrateDatabaseSchema()

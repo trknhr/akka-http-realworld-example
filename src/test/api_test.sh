@@ -7,11 +7,10 @@ mkdir ./$WORKING_DIR
 echo "> Getting data..."
 git clone https://github.com/gothinkster/realworld.git ./$WORKING_DIR
 
-echo "> Start DB"
-nohup docker-compose up -d > /dev/null &
+echo "> Start Application "
+docker-compose up -d
 
-echo "> Start API"
-nohup sbt run start &> /dev/null &
+sleep 5
 
 echo "> Start Test"
 APIURL=localhost:9000/api ./$WORKING_DIR/api/run-api-tests.sh
