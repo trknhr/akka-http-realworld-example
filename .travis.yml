@@ -8,9 +8,7 @@ scala:
   - 2.12.2
 
 env:
-  - WORKING_DIR="api_test"
-  - DOCKER_COMPOSE_VERSION=1.24.1
-
+  - WORKING_DIR="api_test" DOCKER_COMPOSE_VERSION=1.24.1
 
 before_install:
   # Upgrade Docker Compose.
