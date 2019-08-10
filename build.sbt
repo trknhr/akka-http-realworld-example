@@ -1,19 +1,24 @@
-lazy val akkaHttpVersion = "10.0.11"
+lazy val akkaHttpVersion = "10.1.2"
 lazy val akkaVersion    = "2.5.11"
 
 val circeVersion = "0.9.3"
 val sttpV = "1.1.13"
+
 fork in Test := true
 parallelExecution in Test := false
 
-
-lazy val root = (project in file(".")).
+lazy val root = (project in file(".")).enablePlugins(JavaAppPackaging).
   settings(
+    name := "akka-http-quickstart-scala",
+    version := "0.1.0",
+
+
     inThisBuild(List(
-      organization    := "com.example",
+      organization    := "realworld.com",
       scalaVersion    := "2.12.4"
     )),
-    name := "akka-http-quickstart-scala",
+    packageName in Docker := "akka-http-realworld-example-docker",
+    dockerExposedPorts := Seq(5000),
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
@@ -65,3 +70,8 @@ lazy val root = (project in file(".")).
       "org.scalamock" %% "scalamock" % "4.1.0" % Test
     )
   )
+
+unmanagedResourceDirectories in Compile += {
+  baseDirectory.value / "src/main/resources"
+}
+
