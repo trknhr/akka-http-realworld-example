@@ -21,10 +21,9 @@ before_script:
   - git clone https://github.com/gothinkster/realworld.git ${WORKING_DIR}
 
 script:
-#  - sbt clean coverage test coverageReport
-#  - sbt docker:publishLocal
-  - ls
-  - docker-compose version
-#  - sleep 15
-#  - APIURL=localhost:9000/api ./${WORKING_DIR}/api/run-api-tests.sh
+  - sbt clean coverage test coverageReport
+  - sbt docker:publishLocal
+  - docker-compose up -d
+  - sleep 15
+  - APIURL=localhost:9000/api ./${WORKING_DIR}/api/run-api-tests.sh
 
