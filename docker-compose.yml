@@ -16,7 +16,7 @@ services:
       DB_USER_ENV: "postgres"
       DB_PASS_ENV: "postgres"
     ports:
-      - "9000:9000"
+      - "127.0.0.1:9000:9000"
   db:
     image: postgres
     restart: always
