@@ -1,3 +1,5 @@
+sudo: required
+
 services:
   - docker
 
@@ -15,15 +17,16 @@ before_install:
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin/
+  - sudo mv docker-compose /usr/local/bin
 
 before_script:
   - git clone https://github.com/gothinkster/realworld.git ${WORKING_DIR}
 
 script:
 #  - sbt clean coverage test coverageReport
-  - sbt docker:publishLocal
+#  - sbt docker:publishLocal
+  - ls
   - docker-compose up -d
-  - sleep 15
-  - APIURL=localhost:9000/api ./${WORKING_DIR}/api/run-api-tests.sh
+#  - sleep 15
+#  - APIURL=localhost:9000/api ./${WORKING_DIR}/api/run-api-tests.sh
 
