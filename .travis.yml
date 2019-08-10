@@ -25,5 +25,6 @@ script:
   - sbt docker:publishLocal
   - docker-compose up -d
   - sleep 15
-  - APIURL=http://0.0.0.0:9000/api ./${WORKING_DIR}/api/run-api-tests.sh
+  - curl -Ss localhost:9000/api/healthcheck
+#  - APIURL=http://0.0.0.0:9000/api ./${WORKING_DIR}/api/run-api-tests.sh
 
