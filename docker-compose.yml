@@ -10,7 +10,7 @@ services:
     depends_on:
       - db
     environment:
-#      DB_HOST_ENV: "db"
+      DB_HOST_ENV: "db"
       DB_PORT_ENV: 15432
       DB_DB_ENV: "real_world_dev"
       DB_USER_ENV: "postgres"
