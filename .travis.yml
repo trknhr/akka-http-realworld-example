@@ -1,12 +1,17 @@
-services:
-  - docker
-
 language: scala
 scala:
   - 2.12.2
 
 env:
-  - REQ_FILE="api_test"
+  - WORKING_DIR="api_test"
+  - DOCKER_COMPOSE_VERSION=1.4.2
+
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
 before_script:
   - git clone https://github.com/gothinkster/realworld.git $WORKING_DIR
