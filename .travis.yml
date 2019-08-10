@@ -1,8 +1,19 @@
+services:
+  - docker
+
 language: scala
 scala:
   - 2.12.2
 
+env:
+  - REQ_FILE="api_test"
+
+before_script:
+  - git clone https://github.com/gothinkster/realworld.git $WORKING_DIR
+
 script:
   - sbt clean coverage test coverageReport docker:publishLocal
-  - ./src/test/api_test.sh
+  - docker-compose up -d
+  - sleep 15
+  - APIURL=localhost:9000/api ./$WORKING_DIR/api/run-api-tests.sh
 

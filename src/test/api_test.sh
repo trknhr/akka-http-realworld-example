@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export WORKING_DIR='api_test'
+export WORKING_DIR="api_test"
 echo "> Working dir: $WORKING_DIR"
 mkdir ./$WORKING_DIR
 
@@ -10,7 +10,7 @@ git clone https://github.com/gothinkster/realworld.git ./$WORKING_DIR
 echo "> Start Application "
 docker-compose up -d
 
-echo "> Start Test"
+echo "> Start Test "
 sleep 10;APIURL=localhost:9000/api ./$WORKING_DIR/api/run-api-tests.sh
 
 # Clean after test
