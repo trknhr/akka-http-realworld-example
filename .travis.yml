@@ -26,7 +26,7 @@ script:
 #  - sbt clean coverage test coverageReport
 #  - sbt docker:publishLocal
   - ls
-  - which docker-compose
+  - docker-compose version
 #  - sleep 15
 #  - APIURL=localhost:9000/api ./${WORKING_DIR}/api/run-api-tests.sh
 
