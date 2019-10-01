@@ -1,6 +1,12 @@
 package realworld.com.articles
 
-import slick.jdbc.PostgresProfile.api.{ DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _ }
+import slick.jdbc.PostgresProfile.api.{
+  DBIO => _,
+  MappedTo => _,
+  Rep => _,
+  TableQuery => _,
+  _
+}
 import slick.lifted.TableQuery
 
 trait ArticleTagTable {

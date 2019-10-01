@@ -3,7 +3,13 @@ package realworld.com.articles
 import java.sql.Timestamp
 import java.util.Date
 
-import slick.jdbc.PostgresProfile.api.{ DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _ }
+import slick.jdbc.PostgresProfile.api.{
+  DBIO => _,
+  MappedTo => _,
+  Rep => _,
+  TableQuery => _,
+  _
+}
 import slick.lifted.TableQuery
 
 trait FavoriteTable {

@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.directives.{
   HeaderDirectives,
   RouteDirectives
 }
-import pdi.jwt.{ Jwt, JwtAlgorithm }
+import pdi.jwt.{Jwt, JwtAlgorithm}
 import io.circe.parser._
 import io.circe.generic.auto._
 import realworld.com.core.AuthTokenContent
@@ -19,7 +19,11 @@ object JwtAuthDirectives {
 
   def authenticate(secretKey: String): Directive1[Long] = {
     headerValueByName("Authorization")
-      .map(a => Jwt.decodeRaw(a.split(" ").reverse.head, secretKey, Seq(JwtAlgorithm.HS256)))
+      .map(
+        a =>
+          Jwt.decodeRaw(a.split(" ").reverse.head,
+                        secretKey,
+                        Seq(JwtAlgorithm.HS256)))
       .map(_.toOption.flatMap(decode[AuthTokenContent](_).toOption))
       .flatMap {
         case Some(result) =>

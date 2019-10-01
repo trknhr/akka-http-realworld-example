@@ -10,10 +10,9 @@ import realworld.com.core.UserRegistration
 
 import scala.concurrent.ExecutionContext
 
-class UserRoute(
-  secretKey: String,
-  usersService: UserService)(implicit executionContext: ExecutionContext)
-  extends FailFastCirceSupport {
+class UserRoute(secretKey: String, usersService: UserService)(
+    implicit executionContext: ExecutionContext)
+    extends FailFastCirceSupport {
 
   import realworld.com.utils.JwtAuthDirectives._
   import StatusCodes._
@@ -24,11 +23,10 @@ class UserRoute(
       pathEndOrSingleSlash {
         post {
           entity(as[LoginPasswordUser]) { idPass =>
-            complete(
-              login(idPass.user.email, idPass.user.password).map {
-                case Some(user) => OK -> user.asJson
-                case None => BadRequest -> None.asJson
-              })
+            complete(login(idPass.user.email, idPass.user.password).map {
+              case Some(user) => OK -> user.asJson
+              case None       => BadRequest -> None.asJson
+            })
 
           }
         }
@@ -74,10 +72,9 @@ private case class ResisterRequest(user: UserRegistration)
 private case class LoginPasswordUser(user: LoginPassword)
 
 private case class LoginPassword(email: String, password: String)
-private case class UserProfile(
-  username: String,
-  email: String,
-  bio: Option[String],
-  image: Option[String])
+private case class UserProfile(username: String,
+                               email: String,
+                               bio: Option[String],
+                               image: Option[String])
 
 private case class UserUpdateParam(user: core.UserUpdate)

@@ -11,10 +11,10 @@ import realworld.com.articles.comments.CommentRoute
 import scala.concurrent.ExecutionContext
 
 class ArticleRoute(
-  commentRoute: CommentRoute,
-  secretKey: String,
-  articleService: ArticleService)(implicit executionContext: ExecutionContext)
-  extends FailFastCirceSupport {
+    commentRoute: CommentRoute,
+    secretKey: String,
+    articleService: ArticleService)(implicit executionContext: ExecutionContext)
+    extends FailFastCirceSupport {
   import akka.http.scaladsl.model.StatusCodes._
   import articleService._
   import realworld.com.utils.JwtAuthDirectives._
@@ -22,7 +22,11 @@ class ArticleRoute(
   val route = pathPrefix("articles") {
     pathEnd {
       get {
-        parameters('tag.?, 'authorName.?, 'favorited.?, 'limit.as[Long].?, 'offset.as[Long].?).as(ArticleRequest) { request =>
+        parameters('tag.?,
+                   'authorName.?,
+                   'favorited.?,
+                   'limit.as[Long].?,
+                   'offset.as[Long].?).as(ArticleRequest) { request =>
           complete(getArticles(request).map(_.asJson))
         }
       } ~
@@ -58,7 +62,8 @@ class ArticleRoute(
             } ~
               put {
                 entity(as[UpdateArticle]) { updateArticle =>
-                  complete(updateArticleBySlug(slug, userId, updateArticle.article))
+                  complete(
+                    updateArticleBySlug(slug, userId, updateArticle.article))
                 }
               } ~
               delete {
@@ -72,13 +77,13 @@ class ArticleRoute(
           post {
             complete(favoriteArticle(userId, slug).map {
               case Some(x) => OK -> x.asJson
-              case None => NotFound -> None.asJson
+              case None    => NotFound -> None.asJson
             })
           } ~
             delete {
               complete(unFavoriteArticle(userId, slug).map {
                 case Some(x) => OK -> x.asJson
-                case None => NotFound -> None.asJson
+                case None    => NotFound -> None.asJson
               })
             }
         }
@@ -89,6 +94,5 @@ class ArticleRoute(
 
 private case class UpdateArticle(article: ArticleUpdated)
 private case class CreateArticle(article: ArticlePosted)
-case class FeedRequest(
-  limit: Option[Long] = Some(100),
-  offset: Option[Long] = Some(0))
+case class FeedRequest(limit: Option[Long] = Some(100),
+                       offset: Option[Long] = Some(0))

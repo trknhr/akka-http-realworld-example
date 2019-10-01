@@ -7,10 +7,9 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import scala.concurrent.ExecutionContext
 
-class ProfileRoute(
-  secretKey: String,
-  profileService: ProfileService)(implicit executionContext: ExecutionContext)
-  extends FailFastCirceSupport {
+class ProfileRoute(secretKey: String, profileService: ProfileService)(
+    implicit executionContext: ExecutionContext)
+    extends FailFastCirceSupport {
 
   import StatusCodes._
   import profileService._

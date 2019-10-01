@@ -10,10 +10,9 @@ import realworld.com.articles.comments.CommentRoute
 
 import scala.concurrent.ExecutionContext
 
-class TagRoute(
-  secretKey: String,
-  tagService: TagService)(implicit executionContext: ExecutionContext)
-  extends FailFastCirceSupport {
+class TagRoute(secretKey: String, tagService: TagService)(
+    implicit executionContext: ExecutionContext)
+    extends FailFastCirceSupport {
 
   import akka.http.scaladsl.model.StatusCodes._
   import tagService._
@@ -27,4 +26,3 @@ class TagRoute(
     }
   }
 }
-

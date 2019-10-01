@@ -9,33 +9,28 @@ import realworld.com.profile.Profile
 package object comments {
   case class CommentRequest(comment: CommentForJson)
   case class CommentForJson(body: String)
-  case class Comment(
-    id: Long,
-    body: String,
-    articleId: Long,
-    authorId: Long,
-    createdAt: Timestamp,
-    updatedAt: Timestamp)
+  case class Comment(id: Long,
+                     body: String,
+                     articleId: Long,
+                     authorId: Long,
+                     createdAt: Timestamp,
+                     updatedAt: Timestamp)
   object Comment {
     def create(body: String, articleId: Long, authorId: Long): Comment =
-      Comment(
-        -1,
-        body,
-        articleId,
-        authorId,
-        new Timestamp((new Date).getTime),
-        new Timestamp((new Date).getTime))
+      Comment(-1,
+              body,
+              articleId,
+              authorId,
+              new Timestamp((new Date).getTime),
+              new Timestamp((new Date).getTime))
   }
 
-  case class CommentData(
-    id: Long,
-    createdAt: String,
-    updatedAt: String,
-    body: String,
-    username: String,
-    author: Profile)
-  case class CommentResponse(
-    comment: CommentData)
-  case class CommentsResponse(
-    comments: Seq[CommentData])
+  case class CommentData(id: Long,
+                         createdAt: String,
+                         updatedAt: String,
+                         body: String,
+                         username: String,
+                         author: Profile)
+  case class CommentResponse(comment: CommentData)
+  case class CommentsResponse(comments: Seq[CommentData])
 }

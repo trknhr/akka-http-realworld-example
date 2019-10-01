@@ -1,6 +1,6 @@
 package realworld.com.utils
 
-import com.zaxxer.hikari.{ HikariConfig, HikariDataSource }
+import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 
 class DatabaseConnector(jdbcURL: String, dbUser: String, dbPassword: String) {
 

@@ -14,9 +14,8 @@ object Config {
 }
 
 private[utils] case class HttpConfig(host: String, port: Int)
-private[utils] case class DatabaseConfig(
-  host: String,
-  port: String,
-  db: String,
-  username: String,
-  password: String)
+private[utils] case class DatabaseConfig(host: String,
+                                         port: String,
+                                         db: String,
+                                         username: String,
+                                         password: String)
