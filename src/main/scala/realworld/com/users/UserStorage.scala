@@ -1,9 +1,15 @@
 package realworld.com.users
 
 import realworld.com.core.User
-import realworld.com.profile.{ UserFollower, UserFollowersTable }
+import realworld.com.profile.{UserFollower, UserFollowersTable}
 import slick.dbio.DBIO
-import slick.jdbc.PostgresProfile.api.{ DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _ }
+import slick.jdbc.PostgresProfile.api.{
+  DBIO => _,
+  MappedTo => _,
+  Rep => _,
+  TableQuery => _,
+  _
+}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -22,9 +28,10 @@ trait UserStorage {
   def followingUsers(userId: Long, targetUserId: Seq[Long]): DBIO[Seq[Long]]
 }
 
-class JdbcUserStorage extends UserProfileTable
-  with UserStorage
-  with UserFollowersTable {
+class JdbcUserStorage
+    extends UserProfileTable
+    with UserStorage
+    with UserFollowersTable {
 
   def getUsers(): DBIO[Seq[User]] = users.result
 
@@ -53,14 +60,18 @@ class JdbcUserStorage extends UserProfileTable
   }
 
   def findUserByEmail(email: String, password: String): DBIO[Option[User]] =
-    users.filter(a => a.email === email && a.password === password).result.headOption
+    users
+      .filter(a => a.email === email && a.password === password)
+      .result
+      .headOption
 
   def follow(userId: Long, targetUserId: Long): DBIO[Int] =
     followers += UserFollower(userId, targetUserId, currentWhenInserting)
 
   def unfollow(userId: Long, targetUserId: Long): DBIO[Int] = {
-    followers.filter(a =>
-      a.userId === userId && a.followeeId === targetUserId).delete
+    followers
+      .filter(a => a.userId === userId && a.followeeId === targetUserId)
+      .delete
   }
 
   def isFollowing(userId: Long, targetUserId: Long): DBIO[Boolean] =
@@ -68,14 +79,12 @@ class JdbcUserStorage extends UserProfileTable
       .filter(m => m.userId === userId && m.followeeId === targetUserId)
       .result
       .headOption
-      .map(
-        _.isDefined)
+      .map(_.isDefined)
 
   def followingUsers(userId: Long, targetUserIds: Seq[Long]): DBIO[Seq[Long]] =
     followers
       .filter(m => m.userId === userId)
       .filter(m => m.followeeId inSet targetUserIds)
-      .map(
-        _.followeeId)
+      .map(_.followeeId)
       .result
 }

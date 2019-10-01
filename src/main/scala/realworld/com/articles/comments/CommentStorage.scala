@@ -2,7 +2,13 @@ package realworld.com.articles.comments
 
 import realworld.com.utils.DatabaseConnector
 import slick.dbio.DBIO
-import slick.jdbc.PostgresProfile.api.{ DBIO => _, MappedTo => _, Rep => _, TableQuery => _, _ }
+import slick.jdbc.PostgresProfile.api.{
+  DBIO => _,
+  MappedTo => _,
+  Rep => _,
+  TableQuery => _,
+  _
+}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait CommentStorage {

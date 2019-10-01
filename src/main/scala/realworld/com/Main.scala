@@ -4,12 +4,17 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import profile.ProfileService
-import realworld.com.articles.comments.{ CommentService, JdbcCommentStorage }
-import realworld.com.articles.{ ArticleService, JdbcArticleStorage }
+import realworld.com.articles.comments.{CommentService, JdbcCommentStorage}
+import realworld.com.articles.{ArticleService, JdbcArticleStorage}
 import realworld.com.routes.routes.HttpRoute
-import realworld.com.tags.{ JdbcTagStorage, TagService }
-import users.{ JdbcUserStorage, UserService }
-import utils.{ Config, DatabaseConnector, DatabaseMigrationManager, StorageRunner }
+import realworld.com.tags.{JdbcTagStorage, TagService}
+import users.{JdbcUserStorage, UserService}
+import utils.{
+  Config,
+  DatabaseConnector,
+  DatabaseMigrationManager,
+  StorageRunner
+}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -23,16 +28,15 @@ object Main extends App {
 
     val config = Config.load()
 
-    val jdbcURL = s"jdbc:postgresql://${config.database.host}:${config.database.port}/${config.database.db}"
-    val databaseConnector = new DatabaseConnector(
-      jdbcURL,
-      config.database.username,
-      config.database.password)
+    val jdbcURL =
+      s"jdbc:postgresql://${config.database.host}:${config.database.port}/${config.database.db}"
+    val databaseConnector = new DatabaseConnector(jdbcURL,
+                                                  config.database.username,
+                                                  config.database.password)
 
-    val flywayService = new DatabaseMigrationManager(
-      jdbcURL,
-      config.database.username,
-      config.database.password)
+    val flywayService = new DatabaseMigrationManager(jdbcURL,
+                                                     config.database.username,
+                                                     config.database.password)
     flywayService.migrateDatabaseSchema()
 
     val userStorage = new JdbcUserStorage()
@@ -45,23 +49,27 @@ object Main extends App {
 
     val storageRunner = new StorageRunner(databaseConnector)
 
-    val userService = new UserService(storageRunner, userStorage, config.secretKey)
+    val userService =
+      new UserService(storageRunner, userStorage, config.secretKey)
 
     val profileService = new ProfileService(storageRunner, userStorage)
 
-    val articleService = new ArticleService(storageRunner, articleStorage, userStorage, tagStorage)
+    val articleService =
+      new ArticleService(storageRunner, articleStorage, userStorage, tagStorage)
 
-    val commentService = new CommentService(storageRunner, articleStorage, commentStorage, userStorage)
+    val commentService = new CommentService(storageRunner,
+                                            articleStorage,
+                                            commentStorage,
+                                            userStorage)
 
     val tagService = new TagService(storageRunner, tagStorage)
 
-    val httpRoute = new HttpRoute(
-      userService,
-      profileService,
-      articleService,
-      commentService,
-      tagService,
-      config.secretKey)
+    val httpRoute = new HttpRoute(userService,
+                                  profileService,
+                                  articleService,
+                                  commentService,
+                                  tagService,
+                                  config.secretKey)
 
     Http().bindAndHandle(httpRoute.route, config.http.host, config.http.port)
 

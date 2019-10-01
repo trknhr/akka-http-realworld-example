@@ -13,15 +13,14 @@ import slick.jdbc.PostgresProfile.api.{
   _
 }
 import slick.lifted.TableQuery
-case class Article(
-  id: Long,
-  slug: String,
-  title: String,
-  description: String,
-  body: String,
-  authorId: Long,
-  createdAt: Timestamp,
-  updatedAt: Timestamp)
+case class Article(id: Long,
+                   slug: String,
+                   title: String,
+                   description: String,
+                   body: String,
+                   authorId: Long,
+                   createdAt: Timestamp,
+                   updatedAt: Timestamp)
 
 trait ArticleTable {
 
